@@ -150,14 +150,15 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   engine/copy-tasks/itempicks.responses.json, an INDEPENDENT critic writes itempicks.critique.json,
   then the plain run number-checks every line against the item's own text; rerun after a catalog
   change; the page falls back to the rule-based lane line for an item with no line),
-  `npm run tanks` (zero-API: the "Tankiest winning builds" page, ui/v6/tanks.html,
-  data/aggregates/tank-builds.json: per lane (offlane, jungle, support) the hero + Eternal groups with
-  150+ ranked games of ten minutes or more, ranked by damage soaked per death (mitigated + hero damage
-  taken, per death), kept only when the win rate pulled 100 games toward 50% is 50% or better; the
-  augment / crest / opening three / later items shown are what the group's players run most; each lane
-  also compares every Eternal against the same tank hero on other Eternals; four rank bands (All,
-  Silver+, Gold+, Plat+ by match-time rank, with smaller game floors per band); rules in
-  src/tank-builds.ts; rerun daily after perks),
+  `npm run tanks` (zero-API: the "Top builds by job" page, ui/v6/tanks.html,
+  data/aggregates/top-builds.json: per rank band (All, Silver+, Gold+, Plat+ by match-time rank, smaller
+  game floors per band) and per job (tankiest = soak per death in offlane / jungle / support; healing
+  and shielding as a support; magic damage in any lane; damage as a carry) the hero + Eternal groups
+  that lead the job's stat over ranked games of ten minutes or more, kept only when the win rate pulled
+  100 games toward 50% is 50% or better, one row per hero-lane; each section also compares every Eternal
+  against the same hero on other Eternals; the augment / crest / opening three / later items shown are
+  what the group's players run most; shielding is shields RECEIVED by the four teammates (the stream has
+  no shields given); rules in src/output-boards.ts and src/tank-builds.ts; rerun daily after perks),
   `npm run loadouts` (zero-API: the "Loadout" card that leads every hero-lane page,
   data/artifacts/loadouts/<hero>.json. The page follows the DRAFT (maintainer, 2026-11-10): the augment
   is locked first and is hero- and lane-specific, so it is the first choice, and per augment with 60+

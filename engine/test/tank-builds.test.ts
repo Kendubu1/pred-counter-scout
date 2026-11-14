@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { BANDS, MIN_GAMES, addGame, eternalEffects, inBand, qualifies, rankTanks, tankAgg, tankStats, type TankAgg } from '../src/tank-builds.js';
+import { BOARDS, addOut, outAgg, rankBoard } from '../src/output-boards.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const group = (n: number, wins: number, mit: number, taken: number, deaths: number) => { const a = tankAgg(); for (let k = 0; k < n; k++) addGame(a, mit, taken, deaths, 1800, k < wins); return { agg: a }; };
@@ -33,26 +34,37 @@ describe('tankiest winning builds', () => {
     expect(r.find((x) => x.eternal === 'Same')!.verdict).toBe('no clear change');
     expect(r[0]!.eternal).toBe('Good');
   });
-  const f = path.join(ROOT, 'data/aggregates/tank-builds.json');
-it.skipIf(!existsSync(f))('committed board: four rank bands, three lanes, every row winning and with its band\'s games', () => {
+  const f = path.join(ROOT, 'data/aggregates/top-builds.json');
+it.skipIf(!existsSync(f))('committed boards: every rank band and job, each row winning, with the games, one row per hero-lane', () => {
     const d = JSON.parse(readFileSync(f, 'utf8'));
     expect(d.bandOrder).toEqual(BANDS.map((b) => b.key));
-    for (const band of BANDS) {
-      const bd = d.bands[band.key];
-      expect(Object.keys(bd.lanes)).toEqual(['offlane', 'jungle', 'support']);
-      for (const l of Object.values<any>(bd.lanes)) {
-        if (band.key === 'all') { expect(l.board.length).toBeGreaterThan(0); expect(l.eternals.length).toBeGreaterThan(0); }
-        for (const e of l.eternals) if (e.verdict === 'wins more') expect(e.winDelta - e.margin).toBeGreaterThan(0);
-        for (let k = 0; k < l.board.length; k++) {
-          const b = l.board[k];
-          expect(b.games).toBeGreaterThanOrEqual(band.minGames);
-          expect(b.shrunkWinPct).toBeGreaterThanOrEqual(50);
-          if (k) expect(b.soakPerDeath).toBeLessThanOrEqual(l.board[k - 1].soakPerDeath);
+    expect(d.boards.map((b: any) => b.key)).toEqual(BOARDS.map((b) => b.key));
+    for (const band of BANDS) for (const def of BOARDS) {
+      const secs = d.bands[band.key].boards[def.key].sections;
+      expect(secs.map((x: any) => x.key)).toEqual(def.sections.map((x) => x.key));
+      for (const sec of secs) {
+        if (band.key === 'all') expect(sec.rows.length, `${def.key}/${sec.key}`).toBeGreaterThan(0);
+        for (const e of sec.eternals) if (e.verdict === 'wins more') expect(e.winDelta - e.margin).toBeGreaterThan(0);
+        expect(new Set(sec.rows.map((r: any) => `${r.hero}|${r.lane}`)).size).toBe(sec.rows.length);
+        for (let k = 0; k < sec.rows.length; k++) {
+          const r = sec.rows[k];
+          expect(r.games).toBeGreaterThanOrEqual(band.minGames);
+          expect(r.shrunkWinPct).toBeGreaterThanOrEqual(50);
+          if (k) expect(r.value).toBeLessThanOrEqual(sec.rows[k - 1].value);
+          for (const x of r.alts) expect(x.value).toBeLessThanOrEqual(r.value);
         }
       }
     }
     expect(d.bands.plat.playerRows).toBeLessThan(d.bands.gold.playerRows);
     expect(d.bands.gold.playerRows).toBeLessThan(d.bands.silver.playerRows);
+  });
+  it('ranks a job board by its own stat, one row per hero-lane, and leaves losers off', () => {
+    const mk = (hero: string, eternal: string, n: number, wins: number, heal: number) => { const a = outAgg(); for (let k = 0; k < n; k++) addOut(a, { mitigated: 0, takenFromHeroes: 0, deaths: 2, damage: 100, magic: 0, healing: heal, teamShield: 0, durSec: 1200, won: k < wins }); return { hero, lane: 'support', eternal, agg: a }; };
+    const def = BOARDS.find((b) => b.key === 'healing')!;
+    const rows = rankBoard([mk('a', 'X', 200, 120, 20000), mk('a', 'Y', 200, 120, 16000), mk('b', 'X', 200, 120, 12000), mk('c', 'X', 400, 150, 40000), mk('d', 'X', 40, 39, 40000)], def, 150);
+    expect(rows.map((r) => `${r.lead.hero}+${r.lead.eternal}`)).toEqual(['a+X', 'b+X']); // c loses, d has too few games
+    expect(rows[0]!.alts.map((x) => x.eternal)).toEqual(['Y']);
+    expect(def.value(rows[0]!.lead.agg)).toBe(1000);
   });
   it('puts a player in a rank band by the rank held in that game, unplaced players only under all ranks', () => {
     const by = (k: string) => BANDS.find((b) => b.key === k)!;

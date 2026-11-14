@@ -4,13 +4,13 @@
 <script src="sim-flag.js"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tankiest Winning Builds — Pred Scout</title>
-<meta name="description" content="The hardest heroes to kill in Predecessor that still win: the tankiest hero and Eternal for offlane, jungle and support, by damage soaked per death in ranked games.">
+<title>Top Builds by Job — Pred Scout</title>
+<meta name="description" content="The Predecessor builds that lead a job and still win: tankiest, most healing, most shielding, most magic damage and most carry damage, by rank, from ranked games.">
 <!-- share:begin (engine/scripts/share-pages.mjs) -->
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Pred Scout">
-<meta property="og:title" content="Tankiest Winning Builds — Pred Scout">
-<meta property="og:description" content="The hardest heroes to kill in Predecessor that still win: the tankiest hero and Eternal for offlane, jungle and support, by damage soaked per death in ranked games.">
+<meta property="og:title" content="Top Builds by Job — Pred Scout">
+<meta property="og:description" content="The Predecessor builds that lead a job and still win: tankiest, most healing, most shielding, most magic damage and most carry damage, by rank, from ranked games.">
 <meta property="og:url" content="https://kendubu1.github.io/pred-counter-scout/ui/v6/tanks.html">
 <meta name="twitter:card" content="summary">
 <link rel="icon" type="image/png" sizes="32x32" href="../img/brand/favicon-32.png">
@@ -22,73 +22,91 @@
     --bg-0:#0a0a0f; --bg-1:#12121a; --bg-2:#1a1a26; --bg-3:#22222f; --border:#2a2a3a;
     --text-0:#e8e8f0; --text-1:#a0a0b8; --text-2:#8e8ea6;
     --accent:#6c5ce7; --accent-ink:#9a8ef2; --accent-soft:rgba(108,92,231,.14);
-    --green:#00c48c; --red:#ff5a5a; --gold:#f0b429; --blue:#4dabf7; --radius:12px; --maxw:980px;
+    --green:#00c48c; --red:#ff5a5a; --gold:#f0b429; --blue:#4dabf7; --radius:14px; --maxw:860px;
   }
   * { box-sizing:border-box; margin:0; padding:0; }
   :focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
-  html { scroll-behavior:smooth; }
-  body { background:var(--bg-0); color:var(--text-0); font:15px/1.55 Inter,-apple-system,"Segoe UI",Roboto,sans-serif; font-variant-numeric:tabular-nums; }
+  body { background:var(--bg-0); color:var(--text-0); font:15px/1.5 Inter,-apple-system,"Segoe UI",Roboto,sans-serif; font-variant-numeric:tabular-nums; }
   a { color:var(--blue); text-decoration:none; }
   img { display:block; }
   button { font:inherit; cursor:pointer; -webkit-appearance:none; appearance:none; }
   .top { position:sticky; top:0; z-index:10; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); background:rgba(10,10,15,.78); border-bottom:1px solid var(--border); }
-  .top-inner { max-width:var(--maxw); margin:0 auto; padding:.6rem 1rem .35rem; display:flex; align-items:center; gap:.45rem; }
-  .wordmark { font-weight:800; color:var(--text-0); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .top-inner { max-width:var(--maxw); margin:0 auto; padding:.6rem 1rem; display:flex; align-items:center; gap:.45rem; }
+  .wordmark { font-weight:800; color:var(--text-0); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:flex; align-items:center; gap:.4rem; }
   .spacer { flex:1; }
   .navlink { padding:.2rem .7rem; border-radius:99px; color:var(--text-1); border:1px solid transparent; white-space:nowrap; }
-  .navlink.active { background:var(--bg-3); border-color:var(--text-2); color:var(--text-0); }
   .navlink:hover { color:var(--text-0); }
-  .subnav { display:flex; gap:.3rem; overflow-x:auto; max-width:var(--maxw); margin:0 auto; padding:.15rem 1rem .5rem; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
-  .subnav::-webkit-scrollbar { display:none; }
-  .subnav:empty { display:none; }
-  .snpill { flex:none; font:inherit; font-size:.7rem; padding:.18rem .65rem; border-radius:99px; color:var(--text-2); background:transparent; border:1px solid transparent; cursor:pointer; white-space:nowrap; text-transform:capitalize; -webkit-appearance:none; appearance:none; }
-  .snpill.active { background:var(--bg-2); color:var(--text-0); border-color:var(--border); }
-  a.snpill:hover { color:var(--text-0); }
-  /* jump targets land below the sticky top bar + section jumper */
-  .jump { scroll-margin-top:calc(var(--toph, 96px) + 10px); }
-  .wrap { max-width:var(--maxw); margin:0 auto; padding:1.25rem 1rem 4rem; }
-  .lede { font-size:1rem; color:var(--text-1); line-height:1.65; max-width:62ch; }
-  h1 { font-size:1.7rem; font-weight:800; }
-  .card { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:1.1rem 1.2rem; margin-top:1rem; }
-  .card h2 { font-size:1rem; font-weight:600; letter-spacing:0; color:var(--text-0); margin-bottom:.6rem; }
-  .card p { color:var(--text-1); line-height:1.65; }
-  .card ul { margin:.5rem 0 0 1.15rem; padding:0; }
-  .card li { color:var(--text-1); line-height:1.6; margin:.4rem 0; }
-  .card p + p { margin-top:.6rem; }
-  .card b { color:var(--text-0); }
-  .sec { font-size:.8rem; font-weight:600; color:var(--text-1); margin:2rem 0 0; display:flex; align-items:center; gap:.7rem; }
-  .sec::after { content:""; flex:1; height:1px; background:var(--border); }
+  .wrap { max-width:var(--maxw); margin:0 auto; padding:1.4rem 1rem 4rem; }
+  h1 { font-size:1.6rem; font-weight:800; letter-spacing:-.01em; }
+  .lede { font-size:.95rem; color:var(--text-1); margin-top:.25rem; max-width:58ch; }
   .sub { font-size:.74rem; color:var(--text-2); line-height:1.5; }
-  .tk { display:grid; grid-template-columns:1.4rem 52px 1fr; gap:.7rem; align-items:start; }
-  .tk .rk { font-weight:800; color:var(--text-2); font-size:.9rem; padding-top:.9rem; }
-  .tk .por { position:relative; width:52px; height:52px; }
-  .tk .por > img.h { width:52px; height:52px; border-radius:12px; object-fit:cover; background:var(--bg-3); }
-  .tk .por > img.e { position:absolute; right:-6px; bottom:-6px; width:26px; height:26px; border-radius:50%; object-fit:cover; background:var(--bg-3); border:2px solid var(--bg-1); cursor:pointer; }
-  .tk h3 { font-size:1rem; font-weight:800; color:var(--text-0); line-height:1.2; }
-  .tk h3 a { color:inherit; } .tk h3 span { color:var(--accent-ink); font-weight:700; }
-  .stats { display:flex; flex-wrap:wrap; gap:.3rem .9rem; margin:.3rem 0 .45rem; font-size:.8rem; color:var(--text-1); }
-  .stats b { color:var(--text-0); font-variant-numeric:tabular-nums; }
-  .up { color:var(--green) !important; }
-  .kit { display:flex; flex-wrap:wrap; align-items:center; gap:.3rem; }
-  .kit img { width:30px; height:30px; object-fit:cover; background:var(--bg-3); border:1px solid var(--border); cursor:pointer; }
+
+  /* controls: job tabs, then rank and lane pills */
+  .jobs { display:flex; gap:.35rem; overflow-x:auto; scrollbar-width:none; margin:1.1rem -1rem 0; padding:0 1rem; -webkit-overflow-scrolling:touch; }
+  .jobs::-webkit-scrollbar { display:none; }
+  .job { flex:none; background:var(--bg-1); border:1px solid var(--border); border-radius:12px; padding:.5rem .85rem; color:var(--text-1); font-size:.86rem; font-weight:700; min-height:44px; white-space:nowrap; }
+  .job:hover { color:var(--text-0); }
+  .job.active { background:var(--accent-soft); border-color:var(--accent); color:var(--text-0); }
+  .filters { display:flex; flex-wrap:wrap; align-items:center; gap:.5rem 1rem; margin-top:.7rem; }
+  .seg { display:inline-flex; gap:2px; padding:2px; background:var(--bg-1); border:1px solid var(--border); border-radius:10px; }
+  .seg button { background:transparent; border:0; color:var(--text-2); border-radius:8px; padding:.3rem .7rem; font-size:.78rem; font-weight:700; min-height:36px; }
+  .seg button.active { background:var(--bg-3); color:var(--text-0); }
+  .seg-l { font-size:.6875rem; font-weight:700; color:var(--text-2); margin-right:.35rem; }
+
+  .panel { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); margin-top:1rem; overflow:hidden; }
+  .phead { padding:1rem 1.1rem .8rem; border-bottom:1px solid var(--border); }
+  .phead h2 { font-size:1.1rem; font-weight:800; }
+  .phead p { font-size:.8rem; color:var(--text-1); margin-top:.15rem; }
+
+  /* which Eternal: a row of chips */
+  .ets { padding:.8rem 1.1rem; border-bottom:1px solid var(--border); }
+  .ets-h { font-size:.6875rem; font-weight:700; color:var(--text-2); margin-bottom:.45rem; }
+  .chips { display:flex; flex-wrap:wrap; gap:.4rem; }
+  .chip { display:inline-flex; align-items:center; gap:.4rem; background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.2rem .65rem .2rem .2rem; font-size:.8rem; font-weight:700; color:var(--text-0); cursor:pointer; min-height:34px; }
+  .chip img { width:26px; height:26px; border-radius:50%; object-fit:cover; background:var(--bg-3); }
+  .chip small { font-size:.74rem; font-weight:700; }
+  .chip.good { border-color:rgba(0,196,140,.5); } .chip.good small { color:var(--green); }
+  .chip.bad { border-color:rgba(255,90,90,.45); } .chip.bad small { color:var(--red); }
+  .chip.flat small { color:var(--text-2); }
+
+  /* board rows */
+  .row { display:grid; grid-template-columns:1.3rem 48px 1fr auto; column-gap:.75rem; row-gap:.45rem; align-items:center; padding:.9rem 1.1rem; border-bottom:1px solid var(--border); }
+  .row:last-child { border-bottom:0; }
+  .rk { font-size:.86rem; font-weight:800; color:var(--text-2); text-align:center; }
+  .row:nth-child(1) .rk { color:var(--gold); }
+  .por { position:relative; width:48px; height:48px; }
+  .por > img.h { width:48px; height:48px; border-radius:12px; object-fit:cover; background:var(--bg-3); }
+  .por > img.e { position:absolute; right:-6px; bottom:-6px; width:24px; height:24px; border-radius:50%; object-fit:cover; background:var(--bg-3); border:2px solid var(--bg-1); cursor:pointer; }
+  .nm { min-width:0; }
+  .nm h3 { font-size:.98rem; font-weight:800; line-height:1.2; overflow-wrap:anywhere; }
+  .nm h3 a { color:inherit; } .nm h3 span { color:var(--accent-ink); font-weight:700; }
+  .nm .meta { font-size:.76rem; color:var(--text-1); margin-top:.1rem; }
+  .nm .meta b { color:var(--text-0); } .nm .meta b.up { color:var(--green); }
+  .lane { display:inline-block; font-size:.6875rem; font-weight:700; color:var(--text-2); border:1px solid var(--border); border-radius:99px; padding:0 .4rem; margin-left:.25rem; vertical-align:1px; text-transform:capitalize; }
+  .val { text-align:right; }
+  .val b { display:block; font-size:1.15rem; font-weight:800; line-height:1.1; }
+  .val small { font-size:.6875rem; color:var(--text-2); }
+  .bar { grid-column:2 / -1; height:4px; border-radius:99px; background:var(--bg-3); overflow:hidden; }
+  .bar i { display:block; height:100%; border-radius:99px; background:var(--accent); }
+  .kit { grid-column:2 / -1; display:flex; flex-wrap:wrap; align-items:center; gap:.3rem; }
+  .kit img { width:28px; height:28px; object-fit:cover; background:var(--bg-3); border:1px solid var(--border); cursor:pointer; }
   .kit img.rnd { border-radius:50%; } .kit img.sq { border-radius:7px; }
-  .kit .arrow { color:var(--text-2); font-size:.7rem; } .kit .gap { width:.5rem; } .kit .lab { font-size:.6875rem; color:var(--text-2); font-weight:700; margin-right:.1rem; }
-  .ets { display:grid; grid-template-columns:30px 1fr auto; gap:.35rem .6rem; align-items:center; }
-  .ets img { width:30px; height:30px; border-radius:50%; object-fit:cover; background:var(--bg-3); border:1px solid var(--border); cursor:pointer; }
-  .ets .nm { font-size:.86rem; font-weight:700; color:var(--text-0); min-width:0; }
-  .ets .nm small { display:block; font-size:.6875rem; font-weight:400; color:var(--text-2); }
-  .ets .v { font-size:.74rem; font-weight:700; white-space:nowrap; border:1px solid var(--border); border-radius:99px; padding:.08rem .5rem; color:var(--text-2); }
-  .ets .v.good { color:var(--green); border-color:var(--green); } .ets .v.bad { color:var(--red); border-color:var(--red); }
-  .bands { display:flex; gap:.4rem; flex-wrap:wrap; margin-top:.9rem; }
-  .band { background:var(--bg-1); border:1px solid var(--border); border-radius:99px; padding:.3rem .8rem; color:var(--text-2); font-size:.78rem; font-weight:700; min-height:36px; }
-  .band:hover { color:var(--text-0); }
-  .band.active { background:var(--bg-3); border-color:var(--text-2); color:var(--text-0); }
-  details.more { margin-top:.4rem; }
-  details.more > summary { font-size:.6875rem; color:var(--text-2); cursor:pointer; list-style:none; min-height:24px; display:inline-block; padding:.15rem 0; }
-  details.more > summary::-webkit-details-marker { display:none; }
-  details.more > summary::after { content:" ▾"; } details.more[open] > summary::after { content:" ▴"; }
-  details.more .sub b { color:var(--text-1); }
-  @media (max-width:560px) { .tk { grid-template-columns:1.1rem 46px 1fr; gap:.55rem; } .tk .por, .tk .por > img.h { width:46px; height:46px; } }
+  .kit .arrow { color:var(--text-2); font-size:.7rem; } .kit .grp { display:inline-flex; align-items:center; gap:.3rem; margin-right:.7rem; }
+  .kit .lab { font-size:.6875rem; font-weight:700; color:var(--text-2); margin-right:.1rem; }
+  details.more { grid-column:2 / -1; }
+  details.more > summary, details.fold > summary { font-size:.74rem; color:var(--text-2); cursor:pointer; list-style:none; display:inline-block; padding:.2rem 0; min-height:28px; }
+  details.more > summary::-webkit-details-marker, details.fold > summary::-webkit-details-marker { display:none; }
+  details.more .sub div { margin-top:.2rem; } details.more .sub b { color:var(--text-1); }
+  .empty { padding:1.2rem 1.1rem; font-size:.84rem; color:var(--text-2); }
+  .how { margin-top:1rem; padding:0 .2rem; }
+  .how ul { margin:.4rem 0 0 1.1rem; } .how li { font-size:.78rem; color:var(--text-1); line-height:1.55; margin:.3rem 0; } .how li b { color:var(--text-0); }
+  footer { margin-top:2rem; }
+  @media (max-width:560px) {
+    .row { grid-template-columns:1.1rem 44px 1fr auto; column-gap:.6rem; padding:.85rem .9rem; }
+    .por, .por > img.h { width:44px; height:44px; }
+    .phead, .ets { padding-left:.9rem; padding-right:.9rem; }
+    .val b { font-size:1.05rem; }
+  }
 </style>
 </head>
 <body>
@@ -98,31 +116,31 @@
   <a class="navlink" href="./">Pick &amp; Build</a>
   <a class="navlink" href="coach.html">Coach</a>
   <a class="navlink" href="reports.html">Reports</a>
-</div><nav class="subnav" id="subnav" aria-label="Jump to section">
-  <a class="snpill" href="#offlane">Offlane</a>
-  <a class="snpill" href="#jungle">Jungle</a>
-  <a class="snpill" href="#support">Support</a>
-</nav></div>
+</div></div>
 
 <div class="wrap">
-  <h1>Tankiest winning builds</h1>
-  <p class="lede">The hardest heroes to kill that still win. Ranked by damage soaked per death: how much the enemy has to spend to kill you once.</p>
-  <div class="bands" id="bands" role="group" aria-label="Rank"></div>
-  <p class="sub" id="basis" style="margin-top:.4rem"></p>
-  <div id="boards"><section class="card"><p class="sub">Loading…</p></section></div>
-  <section class="card">
-    <h2>How this is counted</h2>
+  <h1>Top builds by job</h1>
+  <p class="lede">The hero and Eternal that lead each job and still win.</p>
+  <div class="jobs" id="jobs" role="tablist" aria-label="Job"></div>
+  <div class="filters">
+    <span><span class="seg-l">Rank</span><span class="seg" id="bands" role="group" aria-label="Rank"></span></span>
+    <span id="laneWrap" hidden><span class="seg-l">Lane</span><span class="seg" id="lanes" role="group" aria-label="Lane"></span></span>
+  </div>
+  <section class="panel" id="panel"><div class="empty">Loading…</div></section>
+  <p class="sub" id="basis" style="margin-top:.6rem"></p>
+  <details class="fold how"><summary>How this is counted</summary>
     <ul>
-      <li><b>Soaked per death</b> is damage mitigated plus damage taken from heroes, divided by deaths, over all of that group's games.</li>
-      <li><b>Winning</b> means the win rate is 50% or better after pulling it 100 games toward 50%, so a small lucky sample cannot qualify. A build that soaks the most and loses is left off.</li>
-      <li>Each row is one hero in one lane on one Eternal, with 150 or more ranked games of ten minutes or longer.</li>
-      <li><b>Rank</b> is the rank the player held in that game. Silver+ means Silver and every rank above it, and the same for Gold+ and Plat+. Silver+ needs 100 games per row, Gold+ 60 and Plat+ 30, because those groups are smaller. Plat+ rows are thin, so check the games under "More". Unplaced players count under All ranks only.</li>
-      <li>The augment, crest and items shown are what those players run most. They describe the build; they are not ranked picks.</li>
-      <li><b>Which Eternal</b> compares an Eternal with the same hero in the same lane on every other Eternal, over the lane's tank heroes (300+ games, soaking at least 1.2 times the lane average). It says "wins more" or "wins less" only when the whole margin is on one side of zero.</li>
-      <li>Teams that are ahead die less, so part of each win rate is "winning made them hard to kill", not only the other way round.</li>
+      <li><b>A row</b> is one hero in one lane on one Eternal: the Eternal that hero does the job best on, among those that win. Its other winning Eternals are under "More".</li>
+      <li><b>Winning</b> means the win rate is 50% or better after pulling it 100 games toward 50%, so a small lucky sample cannot qualify. A build that leads the job and loses is left off.</li>
+      <li><b>Games</b> are ranked games of ten minutes or longer. A row needs 150 games at All ranks, 100 at Silver+, 60 at Gold+ and 30 at Plat+. Plat+ rows are thin.</li>
+      <li><b>Rank</b> is the rank the player held in that game, that rank and above. Unplaced players count under All ranks only.</li>
+      <li><b>Shielding</b> is the shields a support's four teammates received. The match data does not record who gave a shield.</li>
+      <li><b>Best Eternal</b> compares an Eternal with the same hero in the same lane on every other Eternal, over the heroes that are good at the job. Green and red show only when the whole margin is on one side of zero.</li>
+      <li>The augment, crest and items on a row are what those players run most. They describe the build; they are not ranked picks.</li>
+      <li>Teams that are ahead die less and deal more, so part of every win rate here is winning producing the numbers, not only the other way round.</li>
     </ul>
-  </section>
-  <footer class="sub" style="margin-top:2rem">Game data via pred.gg · not affiliated with Omeda Studios.</footer>
+  </details>
+  <footer class="sub">Game data via pred.gg · not affiliated with Omeda Studios.</footer>
 </div>
 <script src="game-text.js"></script>
 <script defer src="item-popup.js"></script>
@@ -131,59 +149,76 @@
 <script>
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const LANE = { offlane: 'Offlane', jungle: 'Jungle', support: 'Support' };
-const num = (n) => Math.round(n).toLocaleString();
-Promise.all([fetch('../../data/aggregates/tank-builds.json').then((r) => r.json()), fetch('../../data/aggregates/item-tags.json').then((r) => r.json()).catch(() => null)]).then(([d, tags]) => {
+const num = (n) => (n >= 100 ? Math.round(n).toLocaleString() : String(n));
+const sign = (n) => (n > 0 ? '+' : '') + n;
+const hide = "this.style.visibility='hidden'";
+Promise.all([fetch('../../data/aggregates/top-builds.json').then((r) => r.json()), fetch('../../data/aggregates/item-tags.json').then((r) => r.json()).catch(() => null)]).then(([d, tags]) => {
   const itemName = (s) => (tags && tags.items[s] ? tags.items[s].name : s);
-  let band = new URLSearchParams(location.search).get('rank') || 'all';
-  if (!d.bands[band]) band = 'all';
-  const drawBands = () => {
-    $('#bands').innerHTML = d.bandOrder.map((k) => `<button class="band${k === band ? ' active' : ''}" data-band="${esc(k)}" aria-pressed="${k === band}">${esc(d.bands[k].label)}</button>`).join('');
-    $('#bands').querySelectorAll('.band').forEach((b) => { b.onclick = () => { band = b.dataset.band; try { history.replaceState(null, '', (band === 'all' ? 'tanks.html' : `tanks.html?rank=${band}`) + location.hash); } catch { /* file:// */ } draw(); }; });
-  };
-  const draw = () => {
-  drawBands();
-  const bd = d.bands[band];
-  $('#basis').textContent = `Patch ${d.patch} · ${d.matches.toLocaleString()} ranked matches · ${bd.label}${band === 'all' ? '' : ` (rank in that game) · ${bd.playerRows.toLocaleString()} player-games · a row needs ${bd.minGames}+ games`}`;
-  const hide = "this.style.visibility='hidden'";
-  const row = (b, i, lane, avg) => {
-    const o = b.otherEternals;
-    const kit = `${b.augment ? `<span class="lab">Augment</span><img class="rnd" data-apop="${esc(b.augment.id)}" data-apop-role="${lane}" src="../img/augments/${esc(b.augment.id)}.webp" alt="${esc(b.augment.name)}" title="${esc(b.augment.name)} · ${b.augment.pct}% run it" onerror="${hide}"><span class="gap"></span>` : ''}${b.crest ? `<span class="lab">Crest</span><img class="sq" data-ipop="${esc(b.crest.slug)}" src="../img/crests/${esc(b.crest.slug)}.webp" alt="${esc(b.crest.name)}" title="${esc(b.crest.name)} · ${b.crest.pct}% run it" onerror="${hide}"><span class="gap"></span>` : ''}${b.core ? `<span class="lab">Open</span>${b.core.items.map((s) => `<img class="sq" data-ipop="${esc(s)}" src="../img/items/${esc(s)}.webp" alt="${esc(itemName(s))}" title="${esc(itemName(s))}" onerror="${hide}">`).join('<span class="arrow">→</span>')}` : ''}`;
-    const later = b.later.length ? `<div class="kit" style="margin-top:.3rem"><span class="lab">Then</span>${b.later.map((x) => `<img class="sq" data-ipop="${esc(x.item)}" src="../img/items/${esc(x.item)}.webp" alt="${esc(itemName(x.item))}" title="${esc(itemName(x.item))} · ${x.pct}% buy it 4th to 6th" onerror="${hide}">`).join('')}</div>` : '';
-    return `<div class="tk"${i ? ' style="margin-top:1rem;padding-top:1rem;border-top:1px dashed var(--border)"' : ''}>
+  const q = new URLSearchParams(location.search);
+  // old links: tanks.html#offlane, tanks.html?rank=silver#jungle
+  const oldLane = ['offlane', 'jungle', 'support'].includes(location.hash.slice(1)) ? location.hash.slice(1) : null;
+  const st = { job: q.get('job') || 'tank', band: q.get('rank') || 'all', lane: q.get('lane') || oldLane || '' };
+  if (!d.boards.some((b) => b.key === st.job)) st.job = 'tank';
+  if (!d.bands[st.band]) st.band = 'all';
+  const save = () => { const p = new URLSearchParams(); if (st.job !== 'tank') p.set('job', st.job); if (st.band !== 'all') p.set('rank', st.band); if (st.lane) p.set('lane', st.lane);
+    try { history.replaceState(null, '', 'tanks.html' + (String(p) ? `?${p}` : '')); } catch { /* file:// */ } };
+
+  const row = (b, i, def, sec, max) => {
+    const o = b.others, mixed = sec.key === 'all';
+    const grp = (lab, inner) => (inner ? `<span class="grp"><span class="lab">${lab}</span>${inner}</span>` : '');
+    const kit = [
+      grp('Loadout', `${b.augment ? `<img class="rnd" data-apop="${esc(b.augment.id)}" data-apop-role="${esc(b.lane)}" src="../img/augments/${esc(b.augment.id)}.webp" alt="${esc(b.augment.name)}" title="Augment: ${esc(b.augment.name)} · ${b.augment.pct}% run it" onerror="${hide}">` : ''}${b.crest ? `<img class="sq" data-ipop="${esc(b.crest.slug)}" src="../img/crests/${esc(b.crest.slug)}.webp" alt="${esc(b.crest.name)}" title="Crest: ${esc(b.crest.name)} · ${b.crest.pct}% run it" onerror="${hide}">` : ''}`),
+      grp('Open', b.core ? b.core.items.map((s) => `<img class="sq" data-ipop="${esc(s)}" src="../img/items/${esc(s)}.webp" alt="${esc(itemName(s))}" title="${esc(itemName(s))}" onerror="${hide}">`).join('<span class="arrow">→</span>') : ''),
+      grp('Then', b.later.map((x) => `<img class="sq" data-ipop="${esc(x.item)}" src="../img/items/${esc(x.item)}.webp" alt="${esc(itemName(x.item))}" title="${esc(itemName(x.item))} · ${x.pct}% buy it 4th to 6th" onerror="${hide}">`).join('')),
+    ].join('');
+    return `<article class="row">
       <span class="rk">${i + 1}</span>
       <span class="por"><img class="h" src="../img/heroes/${esc(b.hero)}.webp" alt="" onerror="${hide}"><img class="e" data-epop="${esc(b.eternal)}" src="../img/eternals/${esc(b.eternal.toLowerCase())}.webp" alt="" title="${esc(b.eternal)} · tap for the Eternal" onerror="${hide}"></span>
-      <div style="min-width:0">
-        <h3><a href="./?hero=${esc(b.hero)}&role=${lane}">${esc(b.heroName)}</a> <span>+ ${esc(b.eternal)}</span></h3>
-        <div class="stats"><span><b>${num(b.soakPerDeath)}</b> soaked per death</span><span><b>${b.deathsPer10.toFixed(2)}</b> deaths per 10 min</span><span><b class="${b.winPct >= 52 ? 'up' : ''}">${b.winPct.toFixed(1)}%</b> win</span></div>
-        <div class="kit">${kit}</div>${later}
-        <details class="more"><summary>More</summary><div class="sub">
-          <div><b>${num(b.mitigatedPerMin)}</b> mitigated per minute · <b>${num(b.takenPerMin)}</b> hero damage taken per minute · ${b.games.toLocaleString()} games</div>
-          <div>${(b.soakPerDeath / avg.soakPerDeath).toFixed(1)} times the ${LANE[lane].toLowerCase()} average of ${num(avg.soakPerDeath)} soaked per death.</div>
-          ${o ? `<div>${esc(b.heroName)} ${LANE[lane].toLowerCase()} on every other Eternal: ${num(o.soakPerDeath)} soaked per death, ${o.deathsPer10.toFixed(2)} deaths per 10 min, ${o.winPct.toFixed(1)}% win (${o.games.toLocaleString()} games).</div>` : ''}
-          ${b.augment ? `<div>Augment: <b>${esc(b.augment.name)}</b>, run by ${b.augment.pct}%.${b.crest ? ` Crest: <b>${esc(b.crest.name)}</b>, ${b.crest.pct}%.` : ''}</div>` : ''}
-          ${b.core ? `<div>Opening three: <b>${b.core.items.map((s) => esc(itemName(s))).join(' → ')}</b> (${b.core.n} of ${b.core.of} who finished three items).</div>` : '<div>No single opening order is common enough to show.</div>'}
-          ${b.later.length ? `<div>Bought 4th to 6th: ${b.later.map((x) => `${esc(itemName(x.item))} ${x.pct}%`).join(', ')}.</div>` : ''}
-        </div></details>
-      </div></div>`;
+      <div class="nm"><h3><a href="./?hero=${esc(b.hero)}&role=${esc(b.lane)}">${esc(b.heroName)}</a> <span>+ ${esc(b.eternal)}</span>${mixed ? `<span class="lane">${esc(b.lane === 'midlane' ? 'mid' : b.lane)}</span>` : ''}</h3>
+        <div class="meta"><b class="${b.winPct >= 52 ? 'up' : ''}">${b.winPct.toFixed(1)}%</b> win · ${b.games.toLocaleString()} games</div></div>
+      <div class="val"><b>${num(b.value)}</b><small>${esc(def.unit)}</small></div>
+      <div class="bar"><i style="width:${Math.max(4, Math.round((100 * b.value) / max))}%"></i></div>
+      ${kit ? `<div class="kit">${kit}</div>` : ''}
+      <details class="more"><summary>More</summary><div class="sub">
+        <div>${sec.average ? `<b>${(b.value / sec.average).toFixed(1)} times</b> the ${esc(sec.label.toLowerCase())} average of ${num(sec.average)}. ` : ''}<b>${b.deathsPer10.toFixed(2)}</b> deaths per 10 min.${def.key === 'tank' ? ` <b>${num(b.mitigatedPerMin)}</b> mitigated per min.` : def.key === 'carry' || def.key === 'magic' ? '' : ` <b>${num(b.damagePerMin)}</b> damage per min.`}</div>
+        ${o ? `<div>${esc(b.heroName)} on every other Eternal: ${num(o.value)} ${esc(def.unit)}, ${o.winPct.toFixed(1)}% win (${o.games.toLocaleString()} games).</div>` : ''}
+        ${b.alts.length ? `<div>Also winning on: ${b.alts.map((x) => `<b>${esc(x.eternal)}</b> ${num(x.value)}, ${x.winPct.toFixed(1)}% (${x.games.toLocaleString()})`).join(' · ')}.</div>` : ''}
+        ${b.augment ? `<div>Augment: <b>${esc(b.augment.name)}</b>, run by ${b.augment.pct}%.${b.crest ? ` Crest: <b>${esc(b.crest.name)}</b>, ${b.crest.pct}%.` : ''}</div>` : ''}
+        ${b.core ? `<div>Opening three: <b>${b.core.items.map((s) => esc(itemName(s))).join(' → ')}</b> (${b.core.n} of ${b.core.of} who finished three items).</div>` : '<div>No single opening order is common enough to show.</div>'}
+        ${b.later.length ? `<div>Bought 4th to 6th: ${b.later.map((x) => `${esc(itemName(x.item))} ${x.pct}%`).join(', ')}.</div>` : ''}
+      </div></details>
+    </article>`;
   };
-  $('#boards').innerHTML = Object.keys(LANE).map((lane) => { const l = bd.lanes[lane];
-    const sign = (n) => (n > 0 ? '+' : '') + n;
-    const etRow = (e) => `<img data-epop="${esc(e.eternal)}" src="../img/eternals/${esc(e.eternal.toLowerCase())}.webp" alt="" onerror="${hide}"><span class="nm">${esc(e.eternal)}<small>${sign(e.soakPct)}% soaked per death · ${sign(e.deathsPct)}% deaths · ${e.games.toLocaleString()} games on ${e.heroes} ${e.heroes === 1 ? 'hero' : 'heroes'}</small></span><span class="v ${e.verdict === 'wins more' ? 'good' : e.verdict === 'wins less' ? 'bad' : ''}" title="Win rate against the same hero on other Eternals: ${sign(e.winDelta)} points, give or take ${e.margin}">${e.verdict === 'no clear change' ? `${sign(e.winDelta)} · unclear` : `${sign(e.winDelta)} pts · ${e.verdict}`}</span>`;
-    const ets = l.eternals || [], topE = ets.slice(0, 3), restE = ets.slice(3);
-    const noEt = `<section class="card"><h2>Which Eternal for ${lane === "offlane" ? "an" : "a"} ${LANE[lane].toLowerCase()} tank</h2><p class="sub">Too few ${esc(bd.label)} games to compare Eternals in this lane yet.</p></section>`;
-    const etCard = !ets.length ? noEt : `<section class="card"><h2>Which Eternal for ${lane === "offlane" ? "an" : "a"} ${LANE[lane].toLowerCase()} tank</h2><div class="ets">${topE.map(etRow).join('')}</div>${restE.length ? `<details class="more"><summary>All ${ets.length} Eternals</summary><div class="ets" style="margin-top:.4rem">${restE.map(etRow).join('')}</div></details>` : ''}<p class="sub" style="margin-top:.5rem">Each Eternal against the same hero on every other Eternal, across this lane's tank heroes. Points are win rate; "unclear" means the gap is inside its margin.</p></section>`;
-    return `<div class="sec jump" id="${lane}">${LANE[lane]}</div>${etCard}<section class="card"><h2>Hardest to kill, and winning</h2>${l.board.length ? l.board.map((b, i) => row(b, i, lane, l.laneAverage)).join('') : `<p class="sub">No build has enough ${esc(bd.label)} games in this lane yet.</p>`}</section>`; }).join('');
+  const etStrip = (sec, def) => {
+    const ets = sec.eternals || [];
+    if (!ets.length) return '';
+    const chip = (e) => `<span class="chip ${e.verdict === 'wins more' ? 'good' : e.verdict === 'wins less' ? 'bad' : 'flat'}" data-epop="${esc(e.eternal)}" title="${esc(e.eternal)}: ${sign(e.winDelta)} win-rate points against the same hero on other Eternals, give or take ${e.margin}. ${sign(e.valuePct)}% ${esc(def.unit)}. ${e.games.toLocaleString()} games on ${e.heroes} ${e.heroes === 1 ? 'hero' : 'heroes'}."><img src="../img/eternals/${esc(e.eternal.toLowerCase())}.webp" alt="" onerror="${hide}">${esc(e.eternal)} <small>${sign(e.winDelta)}</small></span>`;
+    const good = ets.filter((e) => e.verdict === 'wins more'), bad = ets.filter((e) => e.verdict === 'wins less'), flat = ets.filter((e) => e.verdict === 'no clear change');
+    const lead = good.length ? good : [];
+    return `<div class="ets"><div class="ets-h">${good.length ? 'Eternals that win more here' : 'No Eternal clearly wins more here'} <span style="font-weight:400">· win-rate points against the same hero on other Eternals</span></div>
+      <div class="chips">${lead.map(chip).join('')}</div>
+      ${bad.length || flat.length ? `<details class="fold"${good.length ? '' : ' open'}><summary>${bad.length ? `${bad.length} that win less` : 'The rest'}${bad.length && flat.length ? `, ${flat.length} unclear` : !bad.length ? '' : ''}</summary><div class="chips" style="margin-top:.35rem">${bad.map(chip).join('')}${flat.map(chip).join('')}</div></details>` : ''}</div>`;
+  };
+  const draw = () => {
+    const def = d.boards.find((b) => b.key === st.job), bd = d.bands[st.band], secs = bd.boards[st.job].sections;
+    if (!secs.some((s) => s.key === st.lane)) st.lane = secs.length > 1 ? secs[0].key : '';
+    const sec = secs.find((s) => s.key === st.lane) || secs[0];
+    $('#jobs').innerHTML = d.boards.map((b) => `<button class="job${b.key === st.job ? ' active' : ''}" role="tab" aria-selected="${b.key === st.job}" data-job="${esc(b.key)}">${esc(b.label)}</button>`).join('');
+    $('#bands').innerHTML = d.bandOrder.map((k) => `<button class="${k === st.band ? 'active' : ''}" aria-pressed="${k === st.band}" data-band="${esc(k)}">${esc(d.bands[k].label)}</button>`).join('');
+    $('#laneWrap').hidden = secs.length < 2;
+    $('#lanes').innerHTML = secs.length > 1 ? secs.map((s) => `<button class="${s.key === sec.key ? 'active' : ''}" aria-pressed="${s.key === sec.key}" data-lane="${esc(s.key)}">${esc(s.label)}</button>`).join('') : '';
+    const max = sec.rows.length ? sec.rows[0].value : 1;
+    $('#panel').innerHTML = `<div class="phead"><h2>${esc(def.title)}${secs.length > 1 ? ` · ${esc(sec.label)}` : ''}</h2><p>${esc(def.blurb)}</p></div>
+      ${etStrip(sec, def)}
+      ${sec.rows.length ? sec.rows.map((b, i) => row(b, i, def, sec, max)).join('') : `<div class="empty">No build has enough ${esc(bd.label)} games here yet.</div>`}`;
+    $('#basis').textContent = `Patch ${d.patch} · ${d.matches.toLocaleString()} ranked matches · ${bd.label}${st.band === 'all' ? '' : ' (rank in that game)'} · a row needs ${bd.minGames}+ games`;
+    document.querySelectorAll('[data-job]').forEach((b) => { b.onclick = () => { st.job = b.dataset.job; st.lane = ''; save(); draw(); }; });
+    document.querySelectorAll('[data-band]').forEach((b) => { b.onclick = () => { st.band = b.dataset.band; save(); draw(); }; });
+    document.querySelectorAll('[data-lane]').forEach((b) => { b.onclick = () => { st.lane = b.dataset.lane; save(); draw(); }; });
+    const act = $('#jobs .job.active'); if (act) $('#jobs').scrollTo({ left: act.offsetLeft - 16 });
   };
   draw();
-  const t = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
-  if (t) t.scrollIntoView({ block: 'start' });
-}).catch(() => { $('#boards').innerHTML = '<section class="card"><p class="sub">Could not load the board.</p></section>'; });
-(function jumper() {
-  const host = $('#subnav');
-  const setTop = () => document.documentElement.style.setProperty('--toph', `${$('.top')?.offsetHeight ?? 96}px`);
-  setTop(); addEventListener('resize', setTop);
-})();
+}).catch(() => { $('#panel').innerHTML = '<div class="empty">Could not load the boards.</div>'; });
 </script>
 <script defer src="icons.js"></script>
 <script defer src="hero-links.js"></script>

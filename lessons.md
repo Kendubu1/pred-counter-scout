@@ -6093,3 +6093,21 @@ draft that matched on heroes but lost the in-game count is flagged. Calibration 
 1.5x passes 23% of real-tank games and 5% of the rest. Mourn passed in 3 of 34 games; in game a13f0181
 Mourn mitigated 721 a minute (0.76x a support's average), so not there. The field shape win rates stay
 on the draft class, since that is what the ranked lineups count.
+
+## 2026-11-14 — Top builds by job
+
+- The tank board became five boards on one rule (src/output-boards.ts): a hero + Eternal group leads a
+  job's stat and wins. Output does not make a hero meta: across heroes in a lane, output per minute and
+  win rate correlate 0.26 (carry damage), 0.15 (mid magic damage), 0.15 (support healing). Gadget and
+  Valmont deal the most magic damage at about 50% wins; Renna, the top meta mid, is not in the top seven.
+- The Eternal most players run is often not the one that does the job best. Carries mostly run Weald or
+  Thraex; against the same hero on other Eternals, Lotus (+4.3 points) and Xyris (+3.2) win more and
+  Vermis, Vesh and Marrow win less.
+- A board ranked by hero + Eternal fills up with one hero (Narbash on three Eternals, Muriel on three).
+  One row per hero-lane on its best winning Eternal, the others under "More", reads as a board of heroes.
+- The stream records shields RECEIVED only. "Most shielding" is therefore the shields a support's four
+  teammates received, which also credits teammates' own shields; the page says so.
+- Page design: one board on screen (job tabs, then rank and lane), the ranking number right-aligned on
+  the row with a bar scaled to the leader, the build as three labelled icon groups, everything else in a
+  fold. The first version stacked three lanes of eight cards with the same weight on every number.
+
