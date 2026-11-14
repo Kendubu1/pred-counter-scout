@@ -4957,7 +4957,7 @@
  "teamComp": {
   "field": {
    "patch": "1.18",
-   "matches": 53066
+   "matches": 64438
   },
   "us": {
    "heroes": [
@@ -5037,10 +5037,10 @@
    "style": "mixed",
    "shape": "1t1d",
    "shapeWr": {
-    "n": 26648,
-    "w": 13489,
-    "wr": 50.6,
-    "ci95": 0.6
+    "n": 32440,
+    "w": 16441,
+    "wr": 50.7,
+    "ci95": 0.5
    }
   },
   "them": {
@@ -5122,10 +5122,10 @@
    "style": "mixed",
    "shape": "2t1d",
    "shapeWr": {
-    "n": 11396,
-    "w": 6008,
-    "wr": 52.7,
-    "ci95": 0.9
+    "n": 13921,
+    "w": 7349,
+    "wr": 52.8,
+    "ci95": 0.8
    }
   },
   "tankEdge": {
@@ -5169,7 +5169,7 @@
    }
   ],
   "swap": null,
-  "summary": "Draft: 1 tank, 1 diver vs their 2 tanks, 1 diver. In 1.18 ranked, our shape won 50.6% and theirs 52.7%."
+  "summary": "Draft: 1 tank, 1 diver vs their 2 tanks, 1 diver. In 1.18 ranked, our shape won 50.7% and theirs 52.8%."
  },
  "kitRead": {
   "cc": {
@@ -5417,48 +5417,164 @@
    "hero": "Lt. Belica",
    "slug": "lt-belica",
    "takedowns": 13,
-   "loadout": [],
+   "loadout": [
+    {
+     "kind": "augment",
+     "name": "Devastating Bombs",
+     "text": "Void Bomb deals 15% more damage to Isolated Targets.",
+     "ability": {
+      "name": "Void Bomb",
+      "key": "RMB",
+      "what": "Place a bomb that detonates after a short delay, dealing 95/135/175/215/255 (+70%) magical damage.",
+      "cd": 7,
+      "cdHaste": 4.5
+     },
+     "numbers": [],
+     "field": {
+      "wr": 50,
+      "n": 4029,
+      "share": 40,
+      "base": 51.2,
+      "verdict": "below"
+     },
+     "plain": "Void Bomb hits harder on enemies standing alone. Aim bombs at a solo laner or someone separated from their team."
+    },
+    {
+     "kind": "Eternal",
+     "name": "Vesh",
+     "text": "Ability damage dealt to Enemy Heroes deals 7% (+0.4% per minute) of that damage as a DoT over 3s.",
+     "ability": null,
+     "numbers": [
+      "7% growing 0.4% a minute: about 15.4% by the end (21 min)"
+     ],
+     "field": {
+      "wr": 49.3,
+      "n": 4556,
+      "share": 45,
+      "base": 51.2,
+      "verdict": "below"
+     },
+     "plain": "Ability damage to heroes also adds a short burn. Void Bomb, Seismic Assault and the drone zaps all keep ticking after they land."
+    },
+    {
+     "kind": "minor",
+     "name": "Tithe of Death",
+     "text": "Takedowns restore 15% Max Mana and permanently grant 2 Ability Haste, up to 30 Ability Haste.",
+     "ability": null,
+     "numbers": [],
+     "field": {
+      "wr": 49,
+      "n": 2796,
+      "share": 61,
+      "base": 51.2,
+      "verdict": "below"
+     },
+     "plain": "Takedowns restore mana and permanently add ability haste. Once Neural Disruptor is max rank it can also reset on a kill, so fights can snowball into more casts."
+    },
+    {
+     "kind": "minor",
+     "name": "Mind Rot",
+     "text": "The major also deals 2% of the target's current health as bonus damage.",
+     "ability": null,
+     "numbers": [],
+     "field": {
+      "wr": 49,
+      "n": 3357,
+      "share": 74,
+      "base": 51.2,
+      "verdict": "below"
+     },
+     "plain": "The Vesh burn also deals damage based on the target's current health. Strongest when opening on healthy enemies with Void Bomb."
+    },
+    {
+     "kind": "crest",
+     "name": "Soulbearer",
+     "text": "Anima:  Gain a 100 (+35) (+6%) Shield for 8s. Gain 20% Magical Lifesteal and 10% Movement Speed for 8s.",
+     "ability": null,
+     "numbers": [],
+     "field": {
+      "wr": 53.3,
+      "n": 853,
+      "share": 8,
+      "base": 51.2,
+      "verdict": "above"
+     },
+     "plain": "A shield, magical lifesteal and speed for 8s. Pop it before casting Void Bomb and Seismic Assault into a fight to heal off the burst."
+    }
+   ],
    "haste": {
     "sources": [
      {
       "what": "Noxia",
       "amount": 20,
+      "note": "bought at 13:21",
       "kind": "item",
-      "how": "+20 ability haste"
+      "how": "+20 ability haste, bought at 13:21"
+     },
+     {
+      "what": "Soulbearer",
+      "amount": 8,
+      "note": "crest",
+      "kind": "crest",
+      "how": "+8 ability haste"
+     },
+     {
+      "what": "Tithe of Death (minor)",
+      "amount": 26,
+      "note": "2 per takedown, 13 takedowns",
+      "kind": "Eternal minor",
+      "how": "+2 per takedown, up to 30: 13 takedowns"
      }
     ],
-    "total": 20,
+    "total": 54,
     "fightBonus": null,
     "ultOnly": 0
    },
    "ult": {
     "name": "Neural Disruptor",
-    "base": 85,
-    "rank": 3,
-    "rankKnown": false,
-    "endGame": 70.8,
+    "base": 105,
+    "rank": 2,
+    "rankKnown": true,
+    "endGame": 68.2,
     "inFight": null
    },
-   "fedBy": [],
+   "fedBy": [
+    "Tithe of Death (minor): Takedowns restore 15% Max Mana and permanently grant 2 Ability Haste, up to 30 Ability Haste."
+   ],
    "ultPlus": [],
    "lines": [
-    "Lead story: Hard to kill. Never died in 21 minutes, fewer deaths than about 95% of Lt. Belica mid players this patch.",
-    "Neural Disruptor at top rank: 85s base, about 70.8s by the end (17% shorter) from 20 ability haste: Noxia 20.",
-    "Lt. Belica dealt 20,488 hero damage, 31% of their team's, with +175 magical power from items.",
-    "Penetration: Combustion 9; against Neon (level 13 estimated: about 42 magical armor, 33 after penetration) and Adele (level 13 estimated: about 51 magical armor, 42 after penetration) that is about 7% and 6% more damage (estimate: percent penetration taken before flat).",
+    "Lead story: Hard to kill. Never died in 21 minutes, fewer deaths than about 95% of Lt. Belica mid players this patch. The build added healing off damage.",
+    "Lesson: takedowns were the fuel. Each one Lt. Belica touched shortened Neural Disruptor, so feeding early made it come back faster (about 68.2s late); fight right after Neural Disruptor is spent.",
+    "Neural Disruptor at rank 2: 105s base, about 68.2s by the end (35% shorter) from 54 ability haste: Noxia 20, Soulbearer 8, Tithe of Death (minor) 26.",
+    "Tithe of Death (minor): 2 per takedown, 13 takedowns.",
+    "13 takedowns (9 kills, 4 assists) fed: Tithe of Death (minor).",
+    "Lt. Belica dealt 20,488 hero damage, 31% of their team's, with +205 magical power from items.",
+    "Penetration: Combustion 9; against Adele (level 9: about 44 magical armor, 35 after penetration; took 8,506 magical damage from heroes, 39% of all hero damage they took) and Neon (level 13: about 42 magical armor, 33 after penetration; took 9,177 magical damage from heroes, 71% of all hero damage they took) that is about 7% and 7% more damage (estimate: percent penetration taken before flat).",
     "Combustion (item): On dealing Ability Damage: Deal 50 (+18%) Damage to the Target and nearby Enemies.",
     "Noxia (item): Deal 6% of Target's Maximum Health as bonus Damage.",
-    "Stack (Every ability hit set off): 2 effects on one trigger: Combustion, Noxia. Lt. Belica has 4 damaging abilities (Void Bomb, Seismic Assault, Void Drone hit an area, so one cast sets them off on several heroes), and 20 ability haste brought them back 17% sooner: more casts, more triggers.",
-    "Countered? 0 of the 4 players Lt. Belica killed built magical armor. No anti-heal on the team against a build that heals. We killed Lt. Belica 0 times.",
-    "Copy it? Too few Lt. Belica midlane games with this Eternal or core this patch to say whether it wins elsewhere."
+    "Vesh (Eternal): Ability damage dealt to Enemy Heroes deals 7% (+0.4% a minute, about 15.4% by the end) of that damage as a DoT over 3s.",
+    "Mind Rot (Eternal minor): The major also deals 2% of the target's current health as bonus damage.",
+    "Devastating Bombs (augment): Void Bomb deals 15% more damage to Isolated Targets.",
+    "Sustain: Soulbearer: Gain a 100 (+35) (+6%) Shield for 8s. Gain 20% Magical Lifesteal and 10% Movement Speed for 8s.; 2,160 healing recorded.",
+    "Loadout augment Devastating Bombs: Void Bomb hits harder on enemies standing alone. Aim bombs at a solo laner or someone separated from their team. (game text: Void Bomb deals 15% more damage to Isolated Targets.) (changes Void Bomb, 4.5s cooldown with their haste) Field: 50% in 4029 games, 40% of picks, below the hero-role's 51.2%.",
+    "Loadout Eternal Vesh: Ability damage to heroes also adds a short burn. Void Bomb, Seismic Assault and the drone zaps all keep ticking after they land. (game text: Ability damage dealt to Enemy Heroes deals 7% (+0.4% per minute) of that damage as a DoT over 3s.) [7% growing 0.4% a minute: about 15.4% by the end (21 min)] Field: 49.3% in 4556 games, 45% of picks, below the hero-role's 51.2%.",
+    "Loadout minor Tithe of Death: Takedowns restore mana and permanently add ability haste. Once Neural Disruptor is max rank it can also reset on a kill, so fights can snowball into more casts. (game text: Takedowns restore 15% Max Mana and permanently grant 2 Ability Haste, up to 30 Ability Haste.) Field: 49% in 2796 games, 61% of picks, below the hero-role's 51.2%.",
+    "Loadout minor Mind Rot: The Vesh burn also deals damage based on the target's current health. Strongest when opening on healthy enemies with Void Bomb. (game text: The major also deals 2% of the target's current health as bonus damage.) Field: 49% in 3357 games, 74% of picks, below the hero-role's 51.2%.",
+    "Loadout crest Soulbearer: A shield, magical lifesteal and speed for 8s. Pop it before casting Void Bomb and Seismic Assault into a fight to heal off the burst. (game text: Anima:  Gain a 100 (+35) (+6%) Shield for 8s. Gain 20% Magical Lifesteal and 10% Movement Speed for 8s.) Field: 53.3% in 853 games, 8% of picks, above the hero-role's 51.2%.",
+    "Stack (Every ability hit set off): 4 effects on one trigger: Combustion, Noxia, Vesh, Mind Rot. Lt. Belica has 4 damaging abilities (Void Bomb, Seismic Assault, Void Drone hit an area, so one cast sets them off on several heroes), and 54 ability haste brought them back 35% sooner: more casts, more triggers.",
+    "Stack (Damage that scales with the target's health): 2 effects on one trigger: Noxia, Mind Rot. The more health a target stacks, the more these deal, so health items on the other side fed them.",
+    "Stack (Kept alive in fights): 2 effects on one trigger: Noxia, Soulbearer. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went.",
+    "The Eternal was part of it: Vesh (Tithe of Death + Mind Rot) sits on the same triggers as the items (every ability hit set off; damage that scales with the target's health), so the same hits paid out twice.",
+    "Countered? 0 of the 4 players Lt. Belica killed built magical armor. No anti-heal on the team against a build that heals. Health items on Adele raised the %-health damage they took. We killed Lt. Belica 0 times.",
+    "Copy it? Vesh (Tithe of Death + Mind Rot): 48.8% in 2,555 Lt. Belica midlane games, below the hero's 51.2%. It wins less than usual elsewhere: it beat us, not the field."
    ],
    "card": {
     "ult": {
      "name": "Neural Disruptor",
-     "base": 85,
-     "rank": 3,
-     "rankKnown": false,
-     "endGame": 70.8,
+     "base": 105,
+     "rank": 2,
+     "rankKnown": true,
+     "endGame": 68.2,
      "inFight": null
     },
     "takedowns": {
@@ -5467,20 +5583,32 @@
      "assists": 4
     },
     "heals": false,
-    "lesson": null,
+    "lesson": "Lt. Belica's takedowns fed Neural Disruptor: every kill or assist made it come back sooner. Deny early takedowns and fight right after Neural Disruptor is used.",
     "haste": [
      {
       "name": "Noxia",
       "kind": "item",
       "amount": 20,
-      "how": "+20 ability haste"
+      "how": "+20 ability haste, bought at 13:21"
+     },
+     {
+      "name": "Soulbearer",
+      "kind": "crest",
+      "amount": 8,
+      "how": "+8 ability haste"
+     },
+     {
+      "name": "Tithe of Death",
+      "kind": "Eternal minor",
+      "amount": 26,
+      "how": "+2 per takedown, up to 30: 13 takedowns"
      }
     ],
     "fight": null,
     "extras": [],
     "power": {
      "type": "magical",
-     "power": 175,
+     "power": 205,
      "pen": {
       "flat": 9,
       "pct": 0,
@@ -5490,6 +5618,20 @@
      },
      "vs": [
       {
+       "name": "deathisland23",
+       "hero": "Adele",
+       "armor": 44,
+       "after": 35,
+       "more": 7,
+       "diedTo": 3,
+       "level": 9,
+       "levelKnown": true,
+       "taken": {
+        "type": 8506,
+        "total": 21624
+       }
+      },
+      {
        "name": "Marshin05",
        "hero": "Neon",
        "armor": 42,
@@ -5497,52 +5639,53 @@
        "more": 7,
        "diedTo": 3,
        "level": 13,
-       "levelKnown": false,
-       "taken": null
-      },
-      {
-       "name": "deathisland23",
-       "hero": "Adele",
-       "armor": 51,
-       "after": 42,
-       "more": 6,
-       "diedTo": 3,
-       "level": 13,
-       "levelKnown": false,
-       "taken": null
+       "levelKnown": true,
+       "taken": {
+        "type": 9177,
+        "total": 12863
+       }
       },
       {
        "name": "DonFlowers",
        "hero": "Countess",
-       "armor": 53,
-       "after": 44,
+       "armor": 52,
+       "after": 43,
        "more": 6,
        "diedTo": 2,
-       "level": 13,
-       "levelKnown": false,
-       "taken": null
+       "level": 12,
+       "levelKnown": true,
+       "taken": {
+        "type": 3362,
+        "total": 10056
+       }
       },
       {
        "name": "zparrish_23",
        "hero": "Wraith",
-       "armor": 46,
-       "after": 37,
+       "armor": 45,
+       "after": 36,
        "more": 7,
        "diedTo": 1,
-       "level": 13,
-       "levelKnown": false,
-       "taken": null
+       "level": 12,
+       "levelKnown": true,
+       "taken": {
+        "type": 2894,
+        "total": 6978
+       }
       },
       {
        "name": "godmode121",
        "hero": "Aurora",
-       "armor": 51,
-       "after": 42,
+       "armor": 48,
+       "after": 39,
        "more": 6,
        "diedTo": 0,
-       "level": 13,
-       "levelKnown": false,
-       "taken": null
+       "level": 11,
+       "levelKnown": true,
+       "taken": {
+        "type": 2537,
+        "total": 15446
+       }
       }
      ],
      "level": 13,
@@ -5556,6 +5699,21 @@
        "name": "Noxia",
        "kind": "item",
        "how": "Deal 6% of Target's Maximum Health as bonus Damage."
+      },
+      {
+       "name": "Vesh",
+       "kind": "Eternal",
+       "how": "Ability damage dealt to Enemy Heroes deals 7% (+0.4% a minute, about 15.4% by the end) of that damage as a DoT over 3s."
+      },
+      {
+       "name": "Mind Rot",
+       "kind": "Eternal minor",
+       "how": "The major also deals 2% of the target's current health as bonus damage."
+      },
+      {
+       "name": "Devastating Bombs",
+       "kind": "augment",
+       "how": "Void Bomb deals 15% more damage to Isolated Targets."
       }
      ],
      "items": [
@@ -5580,13 +5738,32 @@
        "effects": [
         "Deal 6% of Target's Maximum Health as bonus Damage."
        ]
+      },
+      {
+       "slug": "soulbearer",
+       "name": "Soulbearer",
+       "kind": "crest",
+       "power": 30,
+       "pen": 0,
+       "penPct": 0,
+       "effects": []
       }
      ],
      "dealt": {
       "damage": 20488,
       "share": 31
      },
-     "sustain": null,
+     "sustain": {
+      "stats": [],
+      "effects": [
+       {
+        "name": "Soulbearer",
+        "kind": "item",
+        "how": "Gain a 100 (+35) (+6%) Shield for 8s. Gain 20% Magical Lifesteal and 10% Movement Speed for 8s."
+       }
+      ],
+      "healing": 2160
+     },
      "tough": null
     },
     "powerLesson": null,
@@ -5594,7 +5771,7 @@
      "lead": {
       "id": "survival",
       "title": "Hard to kill",
-      "text": "Never died in 21 minutes, fewer deaths than about 95% of Lt. Belica mid players this patch."
+      "text": "Never died in 21 minutes, fewer deaths than about 95% of Lt. Belica mid players this patch. The build added healing off damage. It came from Soulbearer, Noxia."
      },
      "tabs": [
       "alive",
@@ -5648,12 +5825,56 @@
          "name": "Noxia",
          "kind": "item",
          "text": "Mark Heroes for 3s upon dealing Ability Damage: With a separate ability, deal damage to a Marked Hero to activate Dark Matter."
+        },
+        {
+         "name": "Vesh",
+         "kind": "Eternal",
+         "text": "Ability damage dealt to Enemy Heroes deals 7% (+0.4% per minute) of that damage as a DoT over 3s."
+        },
+        {
+         "name": "Mind Rot",
+         "kind": "Eternal minor",
+         "text": "The major also deals 2% of the target's current health as bonus damage."
         }
        ],
-       "text": "2 effects on one trigger: Combustion, Noxia. Lt. Belica has 4 damaging abilities (Void Bomb, Seismic Assault, Void Drone hit an area, so one cast sets them off on several heroes), and 20 ability haste brought them back 17% sooner: more casts, more triggers."
+       "text": "4 effects on one trigger: Combustion, Noxia, Vesh, Mind Rot. Lt. Belica has 4 damaging abilities (Void Bomb, Seismic Assault, Void Drone hit an area, so one cast sets them off on several heroes), and 54 ability haste brought them back 35% sooner: more casts, more triggers."
+      },
+      {
+       "family": "pctHealth",
+       "title": "Damage that scales with the target's health",
+       "members": [
+        {
+         "name": "Noxia",
+         "kind": "item",
+         "text": "Deal 6% of Target's Maximum Health as bonus Damage."
+        },
+        {
+         "name": "Mind Rot",
+         "kind": "Eternal minor",
+         "text": "The major also deals 2% of the target's current health as bonus damage."
+        }
+       ],
+       "text": "2 effects on one trigger: Noxia, Mind Rot. The more health a target stacks, the more these deal, so health items on the other side fed them."
+      },
+      {
+       "family": "tough",
+       "title": "Kept alive in fights",
+       "members": [
+        {
+         "name": "Noxia",
+         "kind": "item",
+         "text": "Deal 6% of Target's Maximum Health as bonus Damage."
+        },
+        {
+         "name": "Soulbearer",
+         "kind": "crest",
+         "text": "Gain a 100 (+35) (+6%) Shield for 8s. Gain 20% Magical Lifesteal and 10% Movement Speed for 8s."
+        }
+       ],
+       "text": "2 effects on one trigger: Noxia, Soulbearer. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went."
       }
      ],
-     "eternalPart": null,
+     "eternalPart": "The Eternal was part of it: Vesh (Tithe of Death + Mind Rot) sits on the same triggers as the items (every ability hit set off; damage that scales with the target's health), so the same hits paid out twice.",
      "countered": [
       {
        "ok": false,
@@ -5665,19 +5886,107 @@
       },
       {
        "ok": false,
+       "text": "Health items on Adele raised the %-health damage they took."
+      },
+      {
+       "ok": false,
        "text": "We killed Lt. Belica 0 times."
       }
      ],
      "copy": {
-      "verdict": "unknown",
-      "text": "Too few Lt. Belica midlane games with this Eternal or core this patch to say whether it wins elsewhere."
+      "verdict": "beat-us",
+      "text": "Vesh (Tithe of Death + Mind Rot): 48.8% in 2,555 Lt. Belica midlane games, below the hero's 51.2%. It wins less than usual elsewhere: it beat us, not the field."
      }
     },
-    "loadout": []
+    "loadout": [
+     {
+      "kind": "augment",
+      "name": "Devastating Bombs",
+      "text": "Void Bomb deals 15% more damage to Isolated Targets.",
+      "ability": {
+       "name": "Void Bomb",
+       "key": "RMB",
+       "what": "Place a bomb that detonates after a short delay, dealing 95/135/175/215/255 (+70%) magical damage.",
+       "cd": 7,
+       "cdHaste": 4.5
+      },
+      "numbers": [],
+      "field": {
+       "wr": 50,
+       "n": 4029,
+       "share": 40,
+       "base": 51.2,
+       "verdict": "below"
+      },
+      "plain": "Void Bomb hits harder on enemies standing alone. Aim bombs at a solo laner or someone separated from their team."
+     },
+     {
+      "kind": "Eternal",
+      "name": "Vesh",
+      "text": "Ability damage dealt to Enemy Heroes deals 7% (+0.4% per minute) of that damage as a DoT over 3s.",
+      "ability": null,
+      "numbers": [
+       "7% growing 0.4% a minute: about 15.4% by the end (21 min)"
+      ],
+      "field": {
+       "wr": 49.3,
+       "n": 4556,
+       "share": 45,
+       "base": 51.2,
+       "verdict": "below"
+      },
+      "plain": "Ability damage to heroes also adds a short burn. Void Bomb, Seismic Assault and the drone zaps all keep ticking after they land."
+     },
+     {
+      "kind": "minor",
+      "name": "Tithe of Death",
+      "text": "Takedowns restore 15% Max Mana and permanently grant 2 Ability Haste, up to 30 Ability Haste.",
+      "ability": null,
+      "numbers": [],
+      "field": {
+       "wr": 49,
+       "n": 2796,
+       "share": 61,
+       "base": 51.2,
+       "verdict": "below"
+      },
+      "plain": "Takedowns restore mana and permanently add ability haste. Once Neural Disruptor is max rank it can also reset on a kill, so fights can snowball into more casts."
+     },
+     {
+      "kind": "minor",
+      "name": "Mind Rot",
+      "text": "The major also deals 2% of the target's current health as bonus damage.",
+      "ability": null,
+      "numbers": [],
+      "field": {
+       "wr": 49,
+       "n": 3357,
+       "share": 74,
+       "base": 51.2,
+       "verdict": "below"
+      },
+      "plain": "The Vesh burn also deals damage based on the target's current health. Strongest when opening on healthy enemies with Void Bomb."
+     },
+     {
+      "kind": "crest",
+      "name": "Soulbearer",
+      "text": "Anima:  Gain a 100 (+35) (+6%) Shield for 8s. Gain 20% Magical Lifesteal and 10% Movement Speed for 8s.",
+      "ability": null,
+      "numbers": [],
+      "field": {
+       "wr": 53.3,
+       "n": 853,
+       "share": 8,
+       "base": 51.2,
+       "verdict": "above"
+      },
+      "plain": "A shield, magical lifesteal and speed for 8s. Pop it before casting Void Bomb and Seismic Assault into a fight to heal off the burst."
+     }
+    ]
    },
    "power": {
     "type": "magical",
-    "power": 175,
+    "power": 205,
     "pen": {
      "flat": 9,
      "pct": 0,
@@ -5687,6 +5996,20 @@
     },
     "vs": [
      {
+      "name": "deathisland23",
+      "hero": "Adele",
+      "armor": 44,
+      "after": 35,
+      "more": 7,
+      "diedTo": 3,
+      "level": 9,
+      "levelKnown": true,
+      "taken": {
+       "type": 8506,
+       "total": 21624
+      }
+     },
+     {
       "name": "Marshin05",
       "hero": "Neon",
       "armor": 42,
@@ -5694,52 +6017,53 @@
       "more": 7,
       "diedTo": 3,
       "level": 13,
-      "levelKnown": false,
-      "taken": null
-     },
-     {
-      "name": "deathisland23",
-      "hero": "Adele",
-      "armor": 51,
-      "after": 42,
-      "more": 6,
-      "diedTo": 3,
-      "level": 13,
-      "levelKnown": false,
-      "taken": null
+      "levelKnown": true,
+      "taken": {
+       "type": 9177,
+       "total": 12863
+      }
      },
      {
       "name": "DonFlowers",
       "hero": "Countess",
-      "armor": 53,
-      "after": 44,
+      "armor": 52,
+      "after": 43,
       "more": 6,
       "diedTo": 2,
-      "level": 13,
-      "levelKnown": false,
-      "taken": null
+      "level": 12,
+      "levelKnown": true,
+      "taken": {
+       "type": 3362,
+       "total": 10056
+      }
      },
      {
       "name": "zparrish_23",
       "hero": "Wraith",
-      "armor": 46,
-      "after": 37,
+      "armor": 45,
+      "after": 36,
       "more": 7,
       "diedTo": 1,
-      "level": 13,
-      "levelKnown": false,
-      "taken": null
+      "level": 12,
+      "levelKnown": true,
+      "taken": {
+       "type": 2894,
+       "total": 6978
+      }
      },
      {
       "name": "godmode121",
       "hero": "Aurora",
-      "armor": 51,
-      "after": 42,
+      "armor": 48,
+      "after": 39,
       "more": 6,
       "diedTo": 0,
-      "level": 13,
-      "levelKnown": false,
-      "taken": null
+      "level": 11,
+      "levelKnown": true,
+      "taken": {
+       "type": 2537,
+       "total": 15446
+      }
      }
     ],
     "level": 13,
@@ -5753,6 +6077,21 @@
       "name": "Noxia",
       "kind": "item",
       "how": "Deal 6% of Target's Maximum Health as bonus Damage."
+     },
+     {
+      "name": "Vesh",
+      "kind": "Eternal",
+      "how": "Ability damage dealt to Enemy Heroes deals 7% (+0.4% a minute, about 15.4% by the end) of that damage as a DoT over 3s."
+     },
+     {
+      "name": "Mind Rot",
+      "kind": "Eternal minor",
+      "how": "The major also deals 2% of the target's current health as bonus damage."
+     },
+     {
+      "name": "Devastating Bombs",
+      "kind": "augment",
+      "how": "Void Bomb deals 15% more damage to Isolated Targets."
      }
     ],
     "items": [
@@ -5777,20 +6116,39 @@
       "effects": [
        "Deal 6% of Target's Maximum Health as bonus Damage."
       ]
+     },
+     {
+      "slug": "soulbearer",
+      "name": "Soulbearer",
+      "kind": "crest",
+      "power": 30,
+      "pen": 0,
+      "penPct": 0,
+      "effects": []
      }
     ],
     "dealt": {
      "damage": 20488,
      "share": 31
     },
-    "sustain": null,
+    "sustain": {
+     "stats": [],
+     "effects": [
+      {
+       "name": "Soulbearer",
+       "kind": "item",
+       "how": "Gain a 100 (+35) (+6%) Shield for 8s. Gain 20% Magical Lifesteal and 10% Movement Speed for 8s."
+      }
+     ],
+     "healing": 2160
+    },
     "tough": null
    },
    "story": {
     "lead": {
      "id": "survival",
      "title": "Hard to kill",
-     "text": "Never died in 21 minutes, fewer deaths than about 95% of Lt. Belica mid players this patch."
+     "text": "Never died in 21 minutes, fewer deaths than about 95% of Lt. Belica mid players this patch. The build added healing off damage. It came from Soulbearer, Noxia."
     },
     "tabs": [
      "alive",
@@ -5844,12 +6202,56 @@
         "name": "Noxia",
         "kind": "item",
         "text": "Mark Heroes for 3s upon dealing Ability Damage: With a separate ability, deal damage to a Marked Hero to activate Dark Matter."
+       },
+       {
+        "name": "Vesh",
+        "kind": "Eternal",
+        "text": "Ability damage dealt to Enemy Heroes deals 7% (+0.4% per minute) of that damage as a DoT over 3s."
+       },
+       {
+        "name": "Mind Rot",
+        "kind": "Eternal minor",
+        "text": "The major also deals 2% of the target's current health as bonus damage."
        }
       ],
-      "text": "2 effects on one trigger: Combustion, Noxia. Lt. Belica has 4 damaging abilities (Void Bomb, Seismic Assault, Void Drone hit an area, so one cast sets them off on several heroes), and 20 ability haste brought them back 17% sooner: more casts, more triggers."
+      "text": "4 effects on one trigger: Combustion, Noxia, Vesh, Mind Rot. Lt. Belica has 4 damaging abilities (Void Bomb, Seismic Assault, Void Drone hit an area, so one cast sets them off on several heroes), and 54 ability haste brought them back 35% sooner: more casts, more triggers."
+     },
+     {
+      "family": "pctHealth",
+      "title": "Damage that scales with the target's health",
+      "members": [
+       {
+        "name": "Noxia",
+        "kind": "item",
+        "text": "Deal 6% of Target's Maximum Health as bonus Damage."
+       },
+       {
+        "name": "Mind Rot",
+        "kind": "Eternal minor",
+        "text": "The major also deals 2% of the target's current health as bonus damage."
+       }
+      ],
+      "text": "2 effects on one trigger: Noxia, Mind Rot. The more health a target stacks, the more these deal, so health items on the other side fed them."
+     },
+     {
+      "family": "tough",
+      "title": "Kept alive in fights",
+      "members": [
+       {
+        "name": "Noxia",
+        "kind": "item",
+        "text": "Deal 6% of Target's Maximum Health as bonus Damage."
+       },
+       {
+        "name": "Soulbearer",
+        "kind": "crest",
+        "text": "Gain a 100 (+35) (+6%) Shield for 8s. Gain 20% Magical Lifesteal and 10% Movement Speed for 8s."
+       }
+      ],
+      "text": "2 effects on one trigger: Noxia, Soulbearer. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went."
      }
     ],
-    "eternalPart": null,
+    "eternalPart": "The Eternal was part of it: Vesh (Tithe of Death + Mind Rot) sits on the same triggers as the items (every ability hit set off; damage that scales with the target's health), so the same hits paid out twice.",
     "countered": [
      {
       "ok": false,
@@ -5861,22 +6263,155 @@
      },
      {
       "ok": false,
+      "text": "Health items on Adele raised the %-health damage they took."
+     },
+     {
+      "ok": false,
       "text": "We killed Lt. Belica 0 times."
      }
     ],
     "copy": {
-     "verdict": "unknown",
-     "text": "Too few Lt. Belica midlane games with this Eternal or core this patch to say whether it wins elsewhere."
+     "verdict": "beat-us",
+     "text": "Vesh (Tithe of Death + Mind Rot): 48.8% in 2,555 Lt. Belica midlane games, below the hero's 51.2%. It wins less than usual elsewhere: it beat us, not the field."
     }
    },
    "us": true,
    "why": [
     "standout"
    ],
-   "score": 0.72
+   "score": 0.71
   }
  },
- "damageMix": null,
+ "damageMix": {
+  "us": {
+   "physical": 38748,
+   "magical": 26477,
+   "true": 1740,
+   "total": 66965
+  },
+  "them": {
+   "physical": 12162,
+   "magical": 22383,
+   "true": 7667,
+   "total": 42212
+  },
+  "trueFrom": [
+   {
+    "hero": "Adele",
+    "us": false,
+    "amount": 3509,
+    "share": 70,
+    "from": [
+     {
+      "name": "Seeds of Dominion",
+      "kind": "augment"
+     },
+     {
+      "name": "Acacia",
+      "kind": "ability"
+     },
+     {
+      "name": "Imperial Lash",
+      "kind": "ability"
+     },
+     {
+      "name": "Royal Flourish",
+      "kind": "ability"
+     },
+     {
+      "name": "Iron Rose",
+      "kind": "ability"
+     },
+     {
+      "name": "Queen’s Garden",
+      "kind": "ability"
+     },
+     {
+      "name": "Crown of Thorns",
+      "kind": "ability"
+     }
+    ]
+   },
+   {
+    "hero": "Neon",
+    "us": false,
+    "amount": 2848,
+    "share": 37,
+    "from": [
+     {
+      "name": "L.I.N.X",
+      "kind": "ability"
+     }
+    ]
+   },
+   {
+    "hero": "Kaelen",
+    "us": true,
+    "amount": 1383,
+    "share": 15,
+    "from": [
+     {
+      "name": "Heart of Ice",
+      "kind": "ability"
+     }
+    ]
+   },
+   {
+    "hero": "Countess",
+    "us": false,
+    "amount": 1035,
+    "share": 9,
+    "from": [
+     {
+      "name": "Blood Tithe",
+      "kind": "ability"
+     }
+    ]
+   }
+  ],
+  "armor": {
+   "us": {
+    "faced": "mixed",
+    "physical": [
+     "Scarlett"
+    ],
+    "magical": [
+     "Kaelen"
+    ],
+    "of": 5,
+    "points": {
+     "physical": 55,
+     "magical": 40
+    }
+   },
+   "them": {
+    "faced": "physical",
+    "physical": [
+     "Adele",
+     "Aurora"
+    ],
+    "magical": [],
+    "of": 5,
+    "points": {
+     "physical": 85,
+     "magical": 0
+    }
+   }
+  },
+  "field": {
+   "us": {
+    "wr": 51.8,
+    "n": 17783,
+    "band": "30-40% magical"
+   },
+   "them": {
+    "wr": 46.7,
+    "n": 11162,
+    "band": "50-60% magical"
+   },
+   "best": "20-30% magical (52.9% win)"
+  }
+ },
  "buildNotes": [
   {
    "pid": "25bf68d7-3ab6-408e-8803-4e37bfef332d",
@@ -5885,8 +6420,8 @@
    "lane": {
     "opp": "Aurora",
     "oppSlug": "aurora",
-    "wr": 48,
-    "n": 228
+    "wr": 52,
+    "n": 243
    },
    "adapt": [],
    "needs": [],
@@ -5898,18 +6433,18 @@
       "has": false
      },
      {
-      "slug": "tainted-blade",
-      "name": "Tainted Blade",
+      "slug": "earthshaker",
+      "name": "Earthshaker",
       "has": false
      },
      {
-      "slug": "mutilator",
-      "name": "Mutilator",
+      "slug": "nightfall",
+      "name": "Nightfall",
       "has": false
      }
     ],
-    "wr": 62.3,
-    "n": 69
+    "wr": 67.2,
+    "n": 58
    },
    "coreVs": null,
    "built": [
@@ -5934,31 +6469,31 @@
    "lane": {
     "opp": "Wraith",
     "oppSlug": "wraith",
-    "wr": 50.4,
-    "n": 72
+    "wr": 48.6,
+    "n": 81
    },
    "adapt": [],
    "needs": [],
    "core": {
     "items": [
      {
-      "slug": "lightning-hawk",
-      "name": "Lightning Hawk",
+      "slug": "plasma-blade",
+      "name": "Plasma Blade",
       "has": false
      },
      {
-      "slug": "scattershot",
-      "name": "Scattershot",
+      "slug": "vanquisher",
+      "name": "Vanquisher",
       "has": false
      },
      {
-      "slug": "equinox",
-      "name": "Equinox",
+      "slug": "tainted-rounds",
+      "name": "Tainted Rounds",
       "has": false
      }
     ],
-    "wr": 55.3,
-    "n": 257
+    "wr": 53.5,
+    "n": 396
    },
    "coreVs": null,
    "built": [
@@ -5979,13 +6514,13 @@
    "lane": {
     "opp": "Adele",
     "oppSlug": "adele",
-    "wr": 47.3,
-    "n": 101
+    "wr": 45.9,
+    "n": 113
    },
    "adapt": [],
    "needs": [
     {
-     "why": "Adele wins this lane 52.7% of the time",
+     "why": "Adele wins this lane 54.1% of the time",
      "answer": "physical armor",
      "has": false
     }
@@ -6008,8 +6543,8 @@
       "has": false
      }
     ],
-    "wr": 62.8,
-    "n": 43
+    "wr": 55.6,
+    "n": 54
    },
    "coreVs": null,
    "built": [
@@ -6030,8 +6565,8 @@
    "lane": {
     "opp": "Countess",
     "oppSlug": "countess",
-    "wr": 51.4,
-    "n": 136
+    "wr": 52.8,
+    "n": 146
    },
    "adapt": [
     {
@@ -6039,8 +6574,8 @@
      "name": "Tainted Bastion",
      "into": 11,
      "usual": 2,
-     "wr": 63.4,
-     "n": 164,
+     "wr": 63.8,
+     "n": 207,
      "has": false,
      "vs": "Countess"
     }
@@ -6064,8 +6599,8 @@
       "has": false
      }
     ],
-    "wr": 68.3,
-    "n": 240
+    "wr": 69.5,
+    "n": 285
    },
    "coreVs": null,
    "built": [
@@ -6086,8 +6621,8 @@
    "lane": {
     "opp": "Neon",
     "oppSlug": "neon",
-    "wr": 52,
-    "n": 205
+    "wr": 53.4,
+    "n": 222
    },
    "adapt": [],
    "needs": [],
@@ -6109,8 +6644,8 @@
       "has": false
      }
     ],
-    "wr": 61.1,
-    "n": 126
+    "wr": 59.1,
+    "n": 149
    },
    "coreVs": {
     "vs": "Neon",
