@@ -241,3 +241,6 @@ Judge the complete review for useful advice, not just format and literal numbers
 - Strong wins need forceful, specific praise and a repeatable standard, not an invented flaw for every player. Distinct match stories should not become the same escort, ward or objective lecture.
 - Read the final five paragraphs together: each should sound like useful adult coaching, with varied cadence and natural edge. A preset ID and one swear do not establish compliance.
 - Preserve the previous coaching in a dated review snapshot before a requested rewrite. Independently critique the full saved result, including expanded build analysis, before publication.
+
+## Objective naming and recovered timers
+Use Shaper in player-facing prose. GENESIS_CORE, GenesisCore asset names and the map key genesis identify Shaper, not the base Core. Preserve raw identifiers in facts. Seedling, Mini Prime, Orb Prime and Shaper are distinct objectives. See docs/recovery-opportunities.md for timing evidence and unresolved mode/clock limitations. Never infer a free objective or missed contest from a timer alone.

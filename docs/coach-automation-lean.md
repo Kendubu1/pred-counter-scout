@@ -64,3 +64,6 @@ Set `"auto": false` in `data/coaching/lean.json` (stops new lean reviews) and
 `"defaultView": "standard"` (already the default). The standard reviews were never changed, so
 nothing needs restoring. To remove lean copy entirely, delete `coachLean` from the films.
 To make lean the main review later: `"defaultView": "lean"`, then retire the standard steps.
+
+## Objective naming and recovered timers
+Use Shaper in player-facing prose. GENESIS_CORE, GenesisCore asset names and the map key genesis identify Shaper, not the base Core. Preserve raw identifiers in facts. Seedling, Mini Prime, Orb Prime and Shaper are distinct objectives. See docs/recovery-opportunities.md for timing evidence and unresolved mode/clock limitations. Never infer a free objective or missed contest from a timer alone.

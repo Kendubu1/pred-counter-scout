@@ -674,3 +674,6 @@ Judge the complete review for useful advice, not just format and literal numbers
 
 ### Match-linked player accounts
 Preserve `coaching.playerTestimony` when rewriting. These are user or teammate accounts, separate from telemetry. Attribute reported tower dives, chasing or intent explicitly; do not convert them into detected counts, timestamps or causal certainty. Do not overwrite a newer completed user-requested review with an older automation draft. Refresh main and check the review before publishing.
+
+## Objective naming and recovered timers
+Use Shaper in player-facing prose. GENESIS_CORE, GenesisCore asset names and the map key genesis identify Shaper, not the base Core. Preserve raw identifiers in facts. Seedling, Mini Prime, Orb Prime and Shaper are distinct objectives. See docs/recovery-opportunities.md for timing evidence and unresolved mode/clock limitations. Never infer a free objective or missed contest from a timer alone.

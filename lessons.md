@@ -6093,3 +6093,5 @@ draft that matched on heroes but lost the in-game count is flagged. Calibration 
 1.5x passes 23% of real-tank games and 5% of the rest. Mourn passed in 3 of 34 games; in game a13f0181
 Mourn mitigated 721 a minute (0.76x a support's average), so not there. The field shape win rates stay
 on the draft class, since that is what the ranked lineups count.
+
+2026-11-14: GENESIS_CORE is Shaper, not the base Core. Preserve identifiers and normalize display names. Recovery audit prioritizes mode-bound objective timing, real objective durability, event-order passives and multi-target scenarios. A decoded rule cannot establish observed player execution. See docs/recovery-opportunities.md.

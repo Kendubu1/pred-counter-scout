@@ -233,3 +233,6 @@ Judge the complete review for useful advice, not just format and literal numbers
 
 ## Interrupted review recovery (2026-10-22)
 The 0b5db31c run published enriched facts and its detection marker without coaching. The marker therefore measures detection, not completed review publication. `squad:watch` now checks indexed stacked matches for missing/incomplete coaching before credentials or polling and returns exit 3 to resume them. Never treat a data-only commit as completed coaching. Do not advance the reviewed flag until exact saved-copy critique and publication checks pass. A worker interruption may leave partial facts; the next fire must resume authoring rather than exiting because no newer game exists.
+
+## Objective naming and recovered timers
+Use Shaper in player-facing prose. GENESIS_CORE, GenesisCore asset names and the map key genesis identify Shaper, not the base Core. Preserve raw identifiers in facts. Seedling, Mini Prime, Orb Prime and Shaper are distinct objectives. See docs/recovery-opportunities.md for timing evidence and unresolved mode/clock limitations. Never infer a free objective or missed contest from a timer alone.

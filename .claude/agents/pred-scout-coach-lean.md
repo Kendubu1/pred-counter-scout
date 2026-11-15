@@ -244,3 +244,5 @@ From `engine/`: `npm run coach:lean:prepare` writes one task per game to
 `npm run coach:lean:critique:prepare` tasks, and `npm run coach:lean:critique` applies them. Only
 lines not yet approved go back to the critic; after round 3 a still-flagged line is dropped. This
 pipeline never touches `film.coaching`.
+
+Objective naming: call GENESIS_CORE Shaper in prose, never the base Core. Keep raw IDs in source facts. See docs/recovery-opportunities.md for recovered timing limitations; a timer alone does not prove a safe contest.
