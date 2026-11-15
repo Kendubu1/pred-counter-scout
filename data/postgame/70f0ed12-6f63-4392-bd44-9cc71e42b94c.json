@@ -6122,7 +6122,7 @@
  "teamComp": {
   "field": {
    "patch": "1.18",
-   "matches": 64438
+   "matches": 70661
   },
   "us": {
    "heroes": [
@@ -6204,8 +6204,8 @@
    "style": "mixed",
    "shape": "1t2d",
    "shapeWr": {
-    "n": 24555,
-    "w": 12240,
+    "n": 26869,
+    "w": 13382,
     "wr": 49.8,
     "ci95": 0.6
    }
@@ -6290,9 +6290,9 @@
    "style": "brawl",
    "shape": "2t1d",
    "shapeWr": {
-    "n": 13921,
-    "w": 7349,
-    "wr": 52.8,
+    "n": 15280,
+    "w": 8054,
+    "wr": 52.7,
     "ci95": 0.8
    }
   },
@@ -6344,24 +6344,24 @@
     {
      "slug": "kaelen",
      "name": "Kaelen",
-     "wr": 53.9,
-     "n": 5270
-    },
-    {
-     "slug": "steel",
-     "name": "Steel",
-     "wr": 50.5,
-     "n": 6459
+     "wr": 54.2,
+     "n": 5680
     },
     {
      "slug": "riktor",
      "name": "Riktor",
-     "wr": 50.4,
-     "n": 3021
+     "wr": 50.8,
+     "n": 3377
+    },
+    {
+     "slug": "steel",
+     "name": "Steel",
+     "wr": 50.7,
+     "n": 7129
     }
    ]
   },
-  "summary": "Draft: 1 tank, 2 divers vs their 2 tanks, 1 diver. In 1.18 ranked, our shape won 49.8% and theirs 52.8%."
+  "summary": "Draft: 1 tank, 2 divers vs their 2 tanks, 1 diver. In 1.18 ranked, our shape won 49.8% and theirs 52.7%."
  },
  "kitRead": {
   "cc": {
@@ -6643,17 +6643,109 @@
    "hero": "Morigesh",
    "slug": "morigesh",
    "takedowns": 19,
-   "loadout": [],
+   "loadout": [
+    {
+     "kind": "augment",
+     "name": "Ritual Of Death",
+     "text": "Curse heals Morigesh for 70%/80%/90% of damage dealt. Takedowns also decrease Curse's Cooldown by 20s.",
+     "ability": {
+      "name": "Curse",
+      "key": "R",
+      "what": "After a brief channel, Summon a horde of insects to stab the Marked target, dealing 320/450/580 (+80%) magical damage.",
+      "cd": 75,
+      "cdHaste": 58.6
+     },
+     "numbers": [],
+     "field": {
+      "wr": 46.8,
+      "n": 2712,
+      "share": 41,
+      "base": 48.5,
+      "verdict": "below"
+     },
+     "plain": "Curse heals you for most of its damage, and takedowns cut its cooldown. Mark a target, Curse them, and use the heal to stay in the fight."
+    },
+    {
+     "kind": "Eternal",
+     "name": "Vesh",
+     "text": "Ability damage dealt to Enemy Heroes deals 7% (+0.4% per minute) of that damage as a DoT over 3s.",
+     "ability": null,
+     "numbers": [
+      "7% growing 0.4% a minute: about 19.4% by the end (31 min)"
+     ],
+     "field": {
+      "wr": 48.4,
+      "n": 4509,
+      "share": 67,
+      "base": 48.5,
+      "verdict": "level"
+     },
+     "plain": "Ability damage to heroes also adds a short burn. Stacks on top of Pestilence, making Mark, Hive and Swarm hit harder over time."
+    },
+    {
+     "kind": "minor",
+     "name": "Lich",
+     "text": "Gain 4%/7%/10%/14% Magical Lifesteal at Levels 1/6/11/16.",
+     "ability": null,
+     "numbers": [],
+     "field": {
+      "wr": 48.5,
+      "n": 3864,
+      "share": 86,
+      "base": 48.5,
+      "verdict": "level"
+     },
+     "plain": "Magical lifesteal that grows with level. Morigesh deals mostly magic damage, adding to her healing from Mark and Swarm."
+    },
+    {
+     "kind": "minor",
+     "name": "Mind Rot",
+     "text": "The major also deals 2% of the target's current health as bonus damage.",
+     "ability": null,
+     "numbers": [],
+     "field": {
+      "wr": 47.7,
+      "n": 3636,
+      "share": 81,
+      "base": 48.5,
+      "verdict": "level"
+     },
+     "plain": "The Vesh burn also deals damage based on the target's current health. Strongest when opening on healthy targets."
+    },
+    {
+     "kind": "crest",
+     "name": "Soulbearer",
+     "text": "Anima:  Gain a 100 (+35) (+6%) Shield for 8s. Gain 20% Magical Lifesteal and 10% Movement Speed for 8s.",
+     "ability": null,
+     "numbers": [],
+     "field": {
+      "wr": 50.7,
+      "n": 3307,
+      "share": 49,
+      "base": 48.5,
+      "verdict": "above"
+     },
+     "plain": "A shield, magical lifesteal and speed for 8s. Her abilities all deal magic damage, so pop it before Swarm and Curse to heal through the burst."
+    }
+   ],
    "haste": {
     "sources": [
      {
       "what": "Astral Catalyst",
       "amount": 20,
+      "note": "bought at 8:12",
       "kind": "item",
-      "how": "+20 ability haste"
+      "how": "+20 ability haste, bought at 8:12"
+     },
+     {
+      "what": "Soulbearer",
+      "amount": 8,
+      "note": "crest",
+      "kind": "crest",
+      "how": "+8 ability haste"
      }
     ],
-    "total": 20,
+    "total": 28,
     "fightBonus": null,
     "ultOnly": 0
    },
@@ -6661,12 +6753,13 @@
     "name": "Curse",
     "base": 75,
     "rank": 3,
-    "rankKnown": false,
-    "endGame": 62.5,
+    "rankKnown": true,
+    "endGame": 58.6,
     "inFight": null
    },
    "fedBy": [
-    "Astral Catalyst: Damage Dealt: Takedowns:"
+    "Astral Catalyst: Damage Dealt: Takedowns:",
+    "Ritual Of Death (augment): Curse heals Morigesh for 70%/80%/90% of damage dealt. Takedowns also decrease Curse's Cooldown by 20s."
    ],
    "ultPlus": [
     "Astral Catalyst (Ravenous): Hero Kills reduce your Ultimate Cooldown by 25%.• Hero Assists reduce your Ultimate Cooldown by 15%.",
@@ -6674,31 +6767,41 @@
    ],
    "lines": [
     "Lead story: Damage well above normal. 1,633 hero damage a minute, more than 98% of Morigesh mid players this patch (38% of the team's). The damage came from Astral Catalyst, Overseer, Wraith Leggings.",
-    "Curse at top rank: 75s base, about 62.5s by the end (17% shorter) from 20 ability haste: Astral Catalyst 20.",
-    "19 takedowns (14 kills, 5 assists) fed: Astral Catalyst.",
+    "Curse at rank 3: 75s base, about 58.6s by the end (22% shorter) from 28 ability haste: Astral Catalyst 20, Soulbearer 8.",
+    "19 takedowns (14 kills, 5 assists) fed: Astral Catalyst, Ritual Of Death (augment).",
     "Astral Catalyst (Ravenous): Hero Kills reduce your Ultimate Cooldown by 25%.• Hero Assists reduce your Ultimate Cooldown by 15%.",
     "Overseer (Exalted): Enhance your Ultimate Ability: Deals 15% more damage. Heals you for 25% of the damage dealt to Heroes.",
     "Their build heals off damage: anti-heal (the Tainted items) cuts it.",
-    "Morigesh dealt 50,608 hero damage, 38% of their team's, with +475 magical power from items.",
-    "Penetration: Overseer 8, Wraith Leggings 11, Combustion 9; against Gideon (level 17 estimated: about 47 magical armor, 19 after penetration) and Shinbi (level 17 estimated: about 60 magical armor, 32 after penetration) that is about 24% and 21% more damage (estimate: percent penetration taken before flat).",
+    "Morigesh dealt 50,608 hero damage, 38% of their team's, with +505 magical power from items.",
+    "Penetration: Overseer 8, Wraith Leggings 11, Combustion 9; against Gideon (level 16: about 46 magical armor, 18 after penetration; took 21,379 magical damage from heroes, 87% of all hero damage they took) and Shinbi (level 17: about 60 magical armor, 32 after penetration; took 27,948 magical damage from heroes, 73% of all hero damage they took) that is about 24% and 21% more damage (estimate: percent penetration taken before flat).",
     "Astral Catalyst (item): On damaging a Shielded Target: Deal 40% bonus Damage. Does not exceed the size of the Shield.",
     "Overseer (item): Ultimate: Deals 15% more damage. Heals you for 25% of the damage dealt to Heroes.",
     "Wraith Leggings (item): Against Heroes below 40% Health: Abilities deal 12% bonus Magical Damage.",
     "Combustion (item): On dealing Ability Damage: Deal 50 (+18%) Damage to the Target and nearby Enemies.",
-    "Sustain: 7% magical lifesteal; Astral Catalyst: On damaging a Shielded Target: Deal 40% bonus Damage. Does not exceed the size of the Shield.; Overseer: Ultimate: Deals 15% more damage. Heals you for 25% of the damage dealt to Heroes.; 14,089 healing recorded.",
-    "Lesson: Morigesh's penetration cut through: Gideon took about 24% more magical damage than their armor alone allows (estimate: at level 17 (estimated) their armor was about 47, about 19 after 28 flat penetration).",
-    "Stack (Every ability hit set off): 2 effects on one trigger: Wraith Leggings, Combustion. Morigesh has 4 damaging abilities (Hive hit an area, so one cast sets them off on several heroes), and 20 ability haste brought them back 17% sooner: more casts, more triggers.",
-    "Stack (Kept alive in fights): 2 effects on one trigger: Astral Catalyst, Overseer. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went.",
+    "Vesh (Eternal): Ability damage dealt to Enemy Heroes deals 7% (+0.4% a minute, about 19.4% by the end) of that damage as a DoT over 3s.",
+    "Mind Rot (Eternal minor): The major also deals 2% of the target's current health as bonus damage.",
+    "Ritual Of Death (augment): Curse heals Morigesh for 70%/80%/90% of damage dealt. Takedowns also decrease Curse's Cooldown by 20s.",
+    "Sustain: 7% magical lifesteal; Astral Catalyst: On damaging a Shielded Target: Deal 40% bonus Damage. Does not exceed the size of the Shield.; Overseer: Ultimate: Deals 15% more damage. Heals you for 25% of the damage dealt to Heroes.; Soulbearer: Gain a 100 (+35) (+6%) Shield for 8s. Gain 20% Magical Lifesteal and 10% Movement Speed for 8s.; Lich: Gain 4%/7%/10%/14% Magical Lifesteal at Levels 1/6/11/16.; 14,089 healing recorded.",
+    "Lesson: Morigesh's penetration cut through: Gideon took about 24% more magical damage than their armor alone allows (estimate: at level 16 their armor was about 46, about 18 after 28 flat penetration).",
+    "Loadout augment Ritual Of Death: Curse heals you for most of its damage, and takedowns cut its cooldown. Mark a target, Curse them, and use the heal to stay in the fight. (game text: Curse heals Morigesh for 70%/80%/90% of damage dealt. Takedowns also decrease Curse's Cooldown by 20s.) (changes Curse, 58.6s cooldown with their haste) Field: 46.8% in 2712 games, 41% of picks, below the hero-role's 48.5%.",
+    "Loadout Eternal Vesh: Ability damage to heroes also adds a short burn. Stacks on top of Pestilence, making Mark, Hive and Swarm hit harder over time. (game text: Ability damage dealt to Enemy Heroes deals 7% (+0.4% per minute) of that damage as a DoT over 3s.) [7% growing 0.4% a minute: about 19.4% by the end (31 min)] Field: 48.4% in 4509 games, 67% of picks, level the hero-role's 48.5%.",
+    "Loadout minor Lich: Magical lifesteal that grows with level. Morigesh deals mostly magic damage, adding to her healing from Mark and Swarm. (game text: Gain 4%/7%/10%/14% Magical Lifesteal at Levels 1/6/11/16.) Field: 48.5% in 3864 games, 86% of picks, level the hero-role's 48.5%.",
+    "Loadout minor Mind Rot: The Vesh burn also deals damage based on the target's current health. Strongest when opening on healthy targets. (game text: The major also deals 2% of the target's current health as bonus damage.) Field: 47.7% in 3636 games, 81% of picks, level the hero-role's 48.5%.",
+    "Loadout crest Soulbearer: A shield, magical lifesteal and speed for 8s. Her abilities all deal magic damage, so pop it before Swarm and Curse to heal through the burst. (game text: Anima:  Gain a 100 (+35) (+6%) Shield for 8s. Gain 20% Magical Lifesteal and 10% Movement Speed for 8s.) Field: 50.7% in 3307 games, 49% of picks, above the hero-role's 48.5%.",
+    "Stack (Every ability hit set off): 4 effects on one trigger: Wraith Leggings, Combustion, Vesh, Mind Rot. Morigesh has 4 damaging abilities (Hive hit an area, so one cast sets them off on several heroes), and 28 ability haste brought them back 22% sooner: more casts, more triggers.",
+    "Stack (Healing off the damage): 4 effects on one trigger: Overseer, Soulbearer, Lich, Ritual Of Death.",
+    "Stack (Kept alive in fights): 3 effects on one trigger: Astral Catalyst, Overseer, Soulbearer. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went.",
+    "The Eternal was part of it: Vesh (Lich + Mind Rot) sits on the same triggers as the items (every ability hit set off; healing off the damage), so the same fights paid out in both damage and staying power.",
     "Countered? 1 of the 4 players Morigesh killed built magical armor (Riktor). Anti-heal on Yin. We killed Morigesh 0 times.",
-    "Copy it? Too few Morigesh midlane games with this Eternal or core this patch to say whether it wins elsewhere."
+    "Copy it? Vesh (Lich + Mind Rot): 47.9% in 3,412 Morigesh midlane games, level with the hero's 48.5%. A standard setup: what made it work was this game, not a secret build."
    ],
    "card": {
     "ult": {
      "name": "Curse",
      "base": 75,
      "rank": 3,
-     "rankKnown": false,
-     "endGame": 62.5,
+     "rankKnown": true,
+     "endGame": 58.6,
      "inFight": null
     },
     "takedowns": {
@@ -6713,7 +6816,13 @@
       "name": "Astral Catalyst",
       "kind": "item",
       "amount": 20,
-      "how": "+20 ability haste"
+      "how": "+20 ability haste, bought at 8:12"
+     },
+     {
+      "name": "Soulbearer",
+      "kind": "crest",
+      "amount": 8,
+      "how": "+8 ability haste"
      }
     ],
     "fight": null,
@@ -6722,11 +6831,16 @@
       "name": "Overseer",
       "kind": "item",
       "how": "Ultimate: Deals 15% more damage. Heals you for 25% of the damage dealt to Heroes."
+     },
+     {
+      "name": "Ritual Of Death",
+      "kind": "augment",
+      "how": "Curse heals Morigesh for 70%/80%/90% of damage dealt. Takedowns also decrease Curse's Cooldown by 20s."
      }
     ],
     "power": {
      "type": "magical",
-     "power": 475,
+     "power": 505,
      "pen": {
       "flat": 28,
       "pct": 0,
@@ -6740,13 +6854,16 @@
       {
        "name": "🎮 private",
        "hero": "Gideon",
-       "armor": 47,
-       "after": 19,
+       "armor": 46,
+       "after": 18,
        "more": 24,
        "diedTo": 5,
-       "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "level": 16,
+       "levelKnown": true,
+       "taken": {
+        "type": 21379,
+        "total": 24697
+       }
       },
       {
        "name": "🎮 private",
@@ -6756,30 +6873,39 @@
        "more": 21,
        "diedTo": 4,
        "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "levelKnown": true,
+       "taken": {
+        "type": 27948,
+        "total": 38299
+       }
       },
       {
        "name": "Iruvinza",
        "hero": "Yin",
-       "armor": 47,
-       "after": 19,
+       "armor": 44,
+       "after": 16,
        "more": 24,
        "diedTo": 3,
-       "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "level": 15,
+       "levelKnown": true,
+       "taken": {
+        "type": 16682,
+        "total": 23488
+       }
       },
       {
        "name": "Willy Guggenheim",
        "hero": "Riktor",
-       "armor": 100,
-       "after": 72,
-       "more": 16,
+       "armor": 95,
+       "after": 67,
+       "more": 17,
        "diedTo": 2,
-       "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "level": 15,
+       "levelKnown": true,
+       "taken": {
+        "type": 18202,
+        "total": 30087
+       }
       },
       {
        "name": "🎮 private",
@@ -6789,8 +6915,11 @@
        "more": 23,
        "diedTo": 0,
        "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "levelKnown": true,
+       "taken": {
+        "type": 5563,
+        "total": 17216
+       }
       }
      ],
      "level": 17,
@@ -6814,6 +6943,21 @@
        "name": "Combustion",
        "kind": "item",
        "how": "On dealing Ability Damage: Deal 50 (+18%) Damage to the Target and nearby Enemies."
+      },
+      {
+       "name": "Vesh",
+       "kind": "Eternal",
+       "how": "Ability damage dealt to Enemy Heroes deals 7% (+0.4% a minute, about 19.4% by the end) of that damage as a DoT over 3s."
+      },
+      {
+       "name": "Mind Rot",
+       "kind": "Eternal minor",
+       "how": "The major also deals 2% of the target's current health as bonus damage."
+      },
+      {
+       "name": "Ritual Of Death",
+       "kind": "augment",
+       "how": "Curse heals Morigesh for 70%/80%/90% of damage dealt. Takedowns also decrease Curse's Cooldown by 20s."
       }
      ],
      "items": [
@@ -6869,6 +7013,15 @@
        "effects": [
         "On dealing Ability Damage: Deal 50 (+18%) Damage to the Target and nearby Enemies."
        ]
+      },
+      {
+       "slug": "soulbearer",
+       "name": "Soulbearer",
+       "kind": "crest",
+       "power": 30,
+       "pen": 0,
+       "penPct": 0,
+       "effects": []
       }
      ],
      "dealt": {
@@ -6889,13 +7042,23 @@
         "name": "Overseer",
         "kind": "item",
         "how": "Ultimate: Deals 15% more damage. Heals you for 25% of the damage dealt to Heroes."
+       },
+       {
+        "name": "Soulbearer",
+        "kind": "item",
+        "how": "Gain a 100 (+35) (+6%) Shield for 8s. Gain 20% Magical Lifesteal and 10% Movement Speed for 8s."
+       },
+       {
+        "name": "Lich",
+        "kind": "Eternal minor",
+        "how": "Gain 4%/7%/10%/14% Magical Lifesteal at Levels 1/6/11/16."
        }
       ],
       "healing": 14089
      },
      "tough": null
     },
-    "powerLesson": "Morigesh's penetration cut through: Gideon took about 24% more magical damage than their armor alone allows (estimate: at level 17 (estimated) their armor was about 47, about 19 after 28 flat penetration).",
+    "powerLesson": "Morigesh's penetration cut through: Gideon took about 24% more magical damage than their armor alone allows (estimate: at level 16 their armor was about 46, about 18 after 28 flat penetration).",
     "story": {
      "lead": {
       "id": "damage",
@@ -6954,9 +7117,46 @@
          "name": "Combustion",
          "kind": "item",
          "text": "On dealing Ability Damage: Deal 50 (+18%) Damage to the Target and nearby Enemies."
+        },
+        {
+         "name": "Vesh",
+         "kind": "Eternal",
+         "text": "Ability damage dealt to Enemy Heroes deals 7% (+0.4% per minute) of that damage as a DoT over 3s."
+        },
+        {
+         "name": "Mind Rot",
+         "kind": "Eternal minor",
+         "text": "The major also deals 2% of the target's current health as bonus damage."
         }
        ],
-       "text": "2 effects on one trigger: Wraith Leggings, Combustion. Morigesh has 4 damaging abilities (Hive hit an area, so one cast sets them off on several heroes), and 20 ability haste brought them back 17% sooner: more casts, more triggers."
+       "text": "4 effects on one trigger: Wraith Leggings, Combustion, Vesh, Mind Rot. Morigesh has 4 damaging abilities (Hive hit an area, so one cast sets them off on several heroes), and 28 ability haste brought them back 22% sooner: more casts, more triggers."
+      },
+      {
+       "family": "heal",
+       "title": "Healing off the damage",
+       "members": [
+        {
+         "name": "Overseer",
+         "kind": "item",
+         "text": "Enhance your Ultimate Ability: Deals 15% more damage. Heals you for 25% of the damage dealt to Heroes."
+        },
+        {
+         "name": "Soulbearer",
+         "kind": "crest",
+         "text": "Gain a 100 (+35) (+6%) Shield for 8s. Gain 20% Magical Lifesteal and 10% Movement Speed for 8s."
+        },
+        {
+         "name": "Lich",
+         "kind": "Eternal minor",
+         "text": "Gain 4%/7%/10%/14% Magical Lifesteal at Levels 1/6/11/16."
+        },
+        {
+         "name": "Ritual Of Death",
+         "kind": "augment",
+         "text": "Curse heals Morigesh for 70%/80%/90% of damage dealt. Takedowns also decrease Curse's Cooldown by 20s."
+        }
+       ],
+       "text": "4 effects on one trigger: Overseer, Soulbearer, Lich, Ritual Of Death."
       },
       {
        "family": "tough",
@@ -6971,12 +7171,17 @@
          "name": "Overseer",
          "kind": "item",
          "text": "Enhance your Ultimate Ability: Deals 15% more damage. Heals you for 25% of the damage dealt to Heroes."
+        },
+        {
+         "name": "Soulbearer",
+         "kind": "crest",
+         "text": "Gain a 100 (+35) (+6%) Shield for 8s. Gain 20% Magical Lifesteal and 10% Movement Speed for 8s."
         }
        ],
-       "text": "2 effects on one trigger: Astral Catalyst, Overseer. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went."
+       "text": "3 effects on one trigger: Astral Catalyst, Overseer, Soulbearer. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went."
       }
      ],
-     "eternalPart": null,
+     "eternalPart": "The Eternal was part of it: Vesh (Lich + Mind Rot) sits on the same triggers as the items (every ability hit set off; healing off the damage), so the same fights paid out in both damage and staying power.",
      "countered": [
       {
        "ok": false,
@@ -6992,15 +7197,99 @@
       }
      ],
      "copy": {
-      "verdict": "unknown",
-      "text": "Too few Morigesh midlane games with this Eternal or core this patch to say whether it wins elsewhere."
+      "verdict": "standard",
+      "text": "Vesh (Lich + Mind Rot): 47.9% in 3,412 Morigesh midlane games, level with the hero's 48.5%. A standard setup: what made it work was this game, not a secret build."
      }
     },
-    "loadout": []
+    "loadout": [
+     {
+      "kind": "augment",
+      "name": "Ritual Of Death",
+      "text": "Curse heals Morigesh for 70%/80%/90% of damage dealt. Takedowns also decrease Curse's Cooldown by 20s.",
+      "ability": {
+       "name": "Curse",
+       "key": "R",
+       "what": "After a brief channel, Summon a horde of insects to stab the Marked target, dealing 320/450/580 (+80%) magical damage.",
+       "cd": 75,
+       "cdHaste": 58.6
+      },
+      "numbers": [],
+      "field": {
+       "wr": 46.8,
+       "n": 2712,
+       "share": 41,
+       "base": 48.5,
+       "verdict": "below"
+      },
+      "plain": "Curse heals you for most of its damage, and takedowns cut its cooldown. Mark a target, Curse them, and use the heal to stay in the fight."
+     },
+     {
+      "kind": "Eternal",
+      "name": "Vesh",
+      "text": "Ability damage dealt to Enemy Heroes deals 7% (+0.4% per minute) of that damage as a DoT over 3s.",
+      "ability": null,
+      "numbers": [
+       "7% growing 0.4% a minute: about 19.4% by the end (31 min)"
+      ],
+      "field": {
+       "wr": 48.4,
+       "n": 4509,
+       "share": 67,
+       "base": 48.5,
+       "verdict": "level"
+      },
+      "plain": "Ability damage to heroes also adds a short burn. Stacks on top of Pestilence, making Mark, Hive and Swarm hit harder over time."
+     },
+     {
+      "kind": "minor",
+      "name": "Lich",
+      "text": "Gain 4%/7%/10%/14% Magical Lifesteal at Levels 1/6/11/16.",
+      "ability": null,
+      "numbers": [],
+      "field": {
+       "wr": 48.5,
+       "n": 3864,
+       "share": 86,
+       "base": 48.5,
+       "verdict": "level"
+      },
+      "plain": "Magical lifesteal that grows with level. Morigesh deals mostly magic damage, adding to her healing from Mark and Swarm."
+     },
+     {
+      "kind": "minor",
+      "name": "Mind Rot",
+      "text": "The major also deals 2% of the target's current health as bonus damage.",
+      "ability": null,
+      "numbers": [],
+      "field": {
+       "wr": 47.7,
+       "n": 3636,
+       "share": 81,
+       "base": 48.5,
+       "verdict": "level"
+      },
+      "plain": "The Vesh burn also deals damage based on the target's current health. Strongest when opening on healthy targets."
+     },
+     {
+      "kind": "crest",
+      "name": "Soulbearer",
+      "text": "Anima:  Gain a 100 (+35) (+6%) Shield for 8s. Gain 20% Magical Lifesteal and 10% Movement Speed for 8s.",
+      "ability": null,
+      "numbers": [],
+      "field": {
+       "wr": 50.7,
+       "n": 3307,
+       "share": 49,
+       "base": 48.5,
+       "verdict": "above"
+      },
+      "plain": "A shield, magical lifesteal and speed for 8s. Her abilities all deal magic damage, so pop it before Swarm and Curse to heal through the burst."
+     }
+    ]
    },
    "power": {
     "type": "magical",
-    "power": 475,
+    "power": 505,
     "pen": {
      "flat": 28,
      "pct": 0,
@@ -7014,13 +7303,16 @@
      {
       "name": "🎮 private",
       "hero": "Gideon",
-      "armor": 47,
-      "after": 19,
+      "armor": 46,
+      "after": 18,
       "more": 24,
       "diedTo": 5,
-      "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "level": 16,
+      "levelKnown": true,
+      "taken": {
+       "type": 21379,
+       "total": 24697
+      }
      },
      {
       "name": "🎮 private",
@@ -7030,30 +7322,39 @@
       "more": 21,
       "diedTo": 4,
       "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "levelKnown": true,
+      "taken": {
+       "type": 27948,
+       "total": 38299
+      }
      },
      {
       "name": "Iruvinza",
       "hero": "Yin",
-      "armor": 47,
-      "after": 19,
+      "armor": 44,
+      "after": 16,
       "more": 24,
       "diedTo": 3,
-      "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "level": 15,
+      "levelKnown": true,
+      "taken": {
+       "type": 16682,
+       "total": 23488
+      }
      },
      {
       "name": "Willy Guggenheim",
       "hero": "Riktor",
-      "armor": 100,
-      "after": 72,
-      "more": 16,
+      "armor": 95,
+      "after": 67,
+      "more": 17,
       "diedTo": 2,
-      "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "level": 15,
+      "levelKnown": true,
+      "taken": {
+       "type": 18202,
+       "total": 30087
+      }
      },
      {
       "name": "🎮 private",
@@ -7063,8 +7364,11 @@
       "more": 23,
       "diedTo": 0,
       "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "levelKnown": true,
+      "taken": {
+       "type": 5563,
+       "total": 17216
+      }
      }
     ],
     "level": 17,
@@ -7088,6 +7392,21 @@
       "name": "Combustion",
       "kind": "item",
       "how": "On dealing Ability Damage: Deal 50 (+18%) Damage to the Target and nearby Enemies."
+     },
+     {
+      "name": "Vesh",
+      "kind": "Eternal",
+      "how": "Ability damage dealt to Enemy Heroes deals 7% (+0.4% a minute, about 19.4% by the end) of that damage as a DoT over 3s."
+     },
+     {
+      "name": "Mind Rot",
+      "kind": "Eternal minor",
+      "how": "The major also deals 2% of the target's current health as bonus damage."
+     },
+     {
+      "name": "Ritual Of Death",
+      "kind": "augment",
+      "how": "Curse heals Morigesh for 70%/80%/90% of damage dealt. Takedowns also decrease Curse's Cooldown by 20s."
      }
     ],
     "items": [
@@ -7143,6 +7462,15 @@
       "effects": [
        "On dealing Ability Damage: Deal 50 (+18%) Damage to the Target and nearby Enemies."
       ]
+     },
+     {
+      "slug": "soulbearer",
+      "name": "Soulbearer",
+      "kind": "crest",
+      "power": 30,
+      "pen": 0,
+      "penPct": 0,
+      "effects": []
      }
     ],
     "dealt": {
@@ -7163,6 +7491,16 @@
        "name": "Overseer",
        "kind": "item",
        "how": "Ultimate: Deals 15% more damage. Heals you for 25% of the damage dealt to Heroes."
+      },
+      {
+       "name": "Soulbearer",
+       "kind": "item",
+       "how": "Gain a 100 (+35) (+6%) Shield for 8s. Gain 20% Magical Lifesteal and 10% Movement Speed for 8s."
+      },
+      {
+       "name": "Lich",
+       "kind": "Eternal minor",
+       "how": "Gain 4%/7%/10%/14% Magical Lifesteal at Levels 1/6/11/16."
       }
      ],
      "healing": 14089
@@ -7227,9 +7565,46 @@
         "name": "Combustion",
         "kind": "item",
         "text": "On dealing Ability Damage: Deal 50 (+18%) Damage to the Target and nearby Enemies."
+       },
+       {
+        "name": "Vesh",
+        "kind": "Eternal",
+        "text": "Ability damage dealt to Enemy Heroes deals 7% (+0.4% per minute) of that damage as a DoT over 3s."
+       },
+       {
+        "name": "Mind Rot",
+        "kind": "Eternal minor",
+        "text": "The major also deals 2% of the target's current health as bonus damage."
        }
       ],
-      "text": "2 effects on one trigger: Wraith Leggings, Combustion. Morigesh has 4 damaging abilities (Hive hit an area, so one cast sets them off on several heroes), and 20 ability haste brought them back 17% sooner: more casts, more triggers."
+      "text": "4 effects on one trigger: Wraith Leggings, Combustion, Vesh, Mind Rot. Morigesh has 4 damaging abilities (Hive hit an area, so one cast sets them off on several heroes), and 28 ability haste brought them back 22% sooner: more casts, more triggers."
+     },
+     {
+      "family": "heal",
+      "title": "Healing off the damage",
+      "members": [
+       {
+        "name": "Overseer",
+        "kind": "item",
+        "text": "Enhance your Ultimate Ability: Deals 15% more damage. Heals you for 25% of the damage dealt to Heroes."
+       },
+       {
+        "name": "Soulbearer",
+        "kind": "crest",
+        "text": "Gain a 100 (+35) (+6%) Shield for 8s. Gain 20% Magical Lifesteal and 10% Movement Speed for 8s."
+       },
+       {
+        "name": "Lich",
+        "kind": "Eternal minor",
+        "text": "Gain 4%/7%/10%/14% Magical Lifesteal at Levels 1/6/11/16."
+       },
+       {
+        "name": "Ritual Of Death",
+        "kind": "augment",
+        "text": "Curse heals Morigesh for 70%/80%/90% of damage dealt. Takedowns also decrease Curse's Cooldown by 20s."
+       }
+      ],
+      "text": "4 effects on one trigger: Overseer, Soulbearer, Lich, Ritual Of Death."
      },
      {
       "family": "tough",
@@ -7244,12 +7619,17 @@
         "name": "Overseer",
         "kind": "item",
         "text": "Enhance your Ultimate Ability: Deals 15% more damage. Heals you for 25% of the damage dealt to Heroes."
+       },
+       {
+        "name": "Soulbearer",
+        "kind": "crest",
+        "text": "Gain a 100 (+35) (+6%) Shield for 8s. Gain 20% Magical Lifesteal and 10% Movement Speed for 8s."
        }
       ],
-      "text": "2 effects on one trigger: Astral Catalyst, Overseer. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went."
+      "text": "3 effects on one trigger: Astral Catalyst, Overseer, Soulbearer. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went."
      }
     ],
-    "eternalPart": null,
+    "eternalPart": "The Eternal was part of it: Vesh (Lich + Mind Rot) sits on the same triggers as the items (every ability hit set off; healing off the damage), so the same fights paid out in both damage and staying power.",
     "countered": [
      {
       "ok": false,
@@ -7265,8 +7645,8 @@
      }
     ],
     "copy": {
-     "verdict": "unknown",
-     "text": "Too few Morigesh midlane games with this Eternal or core this patch to say whether it wins elsewhere."
+     "verdict": "standard",
+     "text": "Vesh (Lich + Mind Rot): 47.9% in 3,412 Morigesh midlane games, level with the hero's 48.5%. A standard setup: what made it work was this game, not a secret build."
     }
    },
    "us": false,
@@ -7281,23 +7661,107 @@
    "hero": "Shinbi",
    "slug": "shinbi",
    "takedowns": 7,
-   "loadout": [],
+   "loadout": [
+    {
+     "kind": "augment",
+     "name": "Crescendo",
+     "text": "Shinbi’s final Basic Attack within her chain deals Magical Damage and 15 (+35%)(+30%) bonus damage.",
+     "ability": null,
+     "numbers": [],
+     "field": {
+      "wr": 52.8,
+      "n": 1786,
+      "share": 24,
+      "base": 50.8,
+      "verdict": "above"
+     },
+     "plain": "Your last basic attack in the chain hits harder as magic damage, rewarding weaving basic attacks between abilities in lane trades instead of pure ability spam."
+    },
+    {
+     "kind": "Eternal",
+     "name": "Pilow",
+     "text": "Decrease your size by 10%. Upon casting an ability, nearby enemy Heroes within 600 units are debuffed, dealing 4% decreased damage for 3.5s, stacking up to 3 times.",
+     "ability": null,
+     "numbers": [],
+     "field": {
+      "wr": 51.5,
+      "n": 338,
+      "share": 4,
+      "base": 50.8,
+      "verdict": "level"
+     },
+     "plain": "Every ability cast makes enemy heroes within 600 units deal 4% less damage for 3.5s, stacking up to 3 times. Chaining Rushing Beat, Line Tempo and Circle Rhythm in a dive keeps all 3 stacks up."
+    },
+    {
+     "kind": "minor",
+     "name": "Harmonic Currents",
+     "text": "Casting an ability restores 2.5% of your Missing Health and Missing Mana over 3s (1 tick on cast, then 3 once a second).",
+     "ability": null,
+     "numbers": [],
+     "field": {
+      "wr": 52.2,
+      "n": 268,
+      "share": 79,
+      "base": 50.8,
+      "verdict": "above"
+     },
+     "plain": "Each ability cast restores 2.5% of Shinbi's missing health and missing mana over 3s. Frequent Line Tempo casts keep Shinbi topped up in lane, and the refill grows the lower Shinbi's health and mana are."
+    },
+    {
+     "kind": "minor",
+     "name": "Neurotoxin",
+     "text": "Pilow additionally increases damage enemies take by 1.5% per stack.",
+     "ability": null,
+     "numbers": [],
+     "field": {
+      "wr": 50.6,
+      "n": 231,
+      "share": 68,
+      "base": 50.8,
+      "verdict": "level"
+     }
+    },
+    {
+     "kind": "crest",
+     "name": "Obelisk",
+     "text": "Condemn:  Enhanced Basic Attack. Deal 50 (+15%) Damage. If the Target dies within 3s, collect a Soul. Damage increases by 6 for each Soul collected. Soul Stealer:  Souls collected grant 1 Magical Power.",
+     "ability": null,
+     "numbers": [],
+     "field": {
+      "wr": 52.9,
+      "n": 546,
+      "share": 7,
+      "base": 50.8,
+      "verdict": "above"
+     },
+     "plain": "An empowered basic attack you use to finish low targets. Securing kills grows its damage and your magic power over the game, so it rewards a snowballing assassin."
+    }
+   ],
    "haste": {
     "sources": [
      {
       "what": "Prophecy",
       "amount": 15,
+      "note": "bought at 6:15",
       "kind": "item",
-      "how": "+15 ability haste"
+      "how": "+15 ability haste, bought at 6:15"
      },
      {
       "what": "Magnify",
       "amount": 15,
+      "note": "bought at 13:20",
       "kind": "item",
-      "how": "+15 ability haste"
+      "how": "+15 ability haste, bought at 13:20"
+     },
+     {
+      "what": "Obelisk",
+      "amount": 8,
+      "note": "crest",
+      "kind": "crest",
+      "how": "+8 ability haste"
      }
     ],
-    "total": 30,
+    "total": 38,
     "fightBonus": null,
     "ultOnly": 0
    },
@@ -7305,32 +7769,42 @@
     "name": "All-Kill!",
     "base": 85,
     "rank": 3,
-    "rankKnown": false,
-    "endGame": 65.4,
+    "rankKnown": true,
+    "endGame": 61.6,
     "inFight": null
    },
    "fedBy": [],
    "ultPlus": [],
    "lines": [
-    "Lead story: Damage well above normal. 1,590 hero damage a minute, more than 92% of Shinbi offlane players this patch (48% of the team's). The damage came from Prophecy, Combustion.",
-    "All-Kill! at top rank: 85s base, about 65.4s by the end (23% shorter) from 30 ability haste: Prophecy 15, Magnify 15.",
+    "Lead story: Damage well above normal. 1,590 hero damage a minute, more than 92% of Shinbi offlane players this patch (48% of the team's). The damage came from Prophecy, Combustion, Obelisk.",
+    "All-Kill! at rank 3: 85s base, about 61.6s by the end (28% shorter) from 38 ability haste: Prophecy 15, Magnify 15, Obelisk 8.",
     "Their build heals off damage: anti-heal (the Tainted items) cuts it.",
-    "Shinbi dealt 49,305 hero damage, 48% of their team's, with +340 magical power from items.",
-    "Penetration: Combustion 9; against Steel (level 17 estimated: about 100 magical armor, 91 after penetration) and Skylar (level 17 estimated: about 47 magical armor, 38 after penetration) that is about 5% and 7% more damage (estimate: percent penetration taken before flat).",
+    "Shinbi dealt 49,305 hero damage, 48% of their team's, with +370 magical power from items.",
+    "Penetration: Combustion 9; against Steel (level 17: about 100 magical armor, 91 after penetration; took 24,737 magical damage from heroes, 82% of all hero damage they took) and Skylar (level 17: about 47 magical armor, 38 after penetration; took 6,088 magical damage from heroes, 38% of all hero damage they took) that is about 5% and 7% more damage (estimate: percent penetration taken before flat).",
     "Prophecy (item): On Basic Attacks: Deal 20 (+15%) Damage On-Hit.",
     "Combustion (item): On dealing Ability Damage: Deal 50 (+18%) Damage to the Target and nearby Enemies.",
+    "Obelisk (crest): Enhanced Basic Attack. Deal 50 (+15%) Damage. If the Target dies within 3s, collect a Soul. Damage increases by 6 for each Soul collected.",
+    "Pilow (Eternal): Decrease your size by 10%. Upon casting an ability, nearby enemy Heroes within 600 units are debuffed, dealing 4% decreased damage for 3.5s, stacking up to 3 times.",
+    "Neurotoxin (Eternal minor): Pilow additionally increases damage enemies take by 1.5% per stack.",
+    "Crescendo (augment): Shinbi’s final Basic Attack within her chain deals Magical Damage and 15 (+35%)(+30%) bonus damage.",
     "Sustain: 8% omnivamp; 5,531 healing recorded.",
-    "Toughness: +300 health; took 56,182 damage, mitigated 47,014, died 9 times.",
+    "Toughness: +400 health; took 56,182 damage, mitigated 47,014, died 9 times.",
+    "Loadout augment Crescendo: Your last basic attack in the chain hits harder as magic damage, rewarding weaving basic attacks between abilities in lane trades instead of pure ability spam. (game text: Shinbi’s final Basic Attack within her chain deals Magical Damage and 15 (+35%)(+30%) bonus damage.) Field: 52.8% in 1786 games, 24% of picks, above the hero-role's 50.8%.",
+    "Loadout Eternal Pilow: Every ability cast makes enemy heroes within 600 units deal 4% less damage for 3.5s, stacking up to 3 times. Chaining Rushing Beat, Line Tempo and Circle Rhythm in a dive keeps all 3 stacks up. (game text: Decrease your size by 10%. Upon casting an ability, nearby enemy Heroes within 600 units are debuffed, dealing 4% decreased damage for 3.5s, stacking up to 3 times.) Field: 51.5% in 338 games, 4% of picks, level the hero-role's 50.8%.",
+    "Loadout minor Harmonic Currents: Each ability cast restores 2.5% of Shinbi's missing health and missing mana over 3s. Frequent Line Tempo casts keep Shinbi topped up in lane, and the refill grows the lower Shinbi's health and mana are. (game text: Casting an ability restores 2.5% of your Missing Health and Missing Mana over 3s (1 tick on cast, then 3 once a second).) Field: 52.2% in 268 games, 79% of picks, above the hero-role's 50.8%.",
+    "Loadout minor Neurotoxin: Pilow additionally increases damage enemies take by 1.5% per stack. Field: 50.6% in 231 games, 68% of picks, level the hero-role's 50.8%.",
+    "Loadout crest Obelisk: An empowered basic attack you use to finish low targets. Securing kills grows its damage and your magic power over the game, so it rewards a snowballing assassin. (game text: Condemn:  Enhanced Basic Attack. Deal 50 (+15%) Damage. If the Target dies within 3s, collect a Soul. Damage increases by 6 for each Soul collected. Soul Stealer:  Souls collected grant 1 Magical Power.) Field: 52.9% in 546 games, 7% of picks, above the hero-role's 50.8%.",
+    "Stack (Every basic attack set off): 3 effects on one trigger: Prophecy, Obelisk, Crescendo.",
     "Countered? 1 of the 2 players Shinbi killed built magical armor (Steel). We killed Shinbi 9 times.",
-    "Copy it? Too few Shinbi offlane games with this Eternal or core this patch to say whether it wins elsewhere."
+    "Copy it? Pilow (Harmonic Currents + Neurotoxin): 52.8% in 178 Shinbi offlane games, above the hero's 50.8%. Proven this patch: worth copying."
    ],
    "card": {
     "ult": {
      "name": "All-Kill!",
      "base": 85,
      "rank": 3,
-     "rankKnown": false,
-     "endGame": 65.4,
+     "rankKnown": true,
+     "endGame": 61.6,
      "inFight": null
     },
     "takedowns": {
@@ -7339,26 +7813,32 @@
      "assists": 2
     },
     "heals": true,
-    "lesson": null,
+    "lesson": "All-Kill! came back about every 62s instead of 85s by the end (28% shorter). Count it, and take fights while it is down.",
     "haste": [
      {
       "name": "Prophecy",
       "kind": "item",
       "amount": 15,
-      "how": "+15 ability haste"
+      "how": "+15 ability haste, bought at 6:15"
      },
      {
       "name": "Magnify",
       "kind": "item",
       "amount": 15,
-      "how": "+15 ability haste"
+      "how": "+15 ability haste, bought at 13:20"
+     },
+     {
+      "name": "Obelisk",
+      "kind": "crest",
+      "amount": 8,
+      "how": "+8 ability haste"
      }
     ],
     "fight": null,
     "extras": [],
     "power": {
      "type": "magical",
-     "power": 340,
+     "power": 370,
      "pen": {
       "flat": 9,
       "pct": 0,
@@ -7375,8 +7855,11 @@
        "more": 5,
        "diedTo": 4,
        "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "levelKnown": true,
+       "taken": {
+        "type": 24737,
+        "total": 30136
+       }
       },
       {
        "name": "ratdreamflores",
@@ -7386,30 +7869,39 @@
        "more": 7,
        "diedTo": 1,
        "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "levelKnown": true,
+       "taken": {
+        "type": 6088,
+        "total": 16108
+       }
       },
       {
        "name": "🎮 private",
        "hero": "Morigesh",
-       "armor": 47,
-       "after": 38,
-       "more": 7,
+       "armor": 49,
+       "after": 40,
+       "more": 6,
        "diedTo": 0,
-       "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "level": 18,
+       "levelKnown": true,
+       "taken": {
+        "type": 13104,
+        "total": 21141
+       }
       },
       {
        "name": "KingSpring",
        "hero": "Aurora",
-       "armor": 100,
-       "after": 91,
+       "armor": 98,
+       "after": 89,
        "more": 5,
        "diedTo": 0,
-       "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "level": 16,
+       "levelKnown": true,
+       "taken": {
+        "type": 6540,
+        "total": 14312
+       }
       },
       {
        "name": "*paws at you*",
@@ -7419,8 +7911,11 @@
        "more": 5,
        "diedTo": 0,
        "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "levelKnown": true,
+       "taken": {
+        "type": 16486,
+        "total": 20384
+       }
       }
      ],
      "level": 17,
@@ -7434,6 +7929,26 @@
        "name": "Combustion",
        "kind": "item",
        "how": "On dealing Ability Damage: Deal 50 (+18%) Damage to the Target and nearby Enemies."
+      },
+      {
+       "name": "Obelisk",
+       "kind": "crest",
+       "how": "Enhanced Basic Attack. Deal 50 (+15%) Damage. If the Target dies within 3s, collect a Soul. Damage increases by 6 for each Soul collected."
+      },
+      {
+       "name": "Pilow",
+       "kind": "Eternal",
+       "how": "Decrease your size by 10%. Upon casting an ability, nearby enemy Heroes within 600 units are debuffed, dealing 4% decreased damage for 3.5s, stacking up to 3 times."
+      },
+      {
+       "name": "Neurotoxin",
+       "kind": "Eternal minor",
+       "how": "Pilow additionally increases damage enemies take by 1.5% per stack."
+      },
+      {
+       "name": "Crescendo",
+       "kind": "augment",
+       "how": "Shinbi’s final Basic Attack within her chain deals Magical Damage and 15 (+35%)(+30%) bonus damage."
       }
      ],
      "items": [
@@ -7476,6 +7991,17 @@
        "pen": 0,
        "penPct": 0,
        "effects": []
+      },
+      {
+       "slug": "obelisk",
+       "name": "Obelisk",
+       "kind": "crest",
+       "power": 30,
+       "pen": 0,
+       "penPct": 0,
+       "effects": [
+        "Enhanced Basic Attack. Deal 50 (+15%) Damage. If the Target dies within 3s, collect a Soul. Damage increases by 6 for each Soul collected."
+       ]
       }
      ],
      "dealt": {
@@ -7491,7 +8017,7 @@
      },
      "tough": {
       "stats": [
-       "+300 health"
+       "+400 health"
       ],
       "taken": 56182,
       "mitigated": 47014,
@@ -7503,7 +8029,7 @@
      "lead": {
       "id": "damage",
       "title": "Damage well above normal",
-      "text": "1,590 hero damage a minute, more than 92% of Shinbi offlane players this patch (48% of the team's). The damage came from Prophecy, Combustion."
+      "text": "1,590 hero damage a minute, more than 92% of Shinbi offlane players this patch (48% of the team's). The damage came from Prophecy, Combustion, Obelisk."
      },
      "tabs": [
       "damage",
@@ -7543,7 +8069,30 @@
      "normN": 3676
     },
     "worked": {
-     "stacks": [],
+     "stacks": [
+      {
+       "family": "attack",
+       "title": "Every basic attack set off",
+       "members": [
+        {
+         "name": "Prophecy",
+         "kind": "item",
+         "text": "On Basic Attacks: Deal 20 (+15%) Damage On-Hit."
+        },
+        {
+         "name": "Obelisk",
+         "kind": "crest",
+         "text": "Enhanced Basic Attack. Deal 50 (+15%) Damage. If the Target dies within 3s, collect a Soul. Damage increases by 6 for each Soul collected."
+        },
+        {
+         "name": "Crescendo",
+         "kind": "augment",
+         "text": "Shinbi’s final Basic Attack within her chain deals Magical Damage and 15 (+35%)(+30%) bonus damage."
+        }
+       ],
+       "text": "3 effects on one trigger: Prophecy, Obelisk, Crescendo."
+      }
+     ],
      "eternalPart": null,
      "countered": [
       {
@@ -7556,15 +8105,90 @@
       }
      ],
      "copy": {
-      "verdict": "unknown",
-      "text": "Too few Shinbi offlane games with this Eternal or core this patch to say whether it wins elsewhere."
+      "verdict": "proven",
+      "text": "Pilow (Harmonic Currents + Neurotoxin): 52.8% in 178 Shinbi offlane games, above the hero's 50.8%. Proven this patch: worth copying."
      }
     },
-    "loadout": []
+    "loadout": [
+     {
+      "kind": "augment",
+      "name": "Crescendo",
+      "text": "Shinbi’s final Basic Attack within her chain deals Magical Damage and 15 (+35%)(+30%) bonus damage.",
+      "ability": null,
+      "numbers": [],
+      "field": {
+       "wr": 52.8,
+       "n": 1786,
+       "share": 24,
+       "base": 50.8,
+       "verdict": "above"
+      },
+      "plain": "Your last basic attack in the chain hits harder as magic damage, rewarding weaving basic attacks between abilities in lane trades instead of pure ability spam."
+     },
+     {
+      "kind": "Eternal",
+      "name": "Pilow",
+      "text": "Decrease your size by 10%. Upon casting an ability, nearby enemy Heroes within 600 units are debuffed, dealing 4% decreased damage for 3.5s, stacking up to 3 times.",
+      "ability": null,
+      "numbers": [],
+      "field": {
+       "wr": 51.5,
+       "n": 338,
+       "share": 4,
+       "base": 50.8,
+       "verdict": "level"
+      },
+      "plain": "Every ability cast makes enemy heroes within 600 units deal 4% less damage for 3.5s, stacking up to 3 times. Chaining Rushing Beat, Line Tempo and Circle Rhythm in a dive keeps all 3 stacks up."
+     },
+     {
+      "kind": "minor",
+      "name": "Harmonic Currents",
+      "text": "Casting an ability restores 2.5% of your Missing Health and Missing Mana over 3s (1 tick on cast, then 3 once a second).",
+      "ability": null,
+      "numbers": [],
+      "field": {
+       "wr": 52.2,
+       "n": 268,
+       "share": 79,
+       "base": 50.8,
+       "verdict": "above"
+      },
+      "plain": "Each ability cast restores 2.5% of Shinbi's missing health and missing mana over 3s. Frequent Line Tempo casts keep Shinbi topped up in lane, and the refill grows the lower Shinbi's health and mana are."
+     },
+     {
+      "kind": "minor",
+      "name": "Neurotoxin",
+      "text": "Pilow additionally increases damage enemies take by 1.5% per stack.",
+      "ability": null,
+      "numbers": [],
+      "field": {
+       "wr": 50.6,
+       "n": 231,
+       "share": 68,
+       "base": 50.8,
+       "verdict": "level"
+      }
+     },
+     {
+      "kind": "crest",
+      "name": "Obelisk",
+      "text": "Condemn:  Enhanced Basic Attack. Deal 50 (+15%) Damage. If the Target dies within 3s, collect a Soul. Damage increases by 6 for each Soul collected. Soul Stealer:  Souls collected grant 1 Magical Power.",
+      "ability": null,
+      "numbers": [],
+      "field": {
+       "wr": 52.9,
+       "n": 546,
+       "share": 7,
+       "base": 50.8,
+       "verdict": "above"
+      },
+      "plain": "An empowered basic attack you use to finish low targets. Securing kills grows its damage and your magic power over the game, so it rewards a snowballing assassin."
+     }
+    ]
    },
    "power": {
     "type": "magical",
-    "power": 340,
+    "power": 370,
     "pen": {
      "flat": 9,
      "pct": 0,
@@ -7581,8 +8205,11 @@
       "more": 5,
       "diedTo": 4,
       "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "levelKnown": true,
+      "taken": {
+       "type": 24737,
+       "total": 30136
+      }
      },
      {
       "name": "ratdreamflores",
@@ -7592,30 +8219,39 @@
       "more": 7,
       "diedTo": 1,
       "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "levelKnown": true,
+      "taken": {
+       "type": 6088,
+       "total": 16108
+      }
      },
      {
       "name": "🎮 private",
       "hero": "Morigesh",
-      "armor": 47,
-      "after": 38,
-      "more": 7,
+      "armor": 49,
+      "after": 40,
+      "more": 6,
       "diedTo": 0,
-      "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "level": 18,
+      "levelKnown": true,
+      "taken": {
+       "type": 13104,
+       "total": 21141
+      }
      },
      {
       "name": "KingSpring",
       "hero": "Aurora",
-      "armor": 100,
-      "after": 91,
+      "armor": 98,
+      "after": 89,
       "more": 5,
       "diedTo": 0,
-      "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "level": 16,
+      "levelKnown": true,
+      "taken": {
+       "type": 6540,
+       "total": 14312
+      }
      },
      {
       "name": "*paws at you*",
@@ -7625,8 +8261,11 @@
       "more": 5,
       "diedTo": 0,
       "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "levelKnown": true,
+      "taken": {
+       "type": 16486,
+       "total": 20384
+      }
      }
     ],
     "level": 17,
@@ -7640,6 +8279,26 @@
       "name": "Combustion",
       "kind": "item",
       "how": "On dealing Ability Damage: Deal 50 (+18%) Damage to the Target and nearby Enemies."
+     },
+     {
+      "name": "Obelisk",
+      "kind": "crest",
+      "how": "Enhanced Basic Attack. Deal 50 (+15%) Damage. If the Target dies within 3s, collect a Soul. Damage increases by 6 for each Soul collected."
+     },
+     {
+      "name": "Pilow",
+      "kind": "Eternal",
+      "how": "Decrease your size by 10%. Upon casting an ability, nearby enemy Heroes within 600 units are debuffed, dealing 4% decreased damage for 3.5s, stacking up to 3 times."
+     },
+     {
+      "name": "Neurotoxin",
+      "kind": "Eternal minor",
+      "how": "Pilow additionally increases damage enemies take by 1.5% per stack."
+     },
+     {
+      "name": "Crescendo",
+      "kind": "augment",
+      "how": "Shinbi’s final Basic Attack within her chain deals Magical Damage and 15 (+35%)(+30%) bonus damage."
      }
     ],
     "items": [
@@ -7682,6 +8341,17 @@
       "pen": 0,
       "penPct": 0,
       "effects": []
+     },
+     {
+      "slug": "obelisk",
+      "name": "Obelisk",
+      "kind": "crest",
+      "power": 30,
+      "pen": 0,
+      "penPct": 0,
+      "effects": [
+       "Enhanced Basic Attack. Deal 50 (+15%) Damage. If the Target dies within 3s, collect a Soul. Damage increases by 6 for each Soul collected."
+      ]
      }
     ],
     "dealt": {
@@ -7697,7 +8367,7 @@
     },
     "tough": {
      "stats": [
-      "+300 health"
+      "+400 health"
      ],
      "taken": 56182,
      "mitigated": 47014,
@@ -7708,7 +8378,7 @@
     "lead": {
      "id": "damage",
      "title": "Damage well above normal",
-     "text": "1,590 hero damage a minute, more than 92% of Shinbi offlane players this patch (48% of the team's). The damage came from Prophecy, Combustion."
+     "text": "1,590 hero damage a minute, more than 92% of Shinbi offlane players this patch (48% of the team's). The damage came from Prophecy, Combustion, Obelisk."
     },
     "tabs": [
      "damage",
@@ -7748,7 +8418,30 @@
     "normN": 3676
    },
    "worked": {
-    "stacks": [],
+    "stacks": [
+     {
+      "family": "attack",
+      "title": "Every basic attack set off",
+      "members": [
+       {
+        "name": "Prophecy",
+        "kind": "item",
+        "text": "On Basic Attacks: Deal 20 (+15%) Damage On-Hit."
+       },
+       {
+        "name": "Obelisk",
+        "kind": "crest",
+        "text": "Enhanced Basic Attack. Deal 50 (+15%) Damage. If the Target dies within 3s, collect a Soul. Damage increases by 6 for each Soul collected."
+       },
+       {
+        "name": "Crescendo",
+        "kind": "augment",
+        "text": "Shinbi’s final Basic Attack within her chain deals Magical Damage and 15 (+35%)(+30%) bonus damage."
+       }
+      ],
+      "text": "3 effects on one trigger: Prophecy, Obelisk, Crescendo."
+     }
+    ],
     "eternalPart": null,
     "countered": [
      {
@@ -7761,8 +8454,8 @@
      }
     ],
     "copy": {
-     "verdict": "unknown",
-     "text": "Too few Shinbi offlane games with this Eternal or core this patch to say whether it wins elsewhere."
+     "verdict": "proven",
+     "text": "Pilow (Harmonic Currents + Neurotoxin): 52.8% in 178 Shinbi offlane games, above the hero's 50.8%. Proven this patch: worth copying."
     }
    },
    "us": true,
@@ -7775,35 +8468,130 @@
    "hero": "Kwang",
    "slug": "kwang",
    "takedowns": 16,
-   "loadout": [],
+   "loadout": [
+    {
+     "kind": "augment",
+     "name": "Slayer of the Heavens",
+     "text": "Strike of the Heavens deals 25% more damage and reduces Cooldowns by 25% more.",
+     "ability": {
+      "name": "Strike of the Heavens",
+      "key": "Passive",
+      "what": "When Kwang damages an Enemy with an ability his Heavenly Blade becomes Energized with electricity for 4s, stacking up to 3 times.",
+      "cd": null,
+      "cdHaste": null
+     },
+     "numbers": [],
+     "field": {
+      "wr": 46.8,
+      "n": 3854,
+      "share": 86,
+      "base": 47,
+      "verdict": "level"
+     },
+     "plain": "Your energized lightning basic attacks hit harder and cut your cooldowns more. Weave a basic attack after every ability so Judgement and Surge come back faster."
+    },
+    {
+     "kind": "Eternal",
+     "name": "Vesh",
+     "text": "Ability damage dealt to Enemy Heroes deals 7% (+0.4% per minute) of that damage as a DoT over 3s.",
+     "ability": null,
+     "numbers": [
+      "7% growing 0.4% a minute: about 19.4% by the end (31 min)"
+     ],
+     "field": {
+      "wr": 44.9,
+      "n": 2172,
+      "share": 49,
+      "base": 47,
+      "verdict": "below"
+     },
+     "plain": "Every ability hit leaves a short burn. Judgement, Light of the Heavens, Surge and Fury of the Heavens all add extra damage after the combo lands."
+    },
+    {
+     "kind": "minor",
+     "name": "Lich",
+     "text": "Gain 4%/7%/10%/14% Magical Lifesteal at Levels 1/6/11/16.",
+     "ability": null,
+     "numbers": [],
+     "field": {
+      "wr": 44.7,
+      "n": 2014,
+      "share": 93,
+      "base": 47,
+      "verdict": "below"
+     },
+     "plain": "Magic lifesteal that grows with level. Judgement, Fury, Light of the Heavens while holding the Blade and his lightning strikes deal magic damage, so trading in lane keeps you topped up."
+    },
+    {
+     "kind": "minor",
+     "name": "Millennia",
+     "text": "Every 60s, increase your Ultimate Ability Damage by 0.75%.",
+     "ability": null,
+     "numbers": [],
+     "field": {
+      "wr": 43.4,
+      "n": 1407,
+      "share": 65,
+      "base": 47,
+      "verdict": "below"
+     },
+     "plain": "Your ultimate's damage slowly grows over the game. A small late-game boost to Fury of the Heavens; nothing else changes."
+    },
+    {
+     "kind": "crest",
+     "name": "Tempest",
+     "text": "Overcharge:  Deal 15 (+15%) Damage to 3 nearby Heroes every second for 7s. Heal equal to 35% of the damage dealt. Additional hits against the same Target deal 20% Damage.",
+     "ability": null,
+     "numbers": [],
+     "field": {
+      "wr": 46.9,
+      "n": 1732,
+      "share": 39,
+      "base": 47,
+      "verdict": "level"
+     },
+     "plain": "Zaps up to 3 nearby heroes every second and heals you. Pop it as you dive in with Surge of the Heavens to help you survive in the middle of a fight."
+    }
+   ],
    "haste": {
     "sources": [
      {
       "what": "Spirit Of Amir",
       "amount": 10,
+      "note": "bought at 8:18",
       "kind": "item",
-      "how": "+10 ability haste"
+      "how": "+10 ability haste, bought at 8:18"
      },
      {
       "what": "Gaussian Greaves",
       "amount": 10,
+      "note": "bought at 17:27",
       "kind": "item",
-      "how": "+10 ability haste"
+      "how": "+10 ability haste, bought at 17:27"
      },
      {
       "what": "Prophecy",
       "amount": 15,
+      "note": "bought at 26:58",
       "kind": "item",
-      "how": "+15 ability haste"
+      "how": "+15 ability haste, bought at 26:58"
      },
      {
       "what": "Flux Matrix",
       "amount": 15,
+      "note": "bought at 28:23",
       "kind": "item",
-      "how": "+15 ability haste"
+      "how": "+15 ability haste, bought at 28:23"
+     },
+     {
+      "what": "Tempest",
+      "amount": 8,
+      "note": "crest",
+      "kind": "crest",
+      "how": "+8 ability haste"
      }
     ],
-    "total": 50,
+    "total": 58,
     "fightBonus": null,
     "ultOnly": 0
    },
@@ -7811,32 +8599,45 @@
     "name": "Fury of the Heavens",
     "base": 85,
     "rank": 3,
-    "rankKnown": false,
-    "endGame": 56.7,
+    "rankKnown": true,
+    "endGame": 53.8,
     "inFight": null
    },
    "fedBy": [],
    "ultPlus": [],
    "lines": [
-    "Lead story: Hard to kill. Died 1 time in 31 minutes, fewer deaths than about 90% of Kwang jungle players this patch. The build added health and armor.",
-    "Fury of the Heavens at top rank: 85s base, about 56.7s by the end (33% shorter) from 50 ability haste: Spirit Of Amir 10, Gaussian Greaves 10, Prophecy 15, Flux Matrix 15.",
-    "Kwang dealt 27,687 hero damage, 21% of their team's, with +210 magical power from items.",
-    "Penetration: Spirit Of Amir 7; against Shinbi (level 17 estimated: about 60 magical armor, 53 after penetration) and Yin (level 17 estimated: about 47 magical armor, 40 after penetration) that is about 5% and 5% more damage (estimate: percent penetration taken before flat).",
+    "Lead story: Hard to kill. Died 1 time in 31 minutes, fewer deaths than about 90% of Kwang jungle players this patch. The build added health and armor and healing off damage.",
+    "Fury of the Heavens at rank 3: 85s base, about 53.8s by the end (37% shorter) from 58 ability haste: Spirit Of Amir 10, Gaussian Greaves 10, Prophecy 15, Flux Matrix 15, Tempest 8.",
+    "Kwang dealt 27,687 hero damage, 21% of their team's, with +240 magical power from items.",
+    "Penetration: Spirit Of Amir 7; against Shinbi (level 17: about 60 magical armor, 53 after penetration; took 27,948 magical damage from heroes, 73% of all hero damage they took) and Yin (level 15: about 44 magical armor, 37 after penetration; took 16,682 magical damage from heroes, 71% of all hero damage they took) that is about 5% and 5% more damage (estimate: percent penetration taken before flat).",
     "Spirit Of Amir (item): Abilities deal 12% more damage to Monsters.",
     "Gaussian Greaves (item): Gain the ability to Double Jump while mid-air. After Double Jumping, emit a shockwave upon landing. Deals 100 (+50%) Damage. Slows by 40% for 1.25s.",
     "Prophecy (item): On Basic Attacks: Deal 20 (+15%) Damage On-Hit.",
     "Flux Matrix (item): Nearby Enemy Heroes: Take 10% additional Magical Damage. Have their Tenacity decreased by 50%.",
-    "Toughness: +700 health, +35 physical armor, +45 magical armor; took 47,757 damage, mitigated 45,785, died 1 times.",
+    "Tempest (crest): Deal 15 (+15%) Damage to 3 nearby Heroes every second for 7s. Heal equal to 35% of the damage dealt. Additional hits against the same Target deal 20% Damage.",
+    "Vesh (Eternal): Ability damage dealt to Enemy Heroes deals 7% (+0.4% a minute, about 19.4% by the end) of that damage as a DoT over 3s.",
+    "Millennia (Eternal minor): Every 60s, increase your Ultimate Ability Damage by 0.75%.",
+    "Slayer of the Heavens (augment): Strike of the Heavens deals 25% more damage and reduces Cooldowns by 25% more.",
+    "Sustain: Tempest: Deal 15 (+15%) Damage to 3 nearby Heroes every second for 7s. Heal equal to 35% of the damage dealt. Additional hits against the same Target deal 20% Damage.; Lich: Gain 4%/7%/10%/14% Magical Lifesteal at Levels 1/6/11/16.; 14,423 healing recorded.",
+    "Toughness: +800 health, +35 physical armor, +45 magical armor; took 47,757 damage, mitigated 45,785, died 1 times.",
+    "Loadout augment Slayer of the Heavens: Your energized lightning basic attacks hit harder and cut your cooldowns more. Weave a basic attack after every ability so Judgement and Surge come back faster. (game text: Strike of the Heavens deals 25% more damage and reduces Cooldowns by 25% more.) (changes Strike of the Heavens) Field: 46.8% in 3854 games, 86% of picks, level the hero-role's 47%.",
+    "Loadout Eternal Vesh: Every ability hit leaves a short burn. Judgement, Light of the Heavens, Surge and Fury of the Heavens all add extra damage after the combo lands. (game text: Ability damage dealt to Enemy Heroes deals 7% (+0.4% per minute) of that damage as a DoT over 3s.) [7% growing 0.4% a minute: about 19.4% by the end (31 min)] Field: 44.9% in 2172 games, 49% of picks, below the hero-role's 47%.",
+    "Loadout minor Lich: Magic lifesteal that grows with level. Judgement, Fury, Light of the Heavens while holding the Blade and his lightning strikes deal magic damage, so trading in lane keeps you topped up. (game text: Gain 4%/7%/10%/14% Magical Lifesteal at Levels 1/6/11/16.) Field: 44.7% in 2014 games, 93% of picks, below the hero-role's 47%.",
+    "Loadout minor Millennia: Your ultimate's damage slowly grows over the game. A small late-game boost to Fury of the Heavens; nothing else changes. (game text: Every 60s, increase your Ultimate Ability Damage by 0.75%.) Field: 43.4% in 1407 games, 65% of picks, below the hero-role's 47%.",
+    "Loadout crest Tempest: Zaps up to 3 nearby heroes every second and heals you. Pop it as you dive in with Surge of the Heavens to help you survive in the middle of a fight. (game text: Overcharge:  Deal 15 (+15%) Damage to 3 nearby Heroes every second for 7s. Heal equal to 35% of the damage dealt. Additional hits against the same Target deal 20% Damage.) Field: 46.9% in 1732 games, 39% of picks, level the hero-role's 47%.",
+    "Stack (Healing off the damage): 3 effects on one trigger: Spirit Of Amir, Tempest, Lich.",
+    "Stack (Every ability hit set off): 2 effects on one trigger: Spirit Of Amir, Vesh. Kwang has 4 damaging abilities (Light of the Heavens, Judgement of the Heavens, Surge of the Heavens, Fury of the Heavens hit an area, so one cast sets them off on several heroes), and 58 ability haste brought them back 37% sooner: more casts, more triggers.",
+    "The Eternal was part of it: Vesh (Lich + Millennia) sits on the same triggers as the items (healing off the damage; every ability hit set off), so the same fights paid out in both damage and staying power.",
     "Countered? 0 of the 2 players Kwang killed built magical armor. Anti-heal on Yin. We killed Kwang 1 time.",
-    "Copy it? Too few Kwang jungle games with this Eternal or core this patch to say whether it wins elsewhere."
+    "Copy it? Vesh (Lich + Millennia): 43.3% in 1,320 Kwang jungle games, below the hero's 47%. It wins less than usual elsewhere: it beat us, not the field."
    ],
    "card": {
     "ult": {
      "name": "Fury of the Heavens",
      "base": 85,
      "rank": 3,
-     "rankKnown": false,
-     "endGame": 56.7,
+     "rankKnown": true,
+     "endGame": 53.8,
      "inFight": null
     },
     "takedowns": {
@@ -7845,38 +8646,44 @@
      "assists": 10
     },
     "heals": false,
-    "lesson": "Fury of the Heavens came back about every 57s instead of 85s by the end (33% shorter). Count it, and take fights while it is down.",
+    "lesson": "Fury of the Heavens came back about every 54s instead of 85s by the end (37% shorter). Count it, and take fights while it is down.",
     "haste": [
      {
       "name": "Spirit Of Amir",
       "kind": "item",
       "amount": 10,
-      "how": "+10 ability haste"
+      "how": "+10 ability haste, bought at 8:18"
      },
      {
       "name": "Gaussian Greaves",
       "kind": "item",
       "amount": 10,
-      "how": "+10 ability haste"
+      "how": "+10 ability haste, bought at 17:27"
      },
      {
       "name": "Prophecy",
       "kind": "item",
       "amount": 15,
-      "how": "+15 ability haste"
+      "how": "+15 ability haste, bought at 26:58"
      },
      {
       "name": "Flux Matrix",
       "kind": "item",
       "amount": 15,
-      "how": "+15 ability haste"
+      "how": "+15 ability haste, bought at 28:23"
+     },
+     {
+      "name": "Tempest",
+      "kind": "crest",
+      "amount": 8,
+      "how": "+8 ability haste"
      }
     ],
     "fight": null,
     "extras": [],
     "power": {
      "type": "magical",
-     "power": 210,
+     "power": 240,
      "pen": {
       "flat": 7,
       "pct": 0,
@@ -7893,30 +8700,39 @@
        "more": 5,
        "diedTo": 3,
        "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "levelKnown": true,
+       "taken": {
+        "type": 27948,
+        "total": 38299
+       }
       },
       {
        "name": "Iruvinza",
        "hero": "Yin",
-       "armor": 47,
-       "after": 40,
+       "armor": 44,
+       "after": 37,
        "more": 5,
        "diedTo": 3,
-       "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "level": 15,
+       "levelKnown": true,
+       "taken": {
+        "type": 16682,
+        "total": 23488
+       }
       },
       {
        "name": "🎮 private",
        "hero": "Gideon",
-       "armor": 47,
-       "after": 40,
+       "armor": 46,
+       "after": 39,
        "more": 5,
        "diedTo": 0,
-       "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "level": 16,
+       "levelKnown": true,
+       "taken": {
+        "type": 21379,
+        "total": 24697
+       }
       },
       {
        "name": "🎮 private",
@@ -7926,19 +8742,25 @@
        "more": 5,
        "diedTo": 0,
        "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "levelKnown": true,
+       "taken": {
+        "type": 5563,
+        "total": 17216
+       }
       },
       {
        "name": "Willy Guggenheim",
        "hero": "Riktor",
-       "armor": 100,
-       "after": 93,
+       "armor": 95,
+       "after": 88,
        "more": 4,
        "diedTo": 0,
-       "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "level": 15,
+       "levelKnown": true,
+       "taken": {
+        "type": 18202,
+        "total": 30087
+       }
       }
      ],
      "level": 17,
@@ -7962,6 +8784,26 @@
        "name": "Flux Matrix",
        "kind": "item",
        "how": "Nearby Enemy Heroes: Take 10% additional Magical Damage. Have their Tenacity decreased by 50%."
+      },
+      {
+       "name": "Tempest",
+       "kind": "crest",
+       "how": "Deal 15 (+15%) Damage to 3 nearby Heroes every second for 7s. Heal equal to 35% of the damage dealt. Additional hits against the same Target deal 20% Damage."
+      },
+      {
+       "name": "Vesh",
+       "kind": "Eternal",
+       "how": "Ability damage dealt to Enemy Heroes deals 7% (+0.4% a minute, about 19.4% by the end) of that damage as a DoT over 3s."
+      },
+      {
+       "name": "Millennia",
+       "kind": "Eternal minor",
+       "how": "Every 60s, increase your Ultimate Ability Damage by 0.75%."
+      },
+      {
+       "name": "Slayer of the Heavens",
+       "kind": "augment",
+       "how": "Strike of the Heavens deals 25% more damage and reduces Cooldowns by 25% more."
       }
      ],
      "items": [
@@ -8008,16 +8850,42 @@
        "effects": [
         "Nearby Enemy Heroes: Take 10% additional Magical Damage. Have their Tenacity decreased by 50%."
        ]
+      },
+      {
+       "slug": "tempest",
+       "name": "Tempest",
+       "kind": "crest",
+       "power": 30,
+       "pen": 0,
+       "penPct": 0,
+       "effects": [
+        "Deal 15 (+15%) Damage to 3 nearby Heroes every second for 7s. Heal equal to 35% of the damage dealt. Additional hits against the same Target deal 20% Damage."
+       ]
       }
      ],
      "dealt": {
       "damage": 27687,
       "share": 21
      },
-     "sustain": null,
+     "sustain": {
+      "stats": [],
+      "effects": [
+       {
+        "name": "Tempest",
+        "kind": "item",
+        "how": "Deal 15 (+15%) Damage to 3 nearby Heroes every second for 7s. Heal equal to 35% of the damage dealt. Additional hits against the same Target deal 20% Damage."
+       },
+       {
+        "name": "Lich",
+        "kind": "Eternal minor",
+        "how": "Gain 4%/7%/10%/14% Magical Lifesteal at Levels 1/6/11/16."
+       }
+      ],
+      "healing": 14423
+     },
      "tough": {
       "stats": [
-       "+700 health",
+       "+800 health",
        "+35 physical armor",
        "+45 magical armor"
       ],
@@ -8031,7 +8899,7 @@
      "lead": {
       "id": "survival",
       "title": "Hard to kill",
-      "text": "Died 1 time in 31 minutes, fewer deaths than about 90% of Kwang jungle players this patch. The build added health and armor."
+      "text": "Died 1 time in 31 minutes, fewer deaths than about 90% of Kwang jungle players this patch. The build added health and armor and healing off damage. It came from the Eternal setup (Lich) plus Tempest, Spirit Of Amir."
      },
      "tabs": [
       "alive",
@@ -8071,8 +8939,48 @@
      "normN": 2169
     },
     "worked": {
-     "stacks": [],
-     "eternalPart": null,
+     "stacks": [
+      {
+       "family": "heal",
+       "title": "Healing off the damage",
+       "members": [
+        {
+         "name": "Spirit Of Amir",
+         "kind": "item",
+         "text": "Gain Effects, based on your location: In the Jungle: Gain 8% Magical Lifesteal. Outside the Jungle: Gain 8% Magical Power."
+        },
+        {
+         "name": "Tempest",
+         "kind": "crest",
+         "text": "Deal 15 (+15%) Damage to 3 nearby Heroes every second for 7s. Heal equal to 35% of the damage dealt. Additional hits against the same Target deal 20% Damage."
+        },
+        {
+         "name": "Lich",
+         "kind": "Eternal minor",
+         "text": "Gain 4%/7%/10%/14% Magical Lifesteal at Levels 1/6/11/16."
+        }
+       ],
+       "text": "3 effects on one trigger: Spirit Of Amir, Tempest, Lich."
+      },
+      {
+       "family": "ability",
+       "title": "Every ability hit set off",
+       "members": [
+        {
+         "name": "Spirit Of Amir",
+         "kind": "item",
+         "text": "Abilities deal 12% more damage to Monsters."
+        },
+        {
+         "name": "Vesh",
+         "kind": "Eternal",
+         "text": "Ability damage dealt to Enemy Heroes deals 7% (+0.4% per minute) of that damage as a DoT over 3s."
+        }
+       ],
+       "text": "2 effects on one trigger: Spirit Of Amir, Vesh. Kwang has 4 damaging abilities (Light of the Heavens, Judgement of the Heavens, Surge of the Heavens, Fury of the Heavens hit an area, so one cast sets them off on several heroes), and 58 ability haste brought them back 37% sooner: more casts, more triggers."
+      }
+     ],
+     "eternalPart": "The Eternal was part of it: Vesh (Lich + Millennia) sits on the same triggers as the items (healing off the damage; every ability hit set off), so the same fights paid out in both damage and staying power.",
      "countered": [
       {
        "ok": false,
@@ -8088,15 +8996,99 @@
       }
      ],
      "copy": {
-      "verdict": "unknown",
-      "text": "Too few Kwang jungle games with this Eternal or core this patch to say whether it wins elsewhere."
+      "verdict": "beat-us",
+      "text": "Vesh (Lich + Millennia): 43.3% in 1,320 Kwang jungle games, below the hero's 47%. It wins less than usual elsewhere: it beat us, not the field."
      }
     },
-    "loadout": []
+    "loadout": [
+     {
+      "kind": "augment",
+      "name": "Slayer of the Heavens",
+      "text": "Strike of the Heavens deals 25% more damage and reduces Cooldowns by 25% more.",
+      "ability": {
+       "name": "Strike of the Heavens",
+       "key": "Passive",
+       "what": "When Kwang damages an Enemy with an ability his Heavenly Blade becomes Energized with electricity for 4s, stacking up to 3 times.",
+       "cd": null,
+       "cdHaste": null
+      },
+      "numbers": [],
+      "field": {
+       "wr": 46.8,
+       "n": 3854,
+       "share": 86,
+       "base": 47,
+       "verdict": "level"
+      },
+      "plain": "Your energized lightning basic attacks hit harder and cut your cooldowns more. Weave a basic attack after every ability so Judgement and Surge come back faster."
+     },
+     {
+      "kind": "Eternal",
+      "name": "Vesh",
+      "text": "Ability damage dealt to Enemy Heroes deals 7% (+0.4% per minute) of that damage as a DoT over 3s.",
+      "ability": null,
+      "numbers": [
+       "7% growing 0.4% a minute: about 19.4% by the end (31 min)"
+      ],
+      "field": {
+       "wr": 44.9,
+       "n": 2172,
+       "share": 49,
+       "base": 47,
+       "verdict": "below"
+      },
+      "plain": "Every ability hit leaves a short burn. Judgement, Light of the Heavens, Surge and Fury of the Heavens all add extra damage after the combo lands."
+     },
+     {
+      "kind": "minor",
+      "name": "Lich",
+      "text": "Gain 4%/7%/10%/14% Magical Lifesteal at Levels 1/6/11/16.",
+      "ability": null,
+      "numbers": [],
+      "field": {
+       "wr": 44.7,
+       "n": 2014,
+       "share": 93,
+       "base": 47,
+       "verdict": "below"
+      },
+      "plain": "Magic lifesteal that grows with level. Judgement, Fury, Light of the Heavens while holding the Blade and his lightning strikes deal magic damage, so trading in lane keeps you topped up."
+     },
+     {
+      "kind": "minor",
+      "name": "Millennia",
+      "text": "Every 60s, increase your Ultimate Ability Damage by 0.75%.",
+      "ability": null,
+      "numbers": [],
+      "field": {
+       "wr": 43.4,
+       "n": 1407,
+       "share": 65,
+       "base": 47,
+       "verdict": "below"
+      },
+      "plain": "Your ultimate's damage slowly grows over the game. A small late-game boost to Fury of the Heavens; nothing else changes."
+     },
+     {
+      "kind": "crest",
+      "name": "Tempest",
+      "text": "Overcharge:  Deal 15 (+15%) Damage to 3 nearby Heroes every second for 7s. Heal equal to 35% of the damage dealt. Additional hits against the same Target deal 20% Damage.",
+      "ability": null,
+      "numbers": [],
+      "field": {
+       "wr": 46.9,
+       "n": 1732,
+       "share": 39,
+       "base": 47,
+       "verdict": "level"
+      },
+      "plain": "Zaps up to 3 nearby heroes every second and heals you. Pop it as you dive in with Surge of the Heavens to help you survive in the middle of a fight."
+     }
+    ]
    },
    "power": {
     "type": "magical",
-    "power": 210,
+    "power": 240,
     "pen": {
      "flat": 7,
      "pct": 0,
@@ -8113,30 +9105,39 @@
       "more": 5,
       "diedTo": 3,
       "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "levelKnown": true,
+      "taken": {
+       "type": 27948,
+       "total": 38299
+      }
      },
      {
       "name": "Iruvinza",
       "hero": "Yin",
-      "armor": 47,
-      "after": 40,
+      "armor": 44,
+      "after": 37,
       "more": 5,
       "diedTo": 3,
-      "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "level": 15,
+      "levelKnown": true,
+      "taken": {
+       "type": 16682,
+       "total": 23488
+      }
      },
      {
       "name": "🎮 private",
       "hero": "Gideon",
-      "armor": 47,
-      "after": 40,
+      "armor": 46,
+      "after": 39,
       "more": 5,
       "diedTo": 0,
-      "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "level": 16,
+      "levelKnown": true,
+      "taken": {
+       "type": 21379,
+       "total": 24697
+      }
      },
      {
       "name": "🎮 private",
@@ -8146,19 +9147,25 @@
       "more": 5,
       "diedTo": 0,
       "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "levelKnown": true,
+      "taken": {
+       "type": 5563,
+       "total": 17216
+      }
      },
      {
       "name": "Willy Guggenheim",
       "hero": "Riktor",
-      "armor": 100,
-      "after": 93,
+      "armor": 95,
+      "after": 88,
       "more": 4,
       "diedTo": 0,
-      "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "level": 15,
+      "levelKnown": true,
+      "taken": {
+       "type": 18202,
+       "total": 30087
+      }
      }
     ],
     "level": 17,
@@ -8182,6 +9189,26 @@
       "name": "Flux Matrix",
       "kind": "item",
       "how": "Nearby Enemy Heroes: Take 10% additional Magical Damage. Have their Tenacity decreased by 50%."
+     },
+     {
+      "name": "Tempest",
+      "kind": "crest",
+      "how": "Deal 15 (+15%) Damage to 3 nearby Heroes every second for 7s. Heal equal to 35% of the damage dealt. Additional hits against the same Target deal 20% Damage."
+     },
+     {
+      "name": "Vesh",
+      "kind": "Eternal",
+      "how": "Ability damage dealt to Enemy Heroes deals 7% (+0.4% a minute, about 19.4% by the end) of that damage as a DoT over 3s."
+     },
+     {
+      "name": "Millennia",
+      "kind": "Eternal minor",
+      "how": "Every 60s, increase your Ultimate Ability Damage by 0.75%."
+     },
+     {
+      "name": "Slayer of the Heavens",
+      "kind": "augment",
+      "how": "Strike of the Heavens deals 25% more damage and reduces Cooldowns by 25% more."
      }
     ],
     "items": [
@@ -8228,16 +9255,42 @@
       "effects": [
        "Nearby Enemy Heroes: Take 10% additional Magical Damage. Have their Tenacity decreased by 50%."
       ]
+     },
+     {
+      "slug": "tempest",
+      "name": "Tempest",
+      "kind": "crest",
+      "power": 30,
+      "pen": 0,
+      "penPct": 0,
+      "effects": [
+       "Deal 15 (+15%) Damage to 3 nearby Heroes every second for 7s. Heal equal to 35% of the damage dealt. Additional hits against the same Target deal 20% Damage."
+      ]
      }
     ],
     "dealt": {
      "damage": 27687,
      "share": 21
     },
-    "sustain": null,
+    "sustain": {
+     "stats": [],
+     "effects": [
+      {
+       "name": "Tempest",
+       "kind": "item",
+       "how": "Deal 15 (+15%) Damage to 3 nearby Heroes every second for 7s. Heal equal to 35% of the damage dealt. Additional hits against the same Target deal 20% Damage."
+      },
+      {
+       "name": "Lich",
+       "kind": "Eternal minor",
+       "how": "Gain 4%/7%/10%/14% Magical Lifesteal at Levels 1/6/11/16."
+      }
+     ],
+     "healing": 14423
+    },
     "tough": {
      "stats": [
-      "+700 health",
+      "+800 health",
       "+35 physical armor",
       "+45 magical armor"
      ],
@@ -8250,7 +9303,7 @@
     "lead": {
      "id": "survival",
      "title": "Hard to kill",
-     "text": "Died 1 time in 31 minutes, fewer deaths than about 90% of Kwang jungle players this patch. The build added health and armor."
+     "text": "Died 1 time in 31 minutes, fewer deaths than about 90% of Kwang jungle players this patch. The build added health and armor and healing off damage. It came from the Eternal setup (Lich) plus Tempest, Spirit Of Amir."
     },
     "tabs": [
      "alive",
@@ -8290,8 +9343,48 @@
     "normN": 2169
    },
    "worked": {
-    "stacks": [],
-    "eternalPart": null,
+    "stacks": [
+     {
+      "family": "heal",
+      "title": "Healing off the damage",
+      "members": [
+       {
+        "name": "Spirit Of Amir",
+        "kind": "item",
+        "text": "Gain Effects, based on your location: In the Jungle: Gain 8% Magical Lifesteal. Outside the Jungle: Gain 8% Magical Power."
+       },
+       {
+        "name": "Tempest",
+        "kind": "crest",
+        "text": "Deal 15 (+15%) Damage to 3 nearby Heroes every second for 7s. Heal equal to 35% of the damage dealt. Additional hits against the same Target deal 20% Damage."
+       },
+       {
+        "name": "Lich",
+        "kind": "Eternal minor",
+        "text": "Gain 4%/7%/10%/14% Magical Lifesteal at Levels 1/6/11/16."
+       }
+      ],
+      "text": "3 effects on one trigger: Spirit Of Amir, Tempest, Lich."
+     },
+     {
+      "family": "ability",
+      "title": "Every ability hit set off",
+      "members": [
+       {
+        "name": "Spirit Of Amir",
+        "kind": "item",
+        "text": "Abilities deal 12% more damage to Monsters."
+       },
+       {
+        "name": "Vesh",
+        "kind": "Eternal",
+        "text": "Ability damage dealt to Enemy Heroes deals 7% (+0.4% per minute) of that damage as a DoT over 3s."
+       }
+      ],
+      "text": "2 effects on one trigger: Spirit Of Amir, Vesh. Kwang has 4 damaging abilities (Light of the Heavens, Judgement of the Heavens, Surge of the Heavens, Fury of the Heavens hit an area, so one cast sets them off on several heroes), and 58 ability haste brought them back 37% sooner: more casts, more triggers."
+     }
+    ],
+    "eternalPart": "The Eternal was part of it: Vesh (Lich + Millennia) sits on the same triggers as the items (healing off the damage; every ability hit set off), so the same fights paid out in both damage and staying power.",
     "countered": [
      {
       "ok": false,
@@ -8307,8 +9400,8 @@
      }
     ],
     "copy": {
-     "verdict": "unknown",
-     "text": "Too few Kwang jungle games with this Eternal or core this patch to say whether it wins elsewhere."
+     "verdict": "beat-us",
+     "text": "Vesh (Lich + Millennia): 43.3% in 1,320 Kwang jungle games, below the hero's 47%. It wins less than usual elsewhere: it beat us, not the field."
     }
    },
    "us": false,
@@ -8318,7 +9411,97 @@
    "score": 0.58
   }
  },
- "damageMix": null,
+ "damageMix": {
+  "us": {
+   "physical": 34920,
+   "magical": 66941,
+   "true": 203,
+   "total": 102064
+  },
+  "them": {
+   "physical": 37527,
+   "magical": 89608,
+   "true": 6357,
+   "total": 133492
+  },
+  "trueFrom": [
+   {
+    "hero": "Kwang",
+    "us": false,
+    "amount": 3522,
+    "share": 13,
+    "from": [
+     {
+      "name": "Light of the Heavens",
+      "kind": "ability"
+     }
+    ]
+   },
+   {
+    "hero": "Skylar",
+    "us": false,
+    "amount": 2450,
+    "share": 8,
+    "from": [
+     {
+      "name": "Ruination",
+      "kind": "item"
+     },
+     {
+      "name": "Weald",
+      "kind": "Eternal"
+     }
+    ]
+   }
+  ],
+  "armor": {
+   "us": {
+    "faced": "magical",
+    "physical": [
+     "Riktor"
+    ],
+    "magical": [
+     "Riktor"
+    ],
+    "of": 5,
+    "points": {
+     "physical": 95,
+     "magical": 40
+    }
+   },
+   "them": {
+    "faced": "magical",
+    "physical": [
+     "Steel",
+     "Aurora",
+     "Kwang"
+    ],
+    "magical": [
+     "Steel",
+     "Aurora",
+     "Kwang"
+    ],
+    "of": 5,
+    "points": {
+     "physical": 240,
+     "magical": 130
+    }
+   }
+  },
+  "field": {
+   "us": {
+    "wr": 44.5,
+    "n": 4541,
+    "band": "60-70% magical"
+   },
+   "them": {
+    "wr": 44.5,
+    "n": 4541,
+    "band": "60-70% magical"
+   },
+   "best": "20-30% magical (52.9% win)"
+  }
+ },
  "buildNotes": [
   {
    "pid": "782380e6-0f4e-49b7-af23-04e64c9b79af",
@@ -8334,10 +9517,10 @@
     {
      "slug": "megacosm",
      "name": "Megacosm",
-     "into": 60,
+     "into": 59,
      "usual": 38,
-     "wr": 53.7,
-     "n": 2359,
+     "wr": 53.6,
+     "n": 2567,
      "has": false,
      "vs": "Steel"
     },
@@ -8346,8 +9529,8 @@
      "name": "Caustica",
      "into": 27,
      "usual": 10,
-     "wr": 52.6,
-     "n": 597,
+     "wr": 52.2,
+     "n": 659,
      "has": false,
      "vs": "Steel"
     }
@@ -8382,8 +9565,8 @@
       "has": true
      }
     ],
-    "wr": 63.7,
-    "n": 179
+    "wr": 62.5,
+    "n": 192
    },
    "coreVs": null,
    "built": [
@@ -8421,8 +9604,8 @@
      "name": "Tainted Scepter",
      "into": 34,
      "usual": 19,
-     "wr": 49.2,
-     "n": 2159,
+     "wr": 49.7,
+     "n": 2338,
      "has": false,
      "vs": "Morigesh"
     }
@@ -8457,8 +9640,8 @@
       "has": false
      }
     ],
-    "wr": 64.2,
-    "n": 148
+    "wr": 64.7,
+    "n": 167
    },
    "coreVs": {
     "vs": "Morigesh",
@@ -8540,8 +9723,8 @@
       "has": false
      }
     ],
-    "wr": 63,
-    "n": 81
+    "wr": 60,
+    "n": 105
    },
    "coreVs": null,
    "built": [
@@ -8599,8 +9782,8 @@
       "has": true
      }
     ],
-    "wr": 56.6,
-    "n": 371
+    "wr": 56.1,
+    "n": 424
    },
    "coreVs": null,
    "built": [
@@ -8632,10 +9815,20 @@
     {
      "slug": "sky-splitter",
      "name": "Sky Splitter",
-     "into": 82,
+     "into": 83,
      "usual": 74,
-     "wr": 51.9,
-     "n": 2666,
+     "wr": 51.4,
+     "n": 2943,
+     "has": true,
+     "vs": "Kwang"
+    },
+    {
+     "slug": "manta-scythe",
+     "name": "Manta Scythe",
+     "into": 25,
+     "usual": 17,
+     "wr": 48.6,
+     "n": 714,
      "has": true,
      "vs": "Kwang"
     },
@@ -8644,8 +9837,8 @@
      "name": "Tainted Rounds",
      "into": 58,
      "usual": 50,
-     "wr": 54.7,
-     "n": 1666,
+     "wr": 54.2,
+     "n": 1835,
      "has": true,
      "vs": "Morigesh"
     }
@@ -8680,8 +9873,8 @@
       "has": true
      }
     ],
-    "wr": 58.7,
-    "n": 392
+    "wr": 57.4,
+    "n": 423
    },
    "coreVs": null,
    "built": [
