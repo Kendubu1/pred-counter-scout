@@ -5900,7 +5900,7 @@
  "teamComp": {
   "field": {
    "patch": "1.18",
-   "matches": 70661
+   "matches": 77372
   },
   "us": {
    "heroes": [
@@ -5977,9 +5977,9 @@
    "style": "engage-peel",
    "shape": "2t0d",
    "shapeWr": {
-    "n": 7482,
-    "w": 4024,
-    "wr": 53.8,
+    "n": 8218,
+    "w": 4456,
+    "wr": 54.2,
     "ci95": 1.1
    }
   },
@@ -6065,8 +6065,8 @@
    "style": "brawl",
    "shape": "1t2d",
    "shapeWr": {
-    "n": 26869,
-    "w": 13382,
+    "n": 29445,
+    "w": 14655,
     "wr": 49.8,
     "ci95": 0.6
    }
@@ -6077,7 +6077,7 @@
   },
   "diverEdge": {
    "diff": -2,
-   "wr": 53.3
+   "wr": 53.6
   },
   "checks": [
    {
@@ -6112,7 +6112,7 @@
    }
   ],
   "swap": null,
-  "summary": "Draft: 2 tanks, 0 divers vs their 1 tank, 2 divers. In 1.18 ranked, our shape won 53.8% and theirs 49.8%."
+  "summary": "Draft: 2 tanks, 0 divers vs their 1 tank, 2 divers. In 1.18 ranked, our shape won 54.2% and theirs 49.8%."
  },
  "kitRead": {
   "cc": {
@@ -6378,17 +6378,115 @@
    "hero": "Renna",
    "slug": "renna",
    "takedowns": 4,
-   "loadout": [],
+   "loadout": [
+    {
+     "kind": "augment",
+     "name": "Netherward",
+     "text": "Upon using Soulfire, gain a 40 (+35%) Shield for 2s.",
+     "ability": {
+      "name": "Soulfire",
+      "key": "RMB",
+      "what": "Swing your weapon to fire 3 piercing projectile waves over 1.5s that each deal 50/57/64/71/78 (+21%) damage.",
+      "cd": 5,
+      "cdHaste": 3.5
+     },
+     "numbers": [],
+     "field": {
+      "wr": 52.7,
+      "n": 13980,
+      "share": 77,
+      "base": 52.4,
+      "verdict": "level"
+     },
+     "plain": "Every Soulfire cast gives you a short shield. Since Soulfire is your most frequent ability, it adds steady protection during trades."
+    },
+    {
+     "kind": "Eternal",
+     "name": "Lotus",
+     "text": "Every 2 minutes and every Takedown randomly grants +1% Damage, +4 Ability Haste, +0.75% Move Speed, or +1.25% Max Health.",
+     "ability": null,
+     "numbers": [
+      "20 random bonuses this game (every 2 min plus 4 takedowns), 1 in 4 each: about +5% damage, about +20 ability haste, about +3.8% move speed, about +6.3% max health (expected)"
+     ],
+     "field": {
+      "wr": 55.4,
+      "n": 1611,
+      "share": 9,
+      "base": 52.4,
+      "verdict": "above"
+     },
+     "plain": "Every couple of minutes and every takedown, a random small stat bonus. Generic scaling with nothing special for her kit."
+    },
+    {
+     "kind": "minor",
+     "name": "Early Bloom",
+     "text": "Gain an additional Level upon reaching Level 12.",
+     "ability": null,
+     "numbers": [],
+     "field": {
+      "wr": 52.7,
+      "n": 582,
+      "share": 36,
+      "base": 52.4,
+      "verdict": "level"
+     },
+     "plain": "An extra level when you reach level 12. Gets your next ability ranks sooner; otherwise generic."
+    },
+    {
+     "kind": "minor",
+     "name": "Immaculate",
+     "text": "Gain 10% Damage Reduction above 85% current health.",
+     "ability": null,
+     "numbers": [],
+     "field": {
+      "wr": 51.9,
+      "n": 374,
+      "share": 23,
+      "base": 52.4,
+      "verdict": "level"
+     }
+    },
+    {
+     "kind": "crest",
+     "name": "Epoch",
+     "text": "Stasis Device:  Enter Stasis for 2.5s.",
+     "ability": null,
+     "numbers": [],
+     "field": {
+      "wr": 52.6,
+      "n": 11235,
+      "share": 62,
+      "base": 52.4,
+      "verdict": "level"
+     },
+     "plain": "Enter stasis for 2.5s, unable to act. Use it to dodge burst after Abyssal Rift teleports you into danger."
+    }
+   ],
    "haste": {
     "sources": [
      {
       "what": "Entropy",
       "amount": 15,
+      "note": "bought at 10:29",
       "kind": "item",
-      "how": "+15 ability haste"
+      "how": "+15 ability haste, bought at 10:29"
+     },
+     {
+      "what": "Epoch",
+      "amount": 8,
+      "note": "crest",
+      "kind": "crest",
+      "how": "+8 ability haste"
+     },
+     {
+      "what": "Lotus",
+      "amount": 20,
+      "note": "random: 20 procs, 1 in 4 is +4 haste (expected value)",
+      "kind": "Eternal",
+      "how": "20 random bonuses (every 2 min and every takedown), 1 in 4 is +4 haste: about +20 expected"
      }
     ],
-    "total": 15,
+    "total": 43,
     "fightBonus": null,
     "ultOnly": 0
    },
@@ -6396,39 +6494,51 @@
     "name": "Abyssal Rift",
     "base": 95,
     "rank": 3,
-    "rankKnown": false,
-    "endGame": 82.6,
+    "rankKnown": true,
+    "endGame": 66.4,
     "inFight": null
    },
-   "fedBy": [],
+   "fedBy": [
+    "Lotus (Eternal): Every 2 minutes and every Takedown randomly grants +1% Damage, +4 Ability Haste, +0.75% Move Speed, or +1.25% Max Health."
+   ],
    "ultPlus": [
     "Overseer (Exalted): Enhance your Ultimate Ability: Deals 15% more damage. Heals you for 25% of the damage dealt to Heroes."
    ],
    "lines": [
     "Lead story: Hard to kill. Died 2 times in 33 minutes, fewer deaths than about 86% of Renna mid players this patch. The build added healing off damage.",
-    "Abyssal Rift at top rank: 95s base, about 82.6s by the end (13% shorter) from 15 ability haste: Entropy 15.",
+    "Lesson: takedowns were the fuel. Each one Renna touched shortened Abyssal Rift, so feeding early made it come back faster (about 66.4s late); fight right after Abyssal Rift is spent.",
+    "Abyssal Rift at rank 3: 95s base, about 66.4s by the end (30% shorter) from 43 ability haste: Entropy 15, Epoch 8, Lotus 20.",
+    "4 takedowns (4 kills, 0 assists) fed: Lotus (Eternal).",
     "Overseer (Exalted): Enhance your Ultimate Ability: Deals 15% more damage. Heals you for 25% of the damage dealt to Heroes.",
     "Their build heals off damage: anti-heal (the Tainted items) cuts it.",
-    "Renna dealt 29,344 hero damage, 29% of their team's, with +450 magical power from items.",
-    "Penetration: Wraith Leggings 11, Overseer 8, Caustica ignores 35%; against The Fey (level 17 estimated: about 47 magical armor, 12 after penetration) and Skylar (level 17 estimated: about 47 magical armor, 12 after penetration) that is about 32% and 32% more damage (estimate: percent penetration taken before flat).",
+    "Renna dealt 29,344 hero damage, 29% of their team's, with +480 magical power from items.",
+    "Penetration: Wraith Leggings 11, Overseer 8, Caustica ignores 35%; against The Fey (level 18: about 49 magical armor, 13 after penetration; took 14,242 magical damage from heroes, 67% of all hero damage they took) and Skylar (level 18: about 49 magical armor, 13 after penetration; took 6,596 magical damage from heroes, 48% of all hero damage they took) that is about 32% and 32% more damage (estimate: percent penetration taken before flat).",
     "Entropy (item): On dealing Ability Damage: Deal 3 (+3.5%) additional Damage. Each Ability can only trigger this effect once every 0.2s, per Target.",
     "Wraith Leggings (item): Against Heroes below 40% Health: Abilities deal 12% bonus Magical Damage.",
     "Overseer (item): Ultimate: Deals 15% more damage. Heals you for 25% of the damage dealt to Heroes.",
     "Caustica (item): On dealing Ability Damage to a Hero: While they are above 50% Health. For every point of Bonus Magical Armor they possess. Deal 0.2% more Damage.",
+    "Lotus (Eternal): Every 2 minutes and every Takedown randomly grants +1% Damage, +4 Ability Haste, +0.75% Move Speed, or +1.25% Max Health.",
+    "Immaculate (Eternal minor): Gain 10% Damage Reduction above 85% current health.",
     "Sustain: 7% magical lifesteal; Overseer: Ultimate: Deals 15% more damage. Heals you for 25% of the damage dealt to Heroes.; 5,542 healing recorded.",
-    "Lesson: Renna's penetration cut through: The Fey took about 32% more magical damage than their armor alone allows (estimate: at level 17 (estimated) their armor was about 47, about 12 after 19 flat + 35% penetration).",
-    "Stack (Every ability hit set off): 3 effects on one trigger: Entropy, Wraith Leggings, Caustica. Renna has 4 damaging abilities (Stupor hit an area, so one cast sets them off on several heroes), and 15 ability haste brought them back 13% sooner: more casts, more triggers.",
-    "Stack (Kept alive in fights): 2 effects on one trigger: Overseer, Caustica. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went.",
+    "Lesson: Renna's penetration cut through: The Fey took about 32% more magical damage than their armor alone allows (estimate: at level 18 their armor was about 49, about 13 after 19 flat + 35% penetration).",
+    "Loadout augment Netherward: Every Soulfire cast gives you a short shield. Since Soulfire is your most frequent ability, it adds steady protection during trades. (game text: Upon using Soulfire, gain a 40 (+35%) Shield for 2s.) (changes Soulfire, 3.5s cooldown with their haste) Field: 52.7% in 13980 games, 77% of picks, level the hero-role's 52.4%.",
+    "Loadout Eternal Lotus: Every couple of minutes and every takedown, a random small stat bonus. Generic scaling with nothing special for her kit. (game text: Every 2 minutes and every Takedown randomly grants +1% Damage, +4 Ability Haste, +0.75% Move Speed, or +1.25% Max Health.) [20 random bonuses this game (every 2 min plus 4 takedowns), 1 in 4 each: about +5% damage, about +20 ability haste, about +3.8% move speed, about +6.3% max health (expected)] Field: 55.4% in 1611 games, 9% of picks, above the hero-role's 52.4%.",
+    "Loadout minor Early Bloom: An extra level when you reach level 12. Gets your next ability ranks sooner; otherwise generic. (game text: Gain an additional Level upon reaching Level 12.) Field: 52.7% in 582 games, 36% of picks, level the hero-role's 52.4%.",
+    "Loadout minor Immaculate: Gain 10% Damage Reduction above 85% current health. Field: 51.9% in 374 games, 23% of picks, level the hero-role's 52.4%.",
+    "Loadout crest Epoch: Enter stasis for 2.5s, unable to act. Use it to dodge burst after Abyssal Rift teleports you into danger. (game text: Stasis Device:  Enter Stasis for 2.5s.) Field: 52.6% in 11235 games, 62% of picks, level the hero-role's 52.4%.",
+    "Stack (Kept alive in fights): 4 effects on one trigger: Overseer, Caustica, Lotus, Netherward. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went.",
+    "Stack (Every ability hit set off): 3 effects on one trigger: Entropy, Wraith Leggings, Caustica. Renna has 4 damaging abilities (Stupor hit an area, so one cast sets them off on several heroes), and 43 ability haste brought them back 30% sooner: more casts, more triggers.",
+    "The Eternal was part of it: Lotus (Early Bloom + Immaculate) sits on the same trigger as the items (kept alive in fights), so every extra second in a fight made them harder to kill.",
     "Countered? 0 of the 2 players Renna killed built magical armor. Anti-heal on Skylar. We killed Renna 2 times.",
-    "Copy it? Too few Renna midlane games with this Eternal or core this patch to say whether it wins elsewhere."
+    "Copy it? Lotus (Early Bloom + Immaculate): 53% in 234 Renna midlane games, level with the hero's 52.4%; this 3-item core: 55.1% in 4,221 games, below the 56.3% of that hero-role's cores. It wins less than usual elsewhere: it beat us, not the field."
    ],
    "card": {
     "ult": {
      "name": "Abyssal Rift",
      "base": 95,
      "rank": 3,
-     "rankKnown": false,
-     "endGame": 82.6,
+     "rankKnown": true,
+     "endGame": 66.4,
      "inFight": null
     },
     "takedowns": {
@@ -6437,13 +6547,25 @@
      "assists": 0
     },
     "heals": true,
-    "lesson": null,
+    "lesson": "Renna's takedowns fed Abyssal Rift: every kill or assist made it come back sooner. Deny early takedowns and fight right after Abyssal Rift is used.",
     "haste": [
      {
       "name": "Entropy",
       "kind": "item",
       "amount": 15,
-      "how": "+15 ability haste"
+      "how": "+15 ability haste, bought at 10:29"
+     },
+     {
+      "name": "Epoch",
+      "kind": "crest",
+      "amount": 8,
+      "how": "+8 ability haste"
+     },
+     {
+      "name": "Lotus",
+      "kind": "Eternal",
+      "amount": 20,
+      "how": "20 random bonuses (every 2 min and every takedown), 1 in 4 is +4 haste: about +20 expected"
      }
     ],
     "fight": null,
@@ -6456,7 +6578,7 @@
     ],
     "power": {
      "type": "magical",
-     "power": 450,
+     "power": 480,
      "pen": {
       "flat": 19,
       "pct": 35,
@@ -6470,46 +6592,58 @@
       {
        "name": "The-Slicc-Whitt-",
        "hero": "The Fey",
-       "armor": 47,
-       "after": 12,
+       "armor": 49,
+       "after": 13,
        "more": 32,
        "diedTo": 3,
-       "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "level": 18,
+       "levelKnown": true,
+       "taken": {
+        "type": 14242,
+        "total": 21323
+       }
       },
       {
        "name": "Willy Guggenheim",
        "hero": "Skylar",
-       "armor": 47,
-       "after": 12,
+       "armor": 49,
+       "after": 13,
        "more": 32,
        "diedTo": 1,
-       "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "level": 18,
+       "levelKnown": true,
+       "taken": {
+        "type": 6596,
+        "total": 13652
+       }
       },
       {
        "name": "Xeebs",
        "hero": "Riktor",
-       "armor": 100,
-       "after": 46,
+       "armor": 102,
+       "after": 47,
        "more": 37,
        "diedTo": 0,
-       "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "level": 18,
+       "levelKnown": true,
+       "taken": {
+        "type": 6814,
+        "total": 33473
+       }
       },
       {
        "name": "Boyd Cooper",
        "hero": "Aurora",
-       "armor": 105,
-       "after": 49,
+       "armor": 107,
+       "after": 50,
        "more": 37,
        "diedTo": 0,
-       "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "level": 18,
+       "levelKnown": true,
+       "taken": {
+        "type": 7290,
+        "total": 16605
+       }
       },
       {
        "name": "Mr_Meat31",
@@ -6519,8 +6653,11 @@
        "more": 32,
        "diedTo": 0,
        "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "levelKnown": true,
+       "taken": {
+        "type": 3213,
+        "total": 15046
+       }
       }
      ],
      "level": 17,
@@ -6544,6 +6681,16 @@
        "name": "Caustica",
        "kind": "item",
        "how": "On dealing Ability Damage to a Hero: While they are above 50% Health. For every point of Bonus Magical Armor they possess. Deal 0.2% more Damage."
+      },
+      {
+       "name": "Lotus",
+       "kind": "Eternal",
+       "how": "Every 2 minutes and every Takedown randomly grants +1% Damage, +4 Ability Haste, +0.75% Move Speed, or +1.25% Max Health."
+      },
+      {
+       "name": "Immaculate",
+       "kind": "Eternal minor",
+       "how": "Gain 10% Damage Reduction above 85% current health."
       }
      ],
      "items": [
@@ -6599,6 +6746,15 @@
        "effects": [
         "On dealing Ability Damage to a Hero: While they are above 50% Health. For every point of Bonus Magical Armor they possess. Deal 0.2% more Damage."
        ]
+      },
+      {
+       "slug": "epoch",
+       "name": "Epoch",
+       "kind": "crest",
+       "power": 30,
+       "pen": 0,
+       "penPct": 0,
+       "effects": []
       }
      ],
      "dealt": {
@@ -6620,12 +6776,12 @@
      },
      "tough": null
     },
-    "powerLesson": "Renna's penetration cut through: The Fey took about 32% more magical damage than their armor alone allows (estimate: at level 17 (estimated) their armor was about 47, about 12 after 19 flat + 35% penetration).",
+    "powerLesson": "Renna's penetration cut through: The Fey took about 32% more magical damage than their armor alone allows (estimate: at level 18 their armor was about 49, about 13 after 19 flat + 35% penetration).",
     "story": {
      "lead": {
       "id": "survival",
       "title": "Hard to kill",
-      "text": "Died 2 times in 33 minutes, fewer deaths than about 86% of Renna mid players this patch. The build added healing off damage. It came from Overseer, Caustica."
+      "text": "Died 2 times in 33 minutes, fewer deaths than about 86% of Renna mid players this patch. The build added healing off damage. It came from the Eternal setup (Lotus) plus Netherward, Overseer, Caustica."
      },
      "tabs": [
       "alive",
@@ -6667,6 +6823,33 @@
     "worked": {
      "stacks": [
       {
+       "family": "tough",
+       "title": "Kept alive in fights",
+       "members": [
+        {
+         "name": "Overseer",
+         "kind": "item",
+         "text": "Enhance your Ultimate Ability: Deals 15% more damage. Heals you for 25% of the damage dealt to Heroes."
+        },
+        {
+         "name": "Caustica",
+         "kind": "item",
+         "text": "Ignore 35% of Magical Armor."
+        },
+        {
+         "name": "Lotus",
+         "kind": "Eternal",
+         "text": "Every 2 minutes and every Takedown randomly grants +1% Damage, +4 Ability Haste, +0.75% Move Speed, or +1.25% Max Health."
+        },
+        {
+         "name": "Netherward",
+         "kind": "augment",
+         "text": "Upon using Soulfire, gain a 40 (+35%) Shield for 2s."
+        }
+       ],
+       "text": "4 effects on one trigger: Overseer, Caustica, Lotus, Netherward. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went."
+      },
+      {
        "family": "ability",
        "title": "Every ability hit set off",
        "members": [
@@ -6686,27 +6869,10 @@
          "text": "On dealing Ability Damage to a Hero: While they are above 50% Health. For every point of Bonus Magical Armor they possess. Deal 0.2% more Damage."
         }
        ],
-       "text": "3 effects on one trigger: Entropy, Wraith Leggings, Caustica. Renna has 4 damaging abilities (Stupor hit an area, so one cast sets them off on several heroes), and 15 ability haste brought them back 13% sooner: more casts, more triggers."
-      },
-      {
-       "family": "tough",
-       "title": "Kept alive in fights",
-       "members": [
-        {
-         "name": "Overseer",
-         "kind": "item",
-         "text": "Enhance your Ultimate Ability: Deals 15% more damage. Heals you for 25% of the damage dealt to Heroes."
-        },
-        {
-         "name": "Caustica",
-         "kind": "item",
-         "text": "Ignore 35% of Magical Armor."
-        }
-       ],
-       "text": "2 effects on one trigger: Overseer, Caustica. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went."
+       "text": "3 effects on one trigger: Entropy, Wraith Leggings, Caustica. Renna has 4 damaging abilities (Stupor hit an area, so one cast sets them off on several heroes), and 43 ability haste brought them back 30% sooner: more casts, more triggers."
       }
      ],
-     "eternalPart": null,
+     "eternalPart": "The Eternal was part of it: Lotus (Early Bloom + Immaculate) sits on the same trigger as the items (kept alive in fights), so every extra second in a fight made them harder to kill.",
      "countered": [
       {
        "ok": false,
@@ -6722,15 +6888,98 @@
       }
      ],
      "copy": {
-      "verdict": "unknown",
-      "text": "Too few Renna midlane games with this Eternal or core this patch to say whether it wins elsewhere."
+      "verdict": "beat-us",
+      "text": "Lotus (Early Bloom + Immaculate): 53% in 234 Renna midlane games, level with the hero's 52.4%; this 3-item core: 55.1% in 4,221 games, below the 56.3% of that hero-role's cores. It wins less than usual elsewhere: it beat us, not the field."
      }
     },
-    "loadout": []
+    "loadout": [
+     {
+      "kind": "augment",
+      "name": "Netherward",
+      "text": "Upon using Soulfire, gain a 40 (+35%) Shield for 2s.",
+      "ability": {
+       "name": "Soulfire",
+       "key": "RMB",
+       "what": "Swing your weapon to fire 3 piercing projectile waves over 1.5s that each deal 50/57/64/71/78 (+21%) damage.",
+       "cd": 5,
+       "cdHaste": 3.5
+      },
+      "numbers": [],
+      "field": {
+       "wr": 52.7,
+       "n": 13980,
+       "share": 77,
+       "base": 52.4,
+       "verdict": "level"
+      },
+      "plain": "Every Soulfire cast gives you a short shield. Since Soulfire is your most frequent ability, it adds steady protection during trades."
+     },
+     {
+      "kind": "Eternal",
+      "name": "Lotus",
+      "text": "Every 2 minutes and every Takedown randomly grants +1% Damage, +4 Ability Haste, +0.75% Move Speed, or +1.25% Max Health.",
+      "ability": null,
+      "numbers": [
+       "20 random bonuses this game (every 2 min plus 4 takedowns), 1 in 4 each: about +5% damage, about +20 ability haste, about +3.8% move speed, about +6.3% max health (expected)"
+      ],
+      "field": {
+       "wr": 55.4,
+       "n": 1611,
+       "share": 9,
+       "base": 52.4,
+       "verdict": "above"
+      },
+      "plain": "Every couple of minutes and every takedown, a random small stat bonus. Generic scaling with nothing special for her kit."
+     },
+     {
+      "kind": "minor",
+      "name": "Early Bloom",
+      "text": "Gain an additional Level upon reaching Level 12.",
+      "ability": null,
+      "numbers": [],
+      "field": {
+       "wr": 52.7,
+       "n": 582,
+       "share": 36,
+       "base": 52.4,
+       "verdict": "level"
+      },
+      "plain": "An extra level when you reach level 12. Gets your next ability ranks sooner; otherwise generic."
+     },
+     {
+      "kind": "minor",
+      "name": "Immaculate",
+      "text": "Gain 10% Damage Reduction above 85% current health.",
+      "ability": null,
+      "numbers": [],
+      "field": {
+       "wr": 51.9,
+       "n": 374,
+       "share": 23,
+       "base": 52.4,
+       "verdict": "level"
+      }
+     },
+     {
+      "kind": "crest",
+      "name": "Epoch",
+      "text": "Stasis Device:  Enter Stasis for 2.5s.",
+      "ability": null,
+      "numbers": [],
+      "field": {
+       "wr": 52.6,
+       "n": 11235,
+       "share": 62,
+       "base": 52.4,
+       "verdict": "level"
+      },
+      "plain": "Enter stasis for 2.5s, unable to act. Use it to dodge burst after Abyssal Rift teleports you into danger."
+     }
+    ]
    },
    "power": {
     "type": "magical",
-    "power": 450,
+    "power": 480,
     "pen": {
      "flat": 19,
      "pct": 35,
@@ -6744,46 +6993,58 @@
      {
       "name": "The-Slicc-Whitt-",
       "hero": "The Fey",
-      "armor": 47,
-      "after": 12,
+      "armor": 49,
+      "after": 13,
       "more": 32,
       "diedTo": 3,
-      "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "level": 18,
+      "levelKnown": true,
+      "taken": {
+       "type": 14242,
+       "total": 21323
+      }
      },
      {
       "name": "Willy Guggenheim",
       "hero": "Skylar",
-      "armor": 47,
-      "after": 12,
+      "armor": 49,
+      "after": 13,
       "more": 32,
       "diedTo": 1,
-      "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "level": 18,
+      "levelKnown": true,
+      "taken": {
+       "type": 6596,
+       "total": 13652
+      }
      },
      {
       "name": "Xeebs",
       "hero": "Riktor",
-      "armor": 100,
-      "after": 46,
+      "armor": 102,
+      "after": 47,
       "more": 37,
       "diedTo": 0,
-      "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "level": 18,
+      "levelKnown": true,
+      "taken": {
+       "type": 6814,
+       "total": 33473
+      }
      },
      {
       "name": "Boyd Cooper",
       "hero": "Aurora",
-      "armor": 105,
-      "after": 49,
+      "armor": 107,
+      "after": 50,
       "more": 37,
       "diedTo": 0,
-      "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "level": 18,
+      "levelKnown": true,
+      "taken": {
+       "type": 7290,
+       "total": 16605
+      }
      },
      {
       "name": "Mr_Meat31",
@@ -6793,8 +7054,11 @@
       "more": 32,
       "diedTo": 0,
       "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "levelKnown": true,
+      "taken": {
+       "type": 3213,
+       "total": 15046
+      }
      }
     ],
     "level": 17,
@@ -6818,6 +7082,16 @@
       "name": "Caustica",
       "kind": "item",
       "how": "On dealing Ability Damage to a Hero: While they are above 50% Health. For every point of Bonus Magical Armor they possess. Deal 0.2% more Damage."
+     },
+     {
+      "name": "Lotus",
+      "kind": "Eternal",
+      "how": "Every 2 minutes and every Takedown randomly grants +1% Damage, +4 Ability Haste, +0.75% Move Speed, or +1.25% Max Health."
+     },
+     {
+      "name": "Immaculate",
+      "kind": "Eternal minor",
+      "how": "Gain 10% Damage Reduction above 85% current health."
      }
     ],
     "items": [
@@ -6873,6 +7147,15 @@
       "effects": [
        "On dealing Ability Damage to a Hero: While they are above 50% Health. For every point of Bonus Magical Armor they possess. Deal 0.2% more Damage."
       ]
+     },
+     {
+      "slug": "epoch",
+      "name": "Epoch",
+      "kind": "crest",
+      "power": 30,
+      "pen": 0,
+      "penPct": 0,
+      "effects": []
      }
     ],
     "dealt": {
@@ -6898,7 +7181,7 @@
     "lead": {
      "id": "survival",
      "title": "Hard to kill",
-     "text": "Died 2 times in 33 minutes, fewer deaths than about 86% of Renna mid players this patch. The build added healing off damage. It came from Overseer, Caustica."
+     "text": "Died 2 times in 33 minutes, fewer deaths than about 86% of Renna mid players this patch. The build added healing off damage. It came from the Eternal setup (Lotus) plus Netherward, Overseer, Caustica."
     },
     "tabs": [
      "alive",
@@ -6940,6 +7223,33 @@
    "worked": {
     "stacks": [
      {
+      "family": "tough",
+      "title": "Kept alive in fights",
+      "members": [
+       {
+        "name": "Overseer",
+        "kind": "item",
+        "text": "Enhance your Ultimate Ability: Deals 15% more damage. Heals you for 25% of the damage dealt to Heroes."
+       },
+       {
+        "name": "Caustica",
+        "kind": "item",
+        "text": "Ignore 35% of Magical Armor."
+       },
+       {
+        "name": "Lotus",
+        "kind": "Eternal",
+        "text": "Every 2 minutes and every Takedown randomly grants +1% Damage, +4 Ability Haste, +0.75% Move Speed, or +1.25% Max Health."
+       },
+       {
+        "name": "Netherward",
+        "kind": "augment",
+        "text": "Upon using Soulfire, gain a 40 (+35%) Shield for 2s."
+       }
+      ],
+      "text": "4 effects on one trigger: Overseer, Caustica, Lotus, Netherward. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went."
+     },
+     {
       "family": "ability",
       "title": "Every ability hit set off",
       "members": [
@@ -6959,27 +7269,10 @@
         "text": "On dealing Ability Damage to a Hero: While they are above 50% Health. For every point of Bonus Magical Armor they possess. Deal 0.2% more Damage."
        }
       ],
-      "text": "3 effects on one trigger: Entropy, Wraith Leggings, Caustica. Renna has 4 damaging abilities (Stupor hit an area, so one cast sets them off on several heroes), and 15 ability haste brought them back 13% sooner: more casts, more triggers."
-     },
-     {
-      "family": "tough",
-      "title": "Kept alive in fights",
-      "members": [
-       {
-        "name": "Overseer",
-        "kind": "item",
-        "text": "Enhance your Ultimate Ability: Deals 15% more damage. Heals you for 25% of the damage dealt to Heroes."
-       },
-       {
-        "name": "Caustica",
-        "kind": "item",
-        "text": "Ignore 35% of Magical Armor."
-       }
-      ],
-      "text": "2 effects on one trigger: Overseer, Caustica. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went."
+      "text": "3 effects on one trigger: Entropy, Wraith Leggings, Caustica. Renna has 4 damaging abilities (Stupor hit an area, so one cast sets them off on several heroes), and 43 ability haste brought them back 30% sooner: more casts, more triggers."
      }
     ],
-    "eternalPart": null,
+    "eternalPart": "The Eternal was part of it: Lotus (Early Bloom + Immaculate) sits on the same trigger as the items (kept alive in fights), so every extra second in a fight made them harder to kill.",
     "countered": [
      {
       "ok": false,
@@ -6995,8 +7288,8 @@
      }
     ],
     "copy": {
-     "verdict": "unknown",
-     "text": "Too few Renna midlane games with this Eternal or core this patch to say whether it wins elsewhere."
+     "verdict": "beat-us",
+     "text": "Lotus (Early Bloom + Immaculate): 53% in 234 Renna midlane games, level with the hero's 52.4%; this 3-item core: 55.1% in 4,221 games, below the 56.3% of that hero-role's cores. It wins less than usual elsewhere: it beat us, not the field."
     }
    },
    "us": false,
@@ -7010,26 +7303,111 @@
    "hero": "Greystone",
    "slug": "greystone",
    "takedowns": 6,
-   "loadout": [],
+   "loadout": [
+    {
+     "kind": "augment",
+     "name": "Close Cut",
+     "text": "Make Way deals 20% increased damage to the nearest Enemy Unit.",
+     "ability": {
+      "name": "Make Way",
+      "key": "Q",
+      "what": "Summon a fiery whirlwind that deals 90/145/200/255/310 (+90%)(+80%) physical damage over 4s.",
+      "cd": 10,
+      "cdHaste": 7
+     },
+     "numbers": [],
+     "field": {
+      "wr": 51.6,
+      "n": 9036,
+      "share": 47,
+      "base": 51.8,
+      "verdict": "level"
+     },
+     "plain": "Make Way hits the nearest enemy harder. Stand on your target with the whirlwind to get the most from it."
+    },
+    {
+     "kind": "Eternal",
+     "name": "Krix",
+     "text": "Gain 5% (+1% per Level) increased Maximum Health, and bonus size equal to 0.5% of your Maximum Health.",
+     "ability": null,
+     "numbers": [],
+     "field": {
+      "wr": 52.9,
+      "n": 7496,
+      "share": 39,
+      "base": 51.8,
+      "verdict": "above"
+     },
+     "plain": "Raises your max health as you level and makes you bigger. Greystone's passive regen and ultimate heal scale with max health, so you get tankier overall."
+    },
+    {
+     "kind": "minor",
+     "name": "Regenerative Tissue",
+     "text": "After 8s without taking Hero damage, regenerate 0.2/0.4/0.7/1% Max Health per second at Levels 1/6/11/16.",
+     "ability": null,
+     "numbers": [],
+     "field": {
+      "wr": 52.6,
+      "n": 3997,
+      "share": 53,
+      "base": 51.8,
+      "verdict": "level"
+     },
+     "plain": "Heals you over time once you go a while without hero damage. Generic lane sustain on top of your passive regen."
+    },
+    {
+     "kind": "minor",
+     "name": "Feeding Frenzy",
+     "text": "Gain +10% Attack Speed per Enemy Hero within 1200 units.",
+     "ability": null,
+     "numbers": [],
+     "field": {
+      "wr": 51.6,
+      "n": 2305,
+      "share": 31,
+      "base": 51.8,
+      "verdict": "level"
+     },
+     "plain": "You attack faster for every enemy hero near you. Leap in with Assault The Gates and your basic attacks speed up right away."
+    },
+    {
+     "kind": "crest",
+     "name": "Judgement",
+     "text": "Thunder Cleaver:  Deal 70 (+40%) Damage in an area around you. On Hero hit, Heal (+30%) (+8%). Subsequent Hero hits Heal for 50% effectiveness.",
+     "ability": null,
+     "numbers": [],
+     "field": {
+      "wr": 51.6,
+      "n": 7495,
+      "share": 39,
+      "base": 51.8,
+      "verdict": "level"
+     },
+     "plain": "An area hit around you that heals you on hero hits. Use it with Make Way in the middle of a fight to top up."
+    }
+   ],
    "haste": {
     "sources": [
      {
       "what": "Tainted Bastion",
       "amount": 8,
+      "note": "bought at 14:09",
       "kind": "item",
-      "how": "+8 ability haste"
+      "how": "+8 ability haste, bought at 14:09"
      },
      {
       "what": "Basilisk",
       "amount": 20,
+      "note": "bought at 18:47",
       "kind": "item",
-      "how": "+20 ability haste"
+      "how": "+20 ability haste, bought at 18:47"
      },
      {
       "what": "Mutilator",
       "amount": 15,
+      "note": "bought at 26:51",
       "kind": "item",
-      "how": "+15 ability haste"
+      "how": "+15 ability haste, bought at 26:51"
      }
     ],
     "total": 43,
@@ -7040,7 +7418,7 @@
     "name": "Stone Forged Soul",
     "base": 145,
     "rank": 3,
-    "rankKnown": false,
+    "rankKnown": true,
     "endGame": 101.4,
     "inFight": null
    },
@@ -7048,28 +7426,37 @@
    "ultPlus": [],
    "lines": [
     "Lead story: Healed through fights. 617 healing a minute, more than 88% of Greystone offlane players this patch.",
-    "Stone Forged Soul at top rank: 145s base, about 101.4s by the end (30% shorter) from 43 ability haste: Tainted Bastion 8, Basilisk 20, Mutilator 15.",
+    "Stone Forged Soul at rank 3: 145s base, about 101.4s by the end (30% shorter) from 43 ability haste: Tainted Bastion 8, Basilisk 20, Mutilator 15.",
     "Their build heals off damage: anti-heal (the Tainted items) cuts it.",
-    "Greystone dealt 25,798 hero damage, 26% of their team's, with +115 physical power from items.",
+    "Greystone dealt 25,798 hero damage, 26% of their team's, with +127 physical power from items.",
     "Overlord (item): On Successful Basic Attack: Deal (+1%) Damage. Deal (+30%) (+2.5%) Damage around the Target. Damage decreases from 100% to 50% based on distance.",
     "Tainted Bastion (item): On taking Magical Damage: Reduce the Source's Healing by 45% for 3s.",
     "Tainted Bastion (item): Mitigate 3.5% of damage taken. Doubled against Blighted Targets.",
     "Mutilator (item): On Successsful Basic Attacks: Deal 1% of their Max Health as Damage.",
     "Forticus (item): Upon taking Hero damage: Gain a (+8%) Shield for 3.5s.",
     "Forticus (item): Upon damaging or being damaged by Heroes: For the next 3s, gain Stats each second: (+0.6% Base Health) additional Max Health, +4 Movement Speed and +0.5% Size.",
-    "Sustain: 12% omnivamp; Forticus: Upon taking Hero damage: Gain a (+8%) Shield for 3.5s.; Forticus: Shield Activations: Hero Combat Time:; 20,362 healing recorded.",
-    "Toughness: +1150 health, +55 physical armor, +45 magical armor, +25% tenacity; took 52,760 damage, mitigated 49,798, died 2 times.",
-    "Stack (Kept alive in fights): 3 effects on one trigger: Basilisk, Mutilator, Forticus. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went.",
+    "Judgement (crest): Deal 70 (+40%) Damage in an area around you. On Hero hit, Heal (+30%) (+8%). Subsequent Hero hits Heal for 50% effectiveness.",
+    "Close Cut (augment): Make Way deals 20% increased damage to the nearest Enemy Unit.",
+    "Sustain: 16% omnivamp; Forticus: Upon taking Hero damage: Gain a (+8%) Shield for 3.5s.; Forticus: Shield Activations: Hero Combat Time:; Judgement: Deal 70 (+40%) Damage in an area around you. On Hero hit, Heal (+30%) (+8%). Subsequent Hero hits Heal for 50% effectiveness.; 20,362 healing recorded.",
+    "Toughness: +1250 health, +55 physical armor, +45 magical armor, +25% tenacity; took 52,760 damage, mitigated 49,798, died 2 times.",
+    "Loadout augment Close Cut: Make Way hits the nearest enemy harder. Stand on your target with the whirlwind to get the most from it. (game text: Make Way deals 20% increased damage to the nearest Enemy Unit.) (changes Make Way, 7s cooldown with their haste) Field: 51.6% in 9036 games, 47% of picks, level the hero-role's 51.8%.",
+    "Loadout Eternal Krix: Raises your max health as you level and makes you bigger. Greystone's passive regen and ultimate heal scale with max health, so you get tankier overall. (game text: Gain 5% (+1% per Level) increased Maximum Health, and bonus size equal to 0.5% of your Maximum Health.) Field: 52.9% in 7496 games, 39% of picks, above the hero-role's 51.8%.",
+    "Loadout minor Regenerative Tissue: Heals you over time once you go a while without hero damage. Generic lane sustain on top of your passive regen. (game text: After 8s without taking Hero damage, regenerate 0.2/0.4/0.7/1% Max Health per second at Levels 1/6/11/16.) Field: 52.6% in 3997 games, 53% of picks, level the hero-role's 51.8%.",
+    "Loadout minor Feeding Frenzy: You attack faster for every enemy hero near you. Leap in with Assault The Gates and your basic attacks speed up right away. (game text: Gain +10% Attack Speed per Enemy Hero within 1200 units.) Field: 51.6% in 2305 games, 31% of picks, level the hero-role's 51.8%.",
+    "Loadout crest Judgement: An area hit around you that heals you on hero hits. Use it with Make Way in the middle of a fight to top up. (game text: Thunder Cleaver:  Deal 70 (+40%) Damage in an area around you. On Hero hit, Heal (+30%) (+8%). Subsequent Hero hits Heal for 50% effectiveness.) Field: 51.6% in 7495 games, 39% of picks, level the hero-role's 51.8%.",
+    "Stack (Kept alive in fights): 6 effects on one trigger: Basilisk, Mutilator, Forticus, Judgement, Krix, Regenerative Tissue. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went.",
     "Stack (Every basic attack set off): 2 effects on one trigger: Overlord, Mutilator.",
+    "Stack (Healing off the damage): 2 effects on one trigger: Mutilator, Judgement.",
+    "The Eternal was part of it: Krix (Regenerative Tissue + Feeding Frenzy) sits on the same trigger as the items (kept alive in fights), so every extra second in a fight made them harder to kill.",
     "Countered? 1 of the 2 players Greystone killed built physical armor (Riktor). Anti-heal on Skylar. We killed Greystone 2 times.",
-    "Copy it? Too few Greystone offlane games with this Eternal or core this patch to say whether it wins elsewhere."
+    "Copy it? Krix (Regenerative Tissue + Feeding Frenzy): 52.3% in 909 Greystone offlane games, level with the hero's 51.8%. A standard setup: what made it work was this game, not a secret build."
    ],
    "card": {
     "ult": {
      "name": "Stone Forged Soul",
      "base": 145,
      "rank": 3,
-     "rankKnown": false,
+     "rankKnown": true,
      "endGame": 101.4,
      "inFight": null
     },
@@ -7085,26 +7472,26 @@
       "name": "Tainted Bastion",
       "kind": "item",
       "amount": 8,
-      "how": "+8 ability haste"
+      "how": "+8 ability haste, bought at 14:09"
      },
      {
       "name": "Basilisk",
       "kind": "item",
       "amount": 20,
-      "how": "+20 ability haste"
+      "how": "+20 ability haste, bought at 18:47"
      },
      {
       "name": "Mutilator",
       "kind": "item",
       "amount": 15,
-      "how": "+15 ability haste"
+      "how": "+15 ability haste, bought at 26:51"
      }
     ],
     "fight": null,
     "extras": [],
     "power": {
      "type": "physical",
-     "power": 115,
+     "power": 127,
      "pen": {
       "flat": 0,
       "pct": 0,
@@ -7114,24 +7501,30 @@
       {
        "name": "Xeebs",
        "hero": "Riktor",
-       "armor": 217,
-       "after": 217,
+       "armor": 225,
+       "after": 225,
        "more": 0,
        "diedTo": 1,
-       "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "level": 18,
+       "levelKnown": true,
+       "taken": {
+        "type": 25048,
+        "total": 33473
+       }
       },
       {
        "name": "Boyd Cooper",
        "hero": "Aurora",
-       "armor": 115,
-       "after": 115,
+       "armor": 121,
+       "after": 121,
        "more": 0,
        "diedTo": 1,
-       "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "level": 18,
+       "levelKnown": true,
+       "taken": {
+        "type": 8686,
+        "total": 16605
+       }
       },
       {
        "name": "Mr_Meat31",
@@ -7141,30 +7534,39 @@
        "more": 0,
        "diedTo": 0,
        "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "levelKnown": true,
+       "taken": {
+        "type": 11013,
+        "total": 15046
+       }
       },
       {
        "name": "The-Slicc-Whitt-",
        "hero": "The Fey",
-       "armor": 101,
-       "after": 101,
+       "armor": 107,
+       "after": 107,
        "more": 0,
        "diedTo": 0,
-       "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "level": 18,
+       "levelKnown": true,
+       "taken": {
+        "type": 6660,
+        "total": 21323
+       }
       },
       {
        "name": "Willy Guggenheim",
        "hero": "Skylar",
-       "armor": 103,
-       "after": 103,
+       "armor": 110,
+       "after": 110,
        "more": 0,
        "diedTo": 0,
-       "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "level": 18,
+       "levelKnown": true,
+       "taken": {
+        "type": 6237,
+        "total": 13652
+       }
       }
      ],
      "level": 17,
@@ -7198,6 +7600,16 @@
        "name": "Forticus",
        "kind": "item",
        "how": "Upon damaging or being damaged by Heroes: For the next 3s, gain Stats each second: (+0.6% Base Health) additional Max Health, +4 Movement Speed and +0.5% Size."
+      },
+      {
+       "name": "Judgement",
+       "kind": "crest",
+       "how": "Deal 70 (+40%) Damage in an area around you. On Hero hit, Heal (+30%) (+8%). Subsequent Hero hits Heal for 50% effectiveness."
+      },
+      {
+       "name": "Close Cut",
+       "kind": "augment",
+       "how": "Make Way deals 20% increased damage to the nearest Enemy Unit."
       }
      ],
      "items": [
@@ -7255,6 +7667,17 @@
         "Upon taking Hero damage: Gain a (+8%) Shield for 3.5s.",
         "Upon damaging or being damaged by Heroes: For the next 3s, gain Stats each second: (+0.6% Base Health) additional Max Health, +4 Movement Speed and +0.5% Size."
        ]
+      },
+      {
+       "slug": "judgement",
+       "name": "Judgement",
+       "kind": "crest",
+       "power": 12,
+       "pen": 0,
+       "penPct": 0,
+       "effects": [
+        "Deal 70 (+40%) Damage in an area around you. On Hero hit, Heal (+30%) (+8%). Subsequent Hero hits Heal for 50% effectiveness."
+       ]
       }
      ],
      "dealt": {
@@ -7263,7 +7686,7 @@
      },
      "sustain": {
       "stats": [
-       "12% omnivamp"
+       "16% omnivamp"
       ],
       "effects": [
        {
@@ -7275,13 +7698,18 @@
         "name": "Forticus",
         "kind": "item",
         "how": "Shield Activations: Hero Combat Time:"
+       },
+       {
+        "name": "Judgement",
+        "kind": "item",
+        "how": "Deal 70 (+40%) Damage in an area around you. On Hero hit, Heal (+30%) (+8%). Subsequent Hero hits Heal for 50% effectiveness."
        }
       ],
       "healing": 20362
      },
      "tough": {
       "stats": [
-       "+1150 health",
+       "+1250 health",
        "+55 physical armor",
        "+45 magical armor",
        "+25% tenacity"
@@ -7296,7 +7724,7 @@
      "lead": {
       "id": "sustain",
       "title": "Healed through fights",
-      "text": "617 healing a minute, more than 88% of Greystone offlane players this patch. It came from Basilisk, Mutilator, Forticus."
+      "text": "617 healing a minute, more than 88% of Greystone offlane players this patch. It came from the Eternal setup (Krix, Regenerative Tissue) plus Judgement, Basilisk, Mutilator."
      },
      "tabs": [
       "alive",
@@ -7355,9 +7783,24 @@
          "name": "Forticus",
          "kind": "item",
          "text": "Upon taking Hero damage: Gain a (+8%) Shield for 3.5s."
+        },
+        {
+         "name": "Judgement",
+         "kind": "crest",
+         "text": "Deal 70 (+40%) Damage in an area around you. On Hero hit, Heal (+30%) (+8%). Subsequent Hero hits Heal for 50% effectiveness."
+        },
+        {
+         "name": "Krix",
+         "kind": "Eternal",
+         "text": "Gain 5% (+1% per Level) increased Maximum Health, and bonus size equal to 0.5% of your Maximum Health."
+        },
+        {
+         "name": "Regenerative Tissue",
+         "kind": "Eternal minor",
+         "text": "After 8s without taking Hero damage, regenerate 0.2/0.4/0.7/1% Max Health per second at Levels 1/6/11/16."
         }
        ],
-       "text": "3 effects on one trigger: Basilisk, Mutilator, Forticus. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went."
+       "text": "6 effects on one trigger: Basilisk, Mutilator, Forticus, Judgement, Krix, Regenerative Tissue. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went."
       },
       {
        "family": "attack",
@@ -7375,9 +7818,26 @@
         }
        ],
        "text": "2 effects on one trigger: Overlord, Mutilator."
+      },
+      {
+       "family": "heal",
+       "title": "Healing off the damage",
+       "members": [
+        {
+         "name": "Mutilator",
+         "kind": "item",
+         "text": "lifesteal"
+        },
+        {
+         "name": "Judgement",
+         "kind": "crest",
+         "text": "Deal 70 (+40%) Damage in an area around you. On Hero hit, Heal (+30%) (+8%). Subsequent Hero hits Heal for 50% effectiveness."
+        }
+       ],
+       "text": "2 effects on one trigger: Mutilator, Judgement."
       }
      ],
-     "eternalPart": null,
+     "eternalPart": "The Eternal was part of it: Krix (Regenerative Tissue + Feeding Frenzy) sits on the same trigger as the items (kept alive in fights), so every extra second in a fight made them harder to kill.",
      "countered": [
       {
        "ok": false,
@@ -7393,15 +7853,97 @@
       }
      ],
      "copy": {
-      "verdict": "unknown",
-      "text": "Too few Greystone offlane games with this Eternal or core this patch to say whether it wins elsewhere."
+      "verdict": "standard",
+      "text": "Krix (Regenerative Tissue + Feeding Frenzy): 52.3% in 909 Greystone offlane games, level with the hero's 51.8%. A standard setup: what made it work was this game, not a secret build."
      }
     },
-    "loadout": []
+    "loadout": [
+     {
+      "kind": "augment",
+      "name": "Close Cut",
+      "text": "Make Way deals 20% increased damage to the nearest Enemy Unit.",
+      "ability": {
+       "name": "Make Way",
+       "key": "Q",
+       "what": "Summon a fiery whirlwind that deals 90/145/200/255/310 (+90%)(+80%) physical damage over 4s.",
+       "cd": 10,
+       "cdHaste": 7
+      },
+      "numbers": [],
+      "field": {
+       "wr": 51.6,
+       "n": 9036,
+       "share": 47,
+       "base": 51.8,
+       "verdict": "level"
+      },
+      "plain": "Make Way hits the nearest enemy harder. Stand on your target with the whirlwind to get the most from it."
+     },
+     {
+      "kind": "Eternal",
+      "name": "Krix",
+      "text": "Gain 5% (+1% per Level) increased Maximum Health, and bonus size equal to 0.5% of your Maximum Health.",
+      "ability": null,
+      "numbers": [],
+      "field": {
+       "wr": 52.9,
+       "n": 7496,
+       "share": 39,
+       "base": 51.8,
+       "verdict": "above"
+      },
+      "plain": "Raises your max health as you level and makes you bigger. Greystone's passive regen and ultimate heal scale with max health, so you get tankier overall."
+     },
+     {
+      "kind": "minor",
+      "name": "Regenerative Tissue",
+      "text": "After 8s without taking Hero damage, regenerate 0.2/0.4/0.7/1% Max Health per second at Levels 1/6/11/16.",
+      "ability": null,
+      "numbers": [],
+      "field": {
+       "wr": 52.6,
+       "n": 3997,
+       "share": 53,
+       "base": 51.8,
+       "verdict": "level"
+      },
+      "plain": "Heals you over time once you go a while without hero damage. Generic lane sustain on top of your passive regen."
+     },
+     {
+      "kind": "minor",
+      "name": "Feeding Frenzy",
+      "text": "Gain +10% Attack Speed per Enemy Hero within 1200 units.",
+      "ability": null,
+      "numbers": [],
+      "field": {
+       "wr": 51.6,
+       "n": 2305,
+       "share": 31,
+       "base": 51.8,
+       "verdict": "level"
+      },
+      "plain": "You attack faster for every enemy hero near you. Leap in with Assault The Gates and your basic attacks speed up right away."
+     },
+     {
+      "kind": "crest",
+      "name": "Judgement",
+      "text": "Thunder Cleaver:  Deal 70 (+40%) Damage in an area around you. On Hero hit, Heal (+30%) (+8%). Subsequent Hero hits Heal for 50% effectiveness.",
+      "ability": null,
+      "numbers": [],
+      "field": {
+       "wr": 51.6,
+       "n": 7495,
+       "share": 39,
+       "base": 51.8,
+       "verdict": "level"
+      },
+      "plain": "An area hit around you that heals you on hero hits. Use it with Make Way in the middle of a fight to top up."
+     }
+    ]
    },
    "power": {
     "type": "physical",
-    "power": 115,
+    "power": 127,
     "pen": {
      "flat": 0,
      "pct": 0,
@@ -7411,24 +7953,30 @@
      {
       "name": "Xeebs",
       "hero": "Riktor",
-      "armor": 217,
-      "after": 217,
+      "armor": 225,
+      "after": 225,
       "more": 0,
       "diedTo": 1,
-      "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "level": 18,
+      "levelKnown": true,
+      "taken": {
+       "type": 25048,
+       "total": 33473
+      }
      },
      {
       "name": "Boyd Cooper",
       "hero": "Aurora",
-      "armor": 115,
-      "after": 115,
+      "armor": 121,
+      "after": 121,
       "more": 0,
       "diedTo": 1,
-      "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "level": 18,
+      "levelKnown": true,
+      "taken": {
+       "type": 8686,
+       "total": 16605
+      }
      },
      {
       "name": "Mr_Meat31",
@@ -7438,30 +7986,39 @@
       "more": 0,
       "diedTo": 0,
       "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "levelKnown": true,
+      "taken": {
+       "type": 11013,
+       "total": 15046
+      }
      },
      {
       "name": "The-Slicc-Whitt-",
       "hero": "The Fey",
-      "armor": 101,
-      "after": 101,
+      "armor": 107,
+      "after": 107,
       "more": 0,
       "diedTo": 0,
-      "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "level": 18,
+      "levelKnown": true,
+      "taken": {
+       "type": 6660,
+       "total": 21323
+      }
      },
      {
       "name": "Willy Guggenheim",
       "hero": "Skylar",
-      "armor": 103,
-      "after": 103,
+      "armor": 110,
+      "after": 110,
       "more": 0,
       "diedTo": 0,
-      "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "level": 18,
+      "levelKnown": true,
+      "taken": {
+       "type": 6237,
+       "total": 13652
+      }
      }
     ],
     "level": 17,
@@ -7495,6 +8052,16 @@
       "name": "Forticus",
       "kind": "item",
       "how": "Upon damaging or being damaged by Heroes: For the next 3s, gain Stats each second: (+0.6% Base Health) additional Max Health, +4 Movement Speed and +0.5% Size."
+     },
+     {
+      "name": "Judgement",
+      "kind": "crest",
+      "how": "Deal 70 (+40%) Damage in an area around you. On Hero hit, Heal (+30%) (+8%). Subsequent Hero hits Heal for 50% effectiveness."
+     },
+     {
+      "name": "Close Cut",
+      "kind": "augment",
+      "how": "Make Way deals 20% increased damage to the nearest Enemy Unit."
      }
     ],
     "items": [
@@ -7552,6 +8119,17 @@
        "Upon taking Hero damage: Gain a (+8%) Shield for 3.5s.",
        "Upon damaging or being damaged by Heroes: For the next 3s, gain Stats each second: (+0.6% Base Health) additional Max Health, +4 Movement Speed and +0.5% Size."
       ]
+     },
+     {
+      "slug": "judgement",
+      "name": "Judgement",
+      "kind": "crest",
+      "power": 12,
+      "pen": 0,
+      "penPct": 0,
+      "effects": [
+       "Deal 70 (+40%) Damage in an area around you. On Hero hit, Heal (+30%) (+8%). Subsequent Hero hits Heal for 50% effectiveness."
+      ]
      }
     ],
     "dealt": {
@@ -7560,7 +8138,7 @@
     },
     "sustain": {
      "stats": [
-      "12% omnivamp"
+      "16% omnivamp"
      ],
      "effects": [
       {
@@ -7572,13 +8150,18 @@
        "name": "Forticus",
        "kind": "item",
        "how": "Shield Activations: Hero Combat Time:"
+      },
+      {
+       "name": "Judgement",
+       "kind": "item",
+       "how": "Deal 70 (+40%) Damage in an area around you. On Hero hit, Heal (+30%) (+8%). Subsequent Hero hits Heal for 50% effectiveness."
       }
      ],
      "healing": 20362
     },
     "tough": {
      "stats": [
-      "+1150 health",
+      "+1250 health",
       "+55 physical armor",
       "+45 magical armor",
       "+25% tenacity"
@@ -7592,7 +8175,7 @@
     "lead": {
      "id": "sustain",
      "title": "Healed through fights",
-     "text": "617 healing a minute, more than 88% of Greystone offlane players this patch. It came from Basilisk, Mutilator, Forticus."
+     "text": "617 healing a minute, more than 88% of Greystone offlane players this patch. It came from the Eternal setup (Krix, Regenerative Tissue) plus Judgement, Basilisk, Mutilator."
     },
     "tabs": [
      "alive",
@@ -7651,9 +8234,24 @@
         "name": "Forticus",
         "kind": "item",
         "text": "Upon taking Hero damage: Gain a (+8%) Shield for 3.5s."
+       },
+       {
+        "name": "Judgement",
+        "kind": "crest",
+        "text": "Deal 70 (+40%) Damage in an area around you. On Hero hit, Heal (+30%) (+8%). Subsequent Hero hits Heal for 50% effectiveness."
+       },
+       {
+        "name": "Krix",
+        "kind": "Eternal",
+        "text": "Gain 5% (+1% per Level) increased Maximum Health, and bonus size equal to 0.5% of your Maximum Health."
+       },
+       {
+        "name": "Regenerative Tissue",
+        "kind": "Eternal minor",
+        "text": "After 8s without taking Hero damage, regenerate 0.2/0.4/0.7/1% Max Health per second at Levels 1/6/11/16."
        }
       ],
-      "text": "3 effects on one trigger: Basilisk, Mutilator, Forticus. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went."
+      "text": "6 effects on one trigger: Basilisk, Mutilator, Forticus, Judgement, Krix, Regenerative Tissue. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went."
      },
      {
       "family": "attack",
@@ -7671,9 +8269,26 @@
        }
       ],
       "text": "2 effects on one trigger: Overlord, Mutilator."
+     },
+     {
+      "family": "heal",
+      "title": "Healing off the damage",
+      "members": [
+       {
+        "name": "Mutilator",
+        "kind": "item",
+        "text": "lifesteal"
+       },
+       {
+        "name": "Judgement",
+        "kind": "crest",
+        "text": "Deal 70 (+40%) Damage in an area around you. On Hero hit, Heal (+30%) (+8%). Subsequent Hero hits Heal for 50% effectiveness."
+       }
+      ],
+      "text": "2 effects on one trigger: Mutilator, Judgement."
      }
     ],
-    "eternalPart": null,
+    "eternalPart": "The Eternal was part of it: Krix (Regenerative Tissue + Feeding Frenzy) sits on the same trigger as the items (kept alive in fights), so every extra second in a fight made them harder to kill.",
     "countered": [
      {
       "ok": false,
@@ -7689,8 +8304,8 @@
      }
     ],
     "copy": {
-     "verdict": "unknown",
-     "text": "Too few Greystone offlane games with this Eternal or core this patch to say whether it wins elsewhere."
+     "verdict": "standard",
+     "text": "Krix (Regenerative Tissue + Feeding Frenzy): 52.3% in 909 Greystone offlane games, level with the hero's 51.8%. A standard setup: what made it work was this game, not a secret build."
     }
    },
    "us": false,
@@ -7703,33 +8318,129 @@
    "hero": "The Fey",
    "slug": "the-fey",
    "takedowns": 5,
-   "loadout": [],
+   "loadout": [
+    {
+     "kind": "augment",
+     "name": "Natural Infusion",
+     "text": "Damaging Heroes with Harvest Nettles grants 10 Ability Haste for 6s, stacking infinitely.",
+     "ability": {
+      "name": "Harvest Nettles",
+      "key": "E",
+      "what": "Throw an orb of energy, dealing 80/115/150/185/220 (+55%) magical damage.",
+      "cd": 3,
+      "cdHaste": 2.2
+     },
+     "numbers": [],
+     "field": {
+      "wr": 50.7,
+      "n": 5848,
+      "share": 34,
+      "base": 51.7,
+      "verdict": "below"
+     },
+     "plain": "Every Harvest Nettles hit on a hero stacks faster cooldowns for a few seconds, with no cap. Keep hitting heroes to throw Nettles and Untamed Growth nonstop."
+    },
+    {
+     "kind": "Eternal",
+     "name": "Vesh",
+     "text": "Ability damage dealt to Enemy Heroes deals 7% (+0.4% per minute) of that damage as a DoT over 3s.",
+     "ability": null,
+     "numbers": [
+      "7% growing 0.4% a minute: about 20.2% by the end (33 min)"
+     ],
+     "field": {
+      "wr": 50.8,
+      "n": 10210,
+      "share": 60,
+      "base": 51.7,
+      "verdict": "level"
+     },
+     "plain": "Every ability that hits a hero adds a burn on top. Harvest Nettles has a short cooldown, so the burn stays up all fight."
+    },
+    {
+     "kind": "minor",
+     "name": "The Tenth Seal",
+     "text": "At Level 10, gain 5% Ultimate Damage and 25 Ultimate Ability Haste.",
+     "ability": null,
+     "numbers": [],
+     "field": {
+      "wr": 51,
+      "n": 1864,
+      "share": 18,
+      "base": 51.7,
+      "verdict": "level"
+     }
+    },
+    {
+     "kind": "minor",
+     "name": "Mind Rot",
+     "text": "The major also deals 2% of the target's current health as bonus damage.",
+     "ability": null,
+     "numbers": [],
+     "field": {
+      "wr": 50.5,
+      "n": 8259,
+      "share": 81,
+      "base": 51.7,
+      "verdict": "below"
+     },
+     "plain": "Your Vesh burn also deals damage based on the target's current health, so your spells hurt healthy, tanky heroes more."
+    },
+    {
+     "kind": "crest",
+     "name": "Soulbearer",
+     "text": "Anima:  Gain a 100 (+35) (+6%) Shield for 8s. Gain 20% Magical Lifesteal and 10% Movement Speed for 8s.",
+     "ability": null,
+     "numbers": [],
+     "field": {
+      "wr": 54.4,
+      "n": 3768,
+      "share": 22,
+      "base": 51.7,
+      "verdict": "above"
+     },
+     "plain": "A shield, lifesteal on your magic damage, and speed for a few seconds. Pop it when caught and keep throwing Harvest Nettles to heal."
+    }
+   ],
    "haste": {
     "sources": [
      {
       "what": "Astral Catalyst",
       "amount": 20,
+      "note": "bought at 16:55",
       "kind": "item",
-      "how": "+20 ability haste"
+      "how": "+20 ability haste, bought at 16:55"
      },
      {
       "what": "Megacosm",
       "amount": 10,
+      "note": "bought at 32:39",
       "kind": "item",
-      "how": "+10 ability haste"
+      "how": "+10 ability haste, bought at 32:39"
+     },
+     {
+      "what": "Soulbearer",
+      "amount": 8,
+      "note": "crest",
+      "kind": "crest",
+      "how": "+8 ability haste"
      }
     ],
-    "total": 30,
-    "fightBonus": null,
-    "ultOnly": 0
+    "total": 38,
+    "fightBonus": {
+     "what": "Natural Infusion (augment)",
+     "amount": 30,
+     "note": "10 per Harvest Nettles hit for 6s; Harvest Nettles comes back every 2.2s at 38 haste, so up to 3 stacks if every cast hits"
+    },
+    "ultOnly": 25
    },
    "ult": {
     "name": "Fly Trap",
     "base": 95,
     "rank": 3,
-    "rankKnown": false,
-    "endGame": 73.1,
-    "inFight": null
+    "rankKnown": true,
+    "endGame": 58.3,
+    "inFight": 49.2
    },
    "fedBy": [
     "Astral Catalyst: Damage Dealt: Takedowns:",
@@ -7740,33 +8451,46 @@
     "Overseer (Exalted): Enhance your Ultimate Ability: Deals 15% more damage. Heals you for 25% of the damage dealt to Heroes."
    ],
    "lines": [
-    "Fly Trap at top rank: 95s base, about 73.1s by the end (23% shorter) from 30 ability haste: Astral Catalyst 20, Megacosm 10.",
+    "Lead story: Fly Trap on a short timer. Fly Trap came back every ~58s instead of 95s, 39% faster.",
+    "Fly Trap at rank 3: 95s base, about 58.3s by the end (39% shorter) from 63 ability haste: Astral Catalyst 20, Megacosm 10, Soulbearer 8, ultimate haste 25.",
+    "Mid-fight, Natural Infusion (augment) adds up to 30 more (10 per Harvest Nettles hit for 6s; Harvest Nettles comes back every 2.2s at 38 haste, so up to 3 stacks if every cast hits): Fly Trap about 49.2s (estimate).",
     "5 takedowns (1 kills, 4 assists) fed: Astral Catalyst, Nature's Vengeance (passive).",
     "Astral Catalyst (Ravenous): Hero Kills reduce your Ultimate Cooldown by 25%.• Hero Assists reduce your Ultimate Cooldown by 15%.",
     "Overseer (Exalted): Enhance your Ultimate Ability: Deals 15% more damage. Heals you for 25% of the damage dealt to Heroes.",
     "Their build heals off damage: anti-heal (the Tainted items) cuts it.",
-    "The Fey dealt 33,929 hero damage, 35% of their team's, with +320 magical power from items.",
-    "Penetration: Combustion 9, Overseer 8; against Greystone (level 17 estimated: about 105 magical armor, 88 after penetration) and Renna (level 17 estimated: about 47 magical armor, 30 after penetration) that is about 9% and 13% more damage (estimate: percent penetration taken before flat).",
+    "The Fey dealt 33,929 hero damage, 35% of their team's, with +350 magical power from items.",
+    "Penetration: Combustion 9, Overseer 8; against Greystone (level 18: about 107 magical armor, 90 after penetration; took 20,713 magical damage from heroes, 71% of all hero damage they took) and Renna (level 18: about 49 magical armor, 32 after penetration; took 14,758 magical damage from heroes, 78% of all hero damage they took) that is about 9% and 13% more damage (estimate: percent penetration taken before flat).",
     "Combustion (item): On dealing Ability Damage: Deal 50 (+18%) Damage to the Target and nearby Enemies.",
     "Astral Catalyst (item): On damaging a Shielded Target: Deal 40% bonus Damage. Does not exceed the size of the Shield.",
     "Overseer (item): Ultimate: Deals 15% more damage. Heals you for 25% of the damage dealt to Heroes.",
     "Megacosm (item): On dealing Ability Damage: Deal 2.5% of Target's Max Health as Damage over 3s. Additional applications refresh the duration.",
     "Megacosm (item): On dealing Ability Damage to Heroes: Deal 6% of Target's Bonus Health as Damage over 3s.",
-    "Sustain: 7% magical lifesteal; Astral Catalyst: On damaging a Shielded Target: Deal 40% bonus Damage. Does not exceed the size of the Shield.; Overseer: Ultimate: Deals 15% more damage. Heals you for 25% of the damage dealt to Heroes.; 2,975 healing recorded.",
+    "Vesh (Eternal): Ability damage dealt to Enemy Heroes deals 7% (+0.4% a minute, about 20.2% by the end) of that damage as a DoT over 3s.",
+    "The Tenth Seal (Eternal minor): At Level 10, gain 5% Ultimate Damage and 25 Ultimate Ability Haste.",
+    "Mind Rot (Eternal minor): The major also deals 2% of the target's current health as bonus damage.",
+    "Sustain: 7% magical lifesteal; Astral Catalyst: On damaging a Shielded Target: Deal 40% bonus Damage. Does not exceed the size of the Shield.; Overseer: Ultimate: Deals 15% more damage. Heals you for 25% of the damage dealt to Heroes.; Soulbearer: Gain a 100 (+35) (+6%) Shield for 8s. Gain 20% Magical Lifesteal and 10% Movement Speed for 8s.; 2,975 healing recorded.",
     "Toughness: +250 health; took 25,786 damage, mitigated 12,935, died 3 times.",
-    "Stack (Kept alive in fights): 3 effects on one trigger: Astral Catalyst, Overseer, Megacosm. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went.",
-    "Stack (Every ability hit set off): 2 effects on one trigger: Combustion, Megacosm. The Fey has 4 damaging abilities (Untamed Growth, Bramble Patch hit an area, so one cast sets them off on several heroes), and 30 ability haste brought them back 23% sooner: more casts, more triggers.",
-    "Countered? 1 of the 1 players The Fey killed built magical armor (Greystone). We killed The Fey 3 times.",
-    "Copy it? Too few The Fey midlane games with this Eternal or core this patch to say whether it wins elsewhere."
+    "Loadout augment Natural Infusion: Every Harvest Nettles hit on a hero stacks faster cooldowns for a few seconds, with no cap. Keep hitting heroes to throw Nettles and Untamed Growth nonstop. (game text: Damaging Heroes with Harvest Nettles grants 10 Ability Haste for 6s, stacking infinitely.) (changes Harvest Nettles, 2.2s cooldown with their haste) Field: 50.7% in 5848 games, 34% of picks, below the hero-role's 51.7%.",
+    "Loadout Eternal Vesh: Every ability that hits a hero adds a burn on top. Harvest Nettles has a short cooldown, so the burn stays up all fight. (game text: Ability damage dealt to Enemy Heroes deals 7% (+0.4% per minute) of that damage as a DoT over 3s.) [7% growing 0.4% a minute: about 20.2% by the end (33 min)] Field: 50.8% in 10210 games, 60% of picks, level the hero-role's 51.7%.",
+    "Loadout minor The Tenth Seal: At Level 10, gain 5% Ultimate Damage and 25 Ultimate Ability Haste. Field: 51% in 1864 games, 18% of picks, level the hero-role's 51.7%.",
+    "Loadout minor Mind Rot: Your Vesh burn also deals damage based on the target's current health, so your spells hurt healthy, tanky heroes more. (game text: The major also deals 2% of the target's current health as bonus damage.) Field: 50.5% in 8259 games, 81% of picks, below the hero-role's 51.7%.",
+    "Loadout crest Soulbearer: A shield, lifesteal on your magic damage, and speed for a few seconds. Pop it when caught and keep throwing Harvest Nettles to heal. (game text: Anima:  Gain a 100 (+35) (+6%) Shield for 8s. Gain 20% Magical Lifesteal and 10% Movement Speed for 8s.) Field: 54.4% in 3768 games, 22% of picks, above the hero-role's 51.7%.",
+    "Stack (Every ability hit set off): 4 effects on one trigger: Combustion, Megacosm, Vesh, Mind Rot. The Fey has 4 damaging abilities (Untamed Growth, Bramble Patch hit an area, so one cast sets them off on several heroes), and 38 ability haste brought them back 28% sooner: more casts, more triggers.",
+    "Stack (Kept alive in fights): 4 effects on one trigger: Astral Catalyst, Overseer, Megacosm, Soulbearer. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went.",
+    "Stack (Damage that scales with the target's health): 2 effects on one trigger: Megacosm, Mind Rot. The more health a target stacks, the more these deal, so health items on the other side fed them.",
+    "Stack (Healing off the damage): 2 effects on one trigger: Overseer, Soulbearer.",
+    "The Eternal was part of it: Vesh (The Tenth Seal + Mind Rot) sits on the same triggers as the items (every ability hit set off; damage that scales with the target's health), so the same hits paid out twice.",
+    "Countered? 1 of the 1 players The Fey killed built magical armor (Greystone). Anti-heal on Greystone, Steel. Health items on Greystone raised the %-health damage they took. We killed The Fey 3 times.",
+    "Copy it? Vesh (The Tenth Seal + Mind Rot): 51% in 766 The Fey midlane games, level with the hero's 51.7%. A standard setup: what made it work was this game, not a secret build."
    ],
    "card": {
     "ult": {
      "name": "Fly Trap",
      "base": 95,
      "rank": 3,
-     "rankKnown": false,
-     "endGame": 73.1,
-     "inFight": null
+     "rankKnown": true,
+     "endGame": 58.3,
+     "inFight": 49.2
     },
     "takedowns": {
      "count": 5,
@@ -7774,22 +8498,33 @@
      "assists": 4
     },
     "heals": true,
-    "lesson": null,
+    "lesson": "Fly Trap came back about every 58s instead of 95s by the end (39% shorter). Count it, and take fights while it is down.",
     "haste": [
      {
       "name": "Astral Catalyst",
       "kind": "item",
       "amount": 20,
-      "how": "+20 ability haste"
+      "how": "+20 ability haste, bought at 16:55"
      },
      {
       "name": "Megacosm",
       "kind": "item",
       "amount": 10,
-      "how": "+10 ability haste"
+      "how": "+10 ability haste, bought at 32:39"
+     },
+     {
+      "name": "Soulbearer",
+      "kind": "crest",
+      "amount": 8,
+      "how": "+8 ability haste"
      }
     ],
-    "fight": null,
+    "fight": {
+     "name": "Natural Infusion",
+     "kind": "augment",
+     "amount": 30,
+     "how": "+10 for 6s each time Harvest Nettles hits a hero, up to 3 at once"
+    },
     "extras": [
      {
       "name": "Overseer",
@@ -7804,7 +8539,7 @@
     ],
     "power": {
      "type": "magical",
-     "power": 320,
+     "power": 350,
      "pen": {
       "flat": 17,
       "pct": 0,
@@ -7817,35 +8552,44 @@
       {
        "name": "🎮 private",
        "hero": "Greystone",
-       "armor": 105,
-       "after": 88,
+       "armor": 107,
+       "after": 90,
        "more": 9,
        "diedTo": 1,
-       "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "level": 18,
+       "levelKnown": true,
+       "taken": {
+        "type": 20713,
+        "total": 29203
+       }
       },
       {
        "name": "Piranha75",
        "hero": "Renna",
-       "armor": 47,
-       "after": 30,
+       "armor": 49,
+       "after": 32,
        "more": 13,
        "diedTo": 0,
-       "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "level": 18,
+       "levelKnown": true,
+       "taken": {
+        "type": 14758,
+        "total": 18820
+       }
       },
       {
        "name": "Killa™",
        "hero": "Sparrow",
-       "armor": 47,
-       "after": 30,
+       "armor": 49,
+       "after": 32,
        "more": 13,
        "diedTo": 0,
-       "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "level": 18,
+       "levelKnown": true,
+       "taken": {
+        "type": 4948,
+        "total": 10756
+       }
       },
       {
        "name": "MeanSaltine™",
@@ -7855,19 +8599,25 @@
        "more": 10,
        "diedTo": 0,
        "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "levelKnown": true,
+       "taken": {
+        "type": 12454,
+        "total": 20321
+       }
       },
       {
        "name": "🎮 private",
        "hero": "Khaimera",
-       "armor": 105,
-       "after": 88,
+       "armor": 107,
+       "after": 90,
        "more": 9,
        "diedTo": 0,
-       "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "level": 18,
+       "levelKnown": true,
+       "taken": {
+        "type": 11548,
+        "total": 19592
+       }
       }
      ],
      "level": 17,
@@ -7896,6 +8646,21 @@
        "name": "Megacosm",
        "kind": "item",
        "how": "On dealing Ability Damage to Heroes: Deal 6% of Target's Bonus Health as Damage over 3s."
+      },
+      {
+       "name": "Vesh",
+       "kind": "Eternal",
+       "how": "Ability damage dealt to Enemy Heroes deals 7% (+0.4% a minute, about 20.2% by the end) of that damage as a DoT over 3s."
+      },
+      {
+       "name": "The Tenth Seal",
+       "kind": "Eternal minor",
+       "how": "At Level 10, gain 5% Ultimate Damage and 25 Ultimate Ability Haste."
+      },
+      {
+       "name": "Mind Rot",
+       "kind": "Eternal minor",
+       "how": "The major also deals 2% of the target's current health as bonus damage."
       }
      ],
      "items": [
@@ -7943,6 +8708,15 @@
         "On dealing Ability Damage: Deal 2.5% of Target's Max Health as Damage over 3s. Additional applications refresh the duration.",
         "On dealing Ability Damage to Heroes: Deal 6% of Target's Bonus Health as Damage over 3s."
        ]
+      },
+      {
+       "slug": "soulbearer",
+       "name": "Soulbearer",
+       "kind": "crest",
+       "power": 30,
+       "pen": 0,
+       "penPct": 0,
+       "effects": []
       }
      ],
      "dealt": {
@@ -7963,6 +8737,11 @@
         "name": "Overseer",
         "kind": "item",
         "how": "Ultimate: Deals 15% more damage. Heals you for 25% of the damage dealt to Heroes."
+       },
+       {
+        "name": "Soulbearer",
+        "kind": "item",
+        "how": "Gain a 100 (+35) (+6%) Shield for 8s. Gain 20% Magical Lifesteal and 10% Movement Speed for 8s."
        }
       ],
       "healing": 2975
@@ -7978,10 +8757,14 @@
     },
     "powerLesson": null,
     "story": {
-     "lead": null,
+     "lead": {
+      "id": "cooldowns",
+      "title": "Fly Trap on a short timer",
+      "text": "Fly Trap came back every ~58s instead of 95s, 39% faster."
+     },
      "tabs": [
-      "damage",
       "cooldowns",
+      "damage",
       "alive"
      ],
      "vsNorm": {
@@ -8019,6 +8802,33 @@
     "worked": {
      "stacks": [
       {
+       "family": "ability",
+       "title": "Every ability hit set off",
+       "members": [
+        {
+         "name": "Combustion",
+         "kind": "item",
+         "text": "On dealing Ability Damage: Deal 50 (+18%) Damage to the Target and nearby Enemies."
+        },
+        {
+         "name": "Megacosm",
+         "kind": "item",
+         "text": "On dealing Ability Damage: Deal 2.5% of Target's Max Health as Damage over 3s. Additional applications refresh the duration."
+        },
+        {
+         "name": "Vesh",
+         "kind": "Eternal",
+         "text": "Ability damage dealt to Enemy Heroes deals 7% (+0.4% per minute) of that damage as a DoT over 3s."
+        },
+        {
+         "name": "Mind Rot",
+         "kind": "Eternal minor",
+         "text": "The major also deals 2% of the target's current health as bonus damage."
+        }
+       ],
+       "text": "4 effects on one trigger: Combustion, Megacosm, Vesh, Mind Rot. The Fey has 4 damaging abilities (Untamed Growth, Bramble Patch hit an area, so one cast sets them off on several heroes), and 38 ability haste brought them back 28% sooner: more casts, more triggers."
+      },
+      {
        "family": "tough",
        "title": "Kept alive in fights",
        "members": [
@@ -8036,33 +8846,63 @@
          "name": "Megacosm",
          "kind": "item",
          "text": "On dealing Ability Damage: Deal 2.5% of Target's Max Health as Damage over 3s. Additional applications refresh the duration."
+        },
+        {
+         "name": "Soulbearer",
+         "kind": "crest",
+         "text": "Gain a 100 (+35) (+6%) Shield for 8s. Gain 20% Magical Lifesteal and 10% Movement Speed for 8s."
         }
        ],
-       "text": "3 effects on one trigger: Astral Catalyst, Overseer, Megacosm. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went."
+       "text": "4 effects on one trigger: Astral Catalyst, Overseer, Megacosm, Soulbearer. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went."
       },
       {
-       "family": "ability",
-       "title": "Every ability hit set off",
+       "family": "pctHealth",
+       "title": "Damage that scales with the target's health",
        "members": [
-        {
-         "name": "Combustion",
-         "kind": "item",
-         "text": "On dealing Ability Damage: Deal 50 (+18%) Damage to the Target and nearby Enemies."
-        },
         {
          "name": "Megacosm",
          "kind": "item",
          "text": "On dealing Ability Damage: Deal 2.5% of Target's Max Health as Damage over 3s. Additional applications refresh the duration."
+        },
+        {
+         "name": "Mind Rot",
+         "kind": "Eternal minor",
+         "text": "The major also deals 2% of the target's current health as bonus damage."
         }
        ],
-       "text": "2 effects on one trigger: Combustion, Megacosm. The Fey has 4 damaging abilities (Untamed Growth, Bramble Patch hit an area, so one cast sets them off on several heroes), and 30 ability haste brought them back 23% sooner: more casts, more triggers."
+       "text": "2 effects on one trigger: Megacosm, Mind Rot. The more health a target stacks, the more these deal, so health items on the other side fed them."
+      },
+      {
+       "family": "heal",
+       "title": "Healing off the damage",
+       "members": [
+        {
+         "name": "Overseer",
+         "kind": "item",
+         "text": "Enhance your Ultimate Ability: Deals 15% more damage. Heals you for 25% of the damage dealt to Heroes."
+        },
+        {
+         "name": "Soulbearer",
+         "kind": "crest",
+         "text": "Gain a 100 (+35) (+6%) Shield for 8s. Gain 20% Magical Lifesteal and 10% Movement Speed for 8s."
+        }
+       ],
+       "text": "2 effects on one trigger: Overseer, Soulbearer."
       }
      ],
-     "eternalPart": null,
+     "eternalPart": "The Eternal was part of it: Vesh (The Tenth Seal + Mind Rot) sits on the same triggers as the items (every ability hit set off; damage that scales with the target's health), so the same hits paid out twice.",
      "countered": [
       {
        "ok": true,
        "text": "1 of the 1 players The Fey killed built magical armor (Greystone)."
+      },
+      {
+       "ok": true,
+       "text": "Anti-heal on Greystone, Steel."
+      },
+      {
+       "ok": false,
+       "text": "Health items on Greystone raised the %-health damage they took."
       },
       {
        "ok": false,
@@ -8070,15 +8910,98 @@
       }
      ],
      "copy": {
-      "verdict": "unknown",
-      "text": "Too few The Fey midlane games with this Eternal or core this patch to say whether it wins elsewhere."
+      "verdict": "standard",
+      "text": "Vesh (The Tenth Seal + Mind Rot): 51% in 766 The Fey midlane games, level with the hero's 51.7%. A standard setup: what made it work was this game, not a secret build."
      }
     },
-    "loadout": []
+    "loadout": [
+     {
+      "kind": "augment",
+      "name": "Natural Infusion",
+      "text": "Damaging Heroes with Harvest Nettles grants 10 Ability Haste for 6s, stacking infinitely.",
+      "ability": {
+       "name": "Harvest Nettles",
+       "key": "E",
+       "what": "Throw an orb of energy, dealing 80/115/150/185/220 (+55%) magical damage.",
+       "cd": 3,
+       "cdHaste": 2.2
+      },
+      "numbers": [],
+      "field": {
+       "wr": 50.7,
+       "n": 5848,
+       "share": 34,
+       "base": 51.7,
+       "verdict": "below"
+      },
+      "plain": "Every Harvest Nettles hit on a hero stacks faster cooldowns for a few seconds, with no cap. Keep hitting heroes to throw Nettles and Untamed Growth nonstop."
+     },
+     {
+      "kind": "Eternal",
+      "name": "Vesh",
+      "text": "Ability damage dealt to Enemy Heroes deals 7% (+0.4% per minute) of that damage as a DoT over 3s.",
+      "ability": null,
+      "numbers": [
+       "7% growing 0.4% a minute: about 20.2% by the end (33 min)"
+      ],
+      "field": {
+       "wr": 50.8,
+       "n": 10210,
+       "share": 60,
+       "base": 51.7,
+       "verdict": "level"
+      },
+      "plain": "Every ability that hits a hero adds a burn on top. Harvest Nettles has a short cooldown, so the burn stays up all fight."
+     },
+     {
+      "kind": "minor",
+      "name": "The Tenth Seal",
+      "text": "At Level 10, gain 5% Ultimate Damage and 25 Ultimate Ability Haste.",
+      "ability": null,
+      "numbers": [],
+      "field": {
+       "wr": 51,
+       "n": 1864,
+       "share": 18,
+       "base": 51.7,
+       "verdict": "level"
+      }
+     },
+     {
+      "kind": "minor",
+      "name": "Mind Rot",
+      "text": "The major also deals 2% of the target's current health as bonus damage.",
+      "ability": null,
+      "numbers": [],
+      "field": {
+       "wr": 50.5,
+       "n": 8259,
+       "share": 81,
+       "base": 51.7,
+       "verdict": "below"
+      },
+      "plain": "Your Vesh burn also deals damage based on the target's current health, so your spells hurt healthy, tanky heroes more."
+     },
+     {
+      "kind": "crest",
+      "name": "Soulbearer",
+      "text": "Anima:  Gain a 100 (+35) (+6%) Shield for 8s. Gain 20% Magical Lifesteal and 10% Movement Speed for 8s.",
+      "ability": null,
+      "numbers": [],
+      "field": {
+       "wr": 54.4,
+       "n": 3768,
+       "share": 22,
+       "base": 51.7,
+       "verdict": "above"
+      },
+      "plain": "A shield, lifesteal on your magic damage, and speed for a few seconds. Pop it when caught and keep throwing Harvest Nettles to heal."
+     }
+    ]
    },
    "power": {
     "type": "magical",
-    "power": 320,
+    "power": 350,
     "pen": {
      "flat": 17,
      "pct": 0,
@@ -8091,35 +9014,44 @@
      {
       "name": "🎮 private",
       "hero": "Greystone",
-      "armor": 105,
-      "after": 88,
+      "armor": 107,
+      "after": 90,
       "more": 9,
       "diedTo": 1,
-      "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "level": 18,
+      "levelKnown": true,
+      "taken": {
+       "type": 20713,
+       "total": 29203
+      }
      },
      {
       "name": "Piranha75",
       "hero": "Renna",
-      "armor": 47,
-      "after": 30,
+      "armor": 49,
+      "after": 32,
       "more": 13,
       "diedTo": 0,
-      "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "level": 18,
+      "levelKnown": true,
+      "taken": {
+       "type": 14758,
+       "total": 18820
+      }
      },
      {
       "name": "Killa™",
       "hero": "Sparrow",
-      "armor": 47,
-      "after": 30,
+      "armor": 49,
+      "after": 32,
       "more": 13,
       "diedTo": 0,
-      "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "level": 18,
+      "levelKnown": true,
+      "taken": {
+       "type": 4948,
+       "total": 10756
+      }
      },
      {
       "name": "MeanSaltine™",
@@ -8129,19 +9061,25 @@
       "more": 10,
       "diedTo": 0,
       "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "levelKnown": true,
+      "taken": {
+       "type": 12454,
+       "total": 20321
+      }
      },
      {
       "name": "🎮 private",
       "hero": "Khaimera",
-      "armor": 105,
-      "after": 88,
+      "armor": 107,
+      "after": 90,
       "more": 9,
       "diedTo": 0,
-      "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "level": 18,
+      "levelKnown": true,
+      "taken": {
+       "type": 11548,
+       "total": 19592
+      }
      }
     ],
     "level": 17,
@@ -8170,6 +9108,21 @@
       "name": "Megacosm",
       "kind": "item",
       "how": "On dealing Ability Damage to Heroes: Deal 6% of Target's Bonus Health as Damage over 3s."
+     },
+     {
+      "name": "Vesh",
+      "kind": "Eternal",
+      "how": "Ability damage dealt to Enemy Heroes deals 7% (+0.4% a minute, about 20.2% by the end) of that damage as a DoT over 3s."
+     },
+     {
+      "name": "The Tenth Seal",
+      "kind": "Eternal minor",
+      "how": "At Level 10, gain 5% Ultimate Damage and 25 Ultimate Ability Haste."
+     },
+     {
+      "name": "Mind Rot",
+      "kind": "Eternal minor",
+      "how": "The major also deals 2% of the target's current health as bonus damage."
      }
     ],
     "items": [
@@ -8217,6 +9170,15 @@
        "On dealing Ability Damage: Deal 2.5% of Target's Max Health as Damage over 3s. Additional applications refresh the duration.",
        "On dealing Ability Damage to Heroes: Deal 6% of Target's Bonus Health as Damage over 3s."
       ]
+     },
+     {
+      "slug": "soulbearer",
+      "name": "Soulbearer",
+      "kind": "crest",
+      "power": 30,
+      "pen": 0,
+      "penPct": 0,
+      "effects": []
      }
     ],
     "dealt": {
@@ -8237,6 +9199,11 @@
        "name": "Overseer",
        "kind": "item",
        "how": "Ultimate: Deals 15% more damage. Heals you for 25% of the damage dealt to Heroes."
+      },
+      {
+       "name": "Soulbearer",
+       "kind": "item",
+       "how": "Gain a 100 (+35) (+6%) Shield for 8s. Gain 20% Magical Lifesteal and 10% Movement Speed for 8s."
       }
      ],
      "healing": 2975
@@ -8251,10 +9218,14 @@
     }
    },
    "story": {
-    "lead": null,
+    "lead": {
+     "id": "cooldowns",
+     "title": "Fly Trap on a short timer",
+     "text": "Fly Trap came back every ~58s instead of 95s, 39% faster."
+    },
     "tabs": [
-     "damage",
      "cooldowns",
+     "damage",
      "alive"
     ],
     "vsNorm": {
@@ -8292,6 +9263,33 @@
    "worked": {
     "stacks": [
      {
+      "family": "ability",
+      "title": "Every ability hit set off",
+      "members": [
+       {
+        "name": "Combustion",
+        "kind": "item",
+        "text": "On dealing Ability Damage: Deal 50 (+18%) Damage to the Target and nearby Enemies."
+       },
+       {
+        "name": "Megacosm",
+        "kind": "item",
+        "text": "On dealing Ability Damage: Deal 2.5% of Target's Max Health as Damage over 3s. Additional applications refresh the duration."
+       },
+       {
+        "name": "Vesh",
+        "kind": "Eternal",
+        "text": "Ability damage dealt to Enemy Heroes deals 7% (+0.4% per minute) of that damage as a DoT over 3s."
+       },
+       {
+        "name": "Mind Rot",
+        "kind": "Eternal minor",
+        "text": "The major also deals 2% of the target's current health as bonus damage."
+       }
+      ],
+      "text": "4 effects on one trigger: Combustion, Megacosm, Vesh, Mind Rot. The Fey has 4 damaging abilities (Untamed Growth, Bramble Patch hit an area, so one cast sets them off on several heroes), and 38 ability haste brought them back 28% sooner: more casts, more triggers."
+     },
+     {
       "family": "tough",
       "title": "Kept alive in fights",
       "members": [
@@ -8309,33 +9307,63 @@
         "name": "Megacosm",
         "kind": "item",
         "text": "On dealing Ability Damage: Deal 2.5% of Target's Max Health as Damage over 3s. Additional applications refresh the duration."
+       },
+       {
+        "name": "Soulbearer",
+        "kind": "crest",
+        "text": "Gain a 100 (+35) (+6%) Shield for 8s. Gain 20% Magical Lifesteal and 10% Movement Speed for 8s."
        }
       ],
-      "text": "3 effects on one trigger: Astral Catalyst, Overseer, Megacosm. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went."
+      "text": "4 effects on one trigger: Astral Catalyst, Overseer, Megacosm, Soulbearer. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went."
      },
      {
-      "family": "ability",
-      "title": "Every ability hit set off",
+      "family": "pctHealth",
+      "title": "Damage that scales with the target's health",
       "members": [
-       {
-        "name": "Combustion",
-        "kind": "item",
-        "text": "On dealing Ability Damage: Deal 50 (+18%) Damage to the Target and nearby Enemies."
-       },
        {
         "name": "Megacosm",
         "kind": "item",
         "text": "On dealing Ability Damage: Deal 2.5% of Target's Max Health as Damage over 3s. Additional applications refresh the duration."
+       },
+       {
+        "name": "Mind Rot",
+        "kind": "Eternal minor",
+        "text": "The major also deals 2% of the target's current health as bonus damage."
        }
       ],
-      "text": "2 effects on one trigger: Combustion, Megacosm. The Fey has 4 damaging abilities (Untamed Growth, Bramble Patch hit an area, so one cast sets them off on several heroes), and 30 ability haste brought them back 23% sooner: more casts, more triggers."
+      "text": "2 effects on one trigger: Megacosm, Mind Rot. The more health a target stacks, the more these deal, so health items on the other side fed them."
+     },
+     {
+      "family": "heal",
+      "title": "Healing off the damage",
+      "members": [
+       {
+        "name": "Overseer",
+        "kind": "item",
+        "text": "Enhance your Ultimate Ability: Deals 15% more damage. Heals you for 25% of the damage dealt to Heroes."
+       },
+       {
+        "name": "Soulbearer",
+        "kind": "crest",
+        "text": "Gain a 100 (+35) (+6%) Shield for 8s. Gain 20% Magical Lifesteal and 10% Movement Speed for 8s."
+       }
+      ],
+      "text": "2 effects on one trigger: Overseer, Soulbearer."
      }
     ],
-    "eternalPart": null,
+    "eternalPart": "The Eternal was part of it: Vesh (The Tenth Seal + Mind Rot) sits on the same triggers as the items (every ability hit set off; damage that scales with the target's health), so the same hits paid out twice.",
     "countered": [
      {
       "ok": true,
       "text": "1 of the 1 players The Fey killed built magical armor (Greystone)."
+     },
+     {
+      "ok": true,
+      "text": "Anti-heal on Greystone, Steel."
+     },
+     {
+      "ok": false,
+      "text": "Health items on Greystone raised the %-health damage they took."
      },
      {
       "ok": false,
@@ -8343,8 +9371,8 @@
      }
     ],
     "copy": {
-     "verdict": "unknown",
-     "text": "Too few The Fey midlane games with this Eternal or core this patch to say whether it wins elsewhere."
+     "verdict": "standard",
+     "text": "Vesh (The Tenth Seal + Mind Rot): 51% in 766 The Fey midlane games, level with the hero's 51.7%. A standard setup: what made it work was this game, not a secret build."
     }
    },
    "us": true,
@@ -8357,7 +9385,92 @@
    "hero": "Sparrow",
    "slug": "sparrow",
    "takedowns": 7,
-   "loadout": [],
+   "loadout": [
+    {
+     "kind": "augment",
+     "name": "Inner Fury",
+     "text": "Inner Fire now releases a fan of 5 arrows, has 8% more range, and fires 2 more volleys.",
+     "ability": {
+      "name": "Inner Fire",
+      "key": "R",
+      "what": "Unleash a barrage of fanned arrows, firing 12/14/16 volleys over 3.5s.",
+      "cd": 105,
+      "cdHaste": 105
+     },
+     "numbers": [],
+     "field": {
+      "wr": 48.4,
+      "n": 6730,
+      "share": 31,
+      "base": 49.9,
+      "verdict": "below"
+     },
+     "plain": "Inner Fire fires a wider spread, reaches farther and lasts longer, so more arrows land on grouped enemies. Best in teamfights where she can channel it from safety."
+    },
+    {
+     "kind": "Eternal",
+     "name": "Weald",
+     "text": "Damaging an Enemy Hero below 30% Health fires 4 (+1 per 30% Bonus Attack Speed) projectiles that each deal 7 (+1 per level) True Damage. Missiles travel through walls and disappear after 3000u. 10s cooldown per Hero. On-hit effects apply at 20% effectiveness.",
+     "ability": null,
+     "numbers": [
+      "7 + 1 a level: 25 at level 18"
+     ],
+     "field": {
+      "wr": 50.9,
+      "n": 11976,
+      "share": 56,
+      "base": 49.9,
+      "verdict": "above"
+     },
+     "plain": "Hitting a hero below 30% health fires missiles that pass through walls, with more missiles from bonus attack speed, which she builds a lot of. Helps finish low enemies running away."
+    },
+    {
+     "kind": "minor",
+     "name": "Forage",
+     "text": "Gain 3 additional Gold and 3 additional XP per Minion or Monster kill.",
+     "ability": null,
+     "numbers": [],
+     "field": {
+      "wr": 51.9,
+      "n": 8934,
+      "share": 75,
+      "base": 49.9,
+      "verdict": "above"
+     },
+     "plain": "Extra gold and experience from every minion and monster kill. Generic farming boost, nothing special with her kit."
+    },
+    {
+     "kind": "minor",
+     "name": "Barkskin",
+     "text": "Deal 3 (+1 per Level) Physical Damage to Enemy Heroes that Basic Attack you, triggering On-Hit effects at 50% effectiveness.",
+     "ability": null,
+     "numbers": [
+      "3 + 1 a level: 21 at level 18"
+     ],
+     "field": {
+      "wr": 52.4,
+      "n": 729,
+      "share": 6,
+      "base": 49.9,
+      "verdict": "above"
+     }
+    },
+    {
+     "kind": "crest",
+     "name": "Pacifier",
+     "text": "Adrenalize:  Dash a short distance. Empower your next Physical Damage Instance within 3s. Deals 30 (+25%) Damage. Increased by 2.5x against Targets below 20% Max Health. Killing a Hero within 3s allows Adrenalize to be recast for 6s.",
+     "ability": null,
+     "numbers": [],
+     "field": {
+      "wr": 52.5,
+      "n": 7294,
+      "share": 34,
+      "base": 49.9,
+      "verdict": "above"
+     },
+     "plain": "Dash and empower her next hit, which hits much harder on low-health targets and can be recast after a kill. Use it to finish someone softened by Piercing Shot."
+    }
+   ],
    "haste": {
     "sources": [],
     "total": 0,
@@ -8368,7 +9481,7 @@
     "name": "Inner Fire",
     "base": 105,
     "rank": 3,
-    "rankKnown": false,
+    "rankKnown": true,
     "endGame": 105,
     "inFight": null
    },
@@ -8381,23 +9494,35 @@
     "Lead story: Hard to kill. Never died in 33 minutes, fewer deaths than about 98% of Sparrow carry players this patch. The build added health and armor and healing off damage.",
     "Necrosis (Necro's Edge): Gain 25 Ultimate Haste.",
     "Necrosis (Matter Disruptor): Your Ultimate Ability deals 15% more damage.",
-    "Sparrow dealt 27,981 hero damage, 28% of their team's, with +205 physical power from items.",
+    "Sparrow dealt 27,981 hero damage, 28% of their team's, with +217 physical power from items.",
     "Scattershot (item): Upon successful On-Hit Attack: Summon 2 projectiles from the Target. These home towards the closest Enemies. Each deals (+40%) Damage. Applies On-Hit effects at 50% effectiveness.",
     "Necrosis (item): Your Ultimate Ability deals 15% more damage.",
     "Sky Splitter (item): On Successful Basic Attacks: Deal 5% of Target's Current Health as Damage On-Hit. Reduced to 3.5% for Ranged Heroes. Minimum of 12 Damage.",
     "Storm Breaker (item): While moving or landing Basic Attacks: Generate stacks of Momentum. At 100 stacks empower your next Basic Attack On-Hit. Release a bolt of lightning that chains to 7 Targets.",
-    "Sustain: 7% lifesteal; Equinox: On going below 40% Health: Gain a 350-750 Shield for 4s. Shield size increases with Level.; 1,761 healing recorded.",
+    "Pacifier (crest): Dash a short distance. Empower your next Physical Damage Instance within 3s. Deals 30 (+25%) Damage. Increased by 2.5x against Targets below 20% Max Health.",
+    "Weald (Eternal): Damaging an Enemy Hero below 30% Health fires 4 (+1 per 30% Bonus Attack Speed) projectiles that each deal 7 (+1 per level) True Damage.",
+    "Barkskin (Eternal minor): Deal 3 (+1 per Level) Physical Damage to Enemy Heroes that Basic Attack you, triggering On-Hit effects at 50% effectiveness.",
+    "Sustain: 14% lifesteal; Equinox: On going below 40% Health: Gain a 350-750 Shield for 4s. Shield size increases with Level.; 1,761 healing recorded.",
     "Toughness: +20% tenacity; took 20,138 damage, mitigated 13,626, died 0 times.",
-    "Stack (Every basic attack set off): 3 effects on one trigger: Scattershot, Sky Splitter, Storm Breaker.",
-    "Countered? 0 of the 2 players Sparrow killed built physical armor. We killed Sparrow 0 times.",
-    "Copy it? Too few Sparrow carry games with this Eternal or core this patch to say whether it wins elsewhere."
+    "Loadout augment Inner Fury: Inner Fire fires a wider spread, reaches farther and lasts longer, so more arrows land on grouped enemies. Best in teamfights where she can channel it from safety. (game text: Inner Fire now releases a fan of 5 arrows, has 8% more range, and fires 2 more volleys.) (changes Inner Fire, 105s cooldown with their haste) Field: 48.4% in 6730 games, 31% of picks, below the hero-role's 49.9%.",
+    "Loadout Eternal Weald: Hitting a hero below 30% health fires missiles that pass through walls, with more missiles from bonus attack speed, which she builds a lot of. Helps finish low enemies running away. (game text: Damaging an Enemy Hero below 30% Health fires 4 (+1 per 30% Bonus Attack Speed) projectiles that each deal 7 (+1 per level) True Damage. Missiles travel through walls and disappear after 3000u. 10s cooldown per Hero. On-hit effects apply at 20% effectiveness.) [7 + 1 a level: 25 at level 18] Field: 50.9% in 11976 games, 56% of picks, above the hero-role's 49.9%.",
+    "Loadout minor Forage: Extra gold and experience from every minion and monster kill. Generic farming boost, nothing special with her kit. (game text: Gain 3 additional Gold and 3 additional XP per Minion or Monster kill.) Field: 51.9% in 8934 games, 75% of picks, above the hero-role's 49.9%.",
+    "Loadout minor Barkskin: Deal 3 (+1 per Level) Physical Damage to Enemy Heroes that Basic Attack you, triggering On-Hit effects at 50% effectiveness. [3 + 1 a level: 21 at level 18] Field: 52.4% in 729 games, 6% of picks, above the hero-role's 49.9%.",
+    "Loadout crest Pacifier: Dash and empower her next hit, which hits much harder on low-health targets and can be recast after a kill. Use it to finish someone softened by Piercing Shot. (game text: Adrenalize:  Dash a short distance. Empower your next Physical Damage Instance within 3s. Deals 30 (+25%) Damage. Increased by 2.5x against Targets below 20% Max Health. Killing a Hero within 3s allows Adrenalize to be recast for 6s.) Field: 52.5% in 7294 games, 34% of picks, above the hero-role's 49.9%.",
+    "Stack (Every basic attack set off): 5 effects on one trigger: Scattershot, Sky Splitter, Storm Breaker, Weald, Barkskin.",
+    "Stack (Finishing damage on low-health targets): 2 effects on one trigger: Equinox, Weald. Once a fight started going their way, these finished it.",
+    "Stack (Healing off the damage): 2 effects on one trigger: Sky Splitter, Pacifier.",
+    "Stack (Kept alive in fights): 2 effects on one trigger: Equinox, Pacifier. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went.",
+    "The Eternal was part of it: Weald (Forage + Barkskin) sits on the same triggers as the items (every basic attack set off; finishing damage on low-health targets), so the same hits paid out twice.",
+    "Countered? 0 of the 2 players Sparrow killed built physical armor. Anti-heal on Skylar. We killed Sparrow 0 times.",
+    "Copy it? Weald: 50.9% in 11,976 Sparrow carry games, above the hero's 49.9%. Proven this patch: worth copying."
    ],
    "card": {
     "ult": {
      "name": "Inner Fire",
      "base": 105,
      "rank": 3,
-     "rankKnown": false,
+     "rankKnown": true,
      "endGame": 105,
      "inFight": null
     },
@@ -8424,7 +9549,7 @@
     ],
     "power": {
      "type": "physical",
-     "power": 205,
+     "power": 217,
      "pen": {
       "flat": 0,
       "pct": 0,
@@ -8439,52 +9564,67 @@
        "more": 0,
        "diedTo": 1,
        "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "levelKnown": true,
+       "taken": {
+        "type": 11013,
+        "total": 15046
+       }
       },
       {
        "name": "Willy Guggenheim",
        "hero": "Skylar",
-       "armor": 103,
-       "after": 103,
+       "armor": 110,
+       "after": 110,
        "more": 0,
        "diedTo": 1,
-       "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "level": 18,
+       "levelKnown": true,
+       "taken": {
+        "type": 6237,
+        "total": 13652
+       }
       },
       {
        "name": "The-Slicc-Whitt-",
        "hero": "The Fey",
-       "armor": 101,
-       "after": 101,
+       "armor": 107,
+       "after": 107,
        "more": 0,
        "diedTo": 0,
-       "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "level": 18,
+       "levelKnown": true,
+       "taken": {
+        "type": 6660,
+        "total": 21323
+       }
       },
       {
        "name": "Xeebs",
        "hero": "Riktor",
-       "armor": 217,
-       "after": 217,
+       "armor": 225,
+       "after": 225,
        "more": 0,
        "diedTo": 0,
-       "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "level": 18,
+       "levelKnown": true,
+       "taken": {
+        "type": 25048,
+        "total": 33473
+       }
       },
       {
        "name": "Boyd Cooper",
        "hero": "Aurora",
-       "armor": 115,
-       "after": 115,
+       "armor": 121,
+       "after": 121,
        "more": 0,
        "diedTo": 0,
-       "level": 17,
-       "levelKnown": false,
-       "taken": null
+       "level": 18,
+       "levelKnown": true,
+       "taken": {
+        "type": 8686,
+        "total": 16605
+       }
       }
      ],
      "level": 17,
@@ -8508,6 +9648,21 @@
        "name": "Storm Breaker",
        "kind": "item",
        "how": "While moving or landing Basic Attacks: Generate stacks of Momentum. At 100 stacks empower your next Basic Attack On-Hit. Release a bolt of lightning that chains to 7 Targets."
+      },
+      {
+       "name": "Pacifier",
+       "kind": "crest",
+       "how": "Dash a short distance. Empower your next Physical Damage Instance within 3s. Deals 30 (+25%) Damage. Increased by 2.5x against Targets below 20% Max Health."
+      },
+      {
+       "name": "Weald",
+       "kind": "Eternal",
+       "how": "Damaging an Enemy Hero below 30% Health fires 4 (+1 per 30% Bonus Attack Speed) projectiles that each deal 7 (+1 per level) True Damage."
+      },
+      {
+       "name": "Barkskin",
+       "kind": "Eternal minor",
+       "how": "Deal 3 (+1 per Level) Physical Damage to Enemy Heroes that Basic Attack you, triggering On-Hit effects at 50% effectiveness."
       }
      ],
      "items": [
@@ -8563,6 +9718,17 @@
        "pen": 0,
        "penPct": 0,
        "effects": []
+      },
+      {
+       "slug": "pacifier",
+       "name": "Pacifier",
+       "kind": "crest",
+       "power": 12,
+       "pen": 0,
+       "penPct": 0,
+       "effects": [
+        "Dash a short distance. Empower your next Physical Damage Instance within 3s. Deals 30 (+25%) Damage. Increased by 2.5x against Targets below 20% Max Health."
+       ]
       }
      ],
      "dealt": {
@@ -8571,7 +9737,7 @@
      },
      "sustain": {
       "stats": [
-       "7% lifesteal"
+       "14% lifesteal"
       ],
       "effects": [
        {
@@ -8596,7 +9762,7 @@
      "lead": {
       "id": "survival",
       "title": "Hard to kill",
-      "text": "Never died in 33 minutes, fewer deaths than about 98% of Sparrow carry players this patch. The build added health and armor and healing off damage."
+      "text": "Never died in 33 minutes, fewer deaths than about 98% of Sparrow carry players this patch. The build added health and armor and healing off damage. It came from Pacifier, Sky Splitter, Equinox."
      },
      "tabs": [
       "alive",
@@ -8655,16 +9821,81 @@
          "name": "Storm Breaker",
          "kind": "item",
          "text": "While moving or landing Basic Attacks: Generate stacks of Momentum. At 100 stacks empower your next Basic Attack On-Hit. Release a bolt of lightning that chains to 7 Targets. Deal 70 (+20%) Damage. Applies On-Hit effects."
+        },
+        {
+         "name": "Weald",
+         "kind": "Eternal",
+         "text": "Damaging an Enemy Hero below 30% Health fires 4 (+1 per 30% Bonus Attack Speed) projectiles that each deal 7 (+1 per level) True Damage. Missiles travel through walls and disappear after 3000u. 10s cooldown per Hero. On-hit effects apply at 20% effectiveness."
+        },
+        {
+         "name": "Barkskin",
+         "kind": "Eternal minor",
+         "text": "Deal 3 (+1 per Level) Physical Damage to Enemy Heroes that Basic Attack you, triggering On-Hit effects at 50% effectiveness."
         }
        ],
-       "text": "3 effects on one trigger: Scattershot, Sky Splitter, Storm Breaker."
+       "text": "5 effects on one trigger: Scattershot, Sky Splitter, Storm Breaker, Weald, Barkskin."
+      },
+      {
+       "family": "lowHealth",
+       "title": "Finishing damage on low-health targets",
+       "members": [
+        {
+         "name": "Equinox",
+         "kind": "item",
+         "text": "On going below 40% Health: Gain a 350-750 Shield for 4s. Shield size increases with Level."
+        },
+        {
+         "name": "Weald",
+         "kind": "Eternal",
+         "text": "Damaging an Enemy Hero below 30% Health fires 4 (+1 per 30% Bonus Attack Speed) projectiles that each deal 7 (+1 per level) True Damage. Missiles travel through walls and disappear after 3000u. 10s cooldown per Hero. On-hit effects apply at 20% effectiveness."
+        }
+       ],
+       "text": "2 effects on one trigger: Equinox, Weald. Once a fight started going their way, these finished it."
+      },
+      {
+       "family": "heal",
+       "title": "Healing off the damage",
+       "members": [
+        {
+         "name": "Sky Splitter",
+         "kind": "item",
+         "text": "lifesteal"
+        },
+        {
+         "name": "Pacifier",
+         "kind": "item",
+         "text": "lifesteal"
+        }
+       ],
+       "text": "2 effects on one trigger: Sky Splitter, Pacifier."
+      },
+      {
+       "family": "tough",
+       "title": "Kept alive in fights",
+       "members": [
+        {
+         "name": "Equinox",
+         "kind": "item",
+         "text": "On going below 40% Health: Gain a 350-750 Shield for 4s. Shield size increases with Level."
+        },
+        {
+         "name": "Pacifier",
+         "kind": "crest",
+         "text": "Dash a short distance. Empower your next Physical Damage Instance within 3s. Deals 30 (+25%) Damage. Increased by 2.5x against Targets below 20% Max Health. Killing a Hero within 3s allows Adrenalize to be recast for 6s."
+        }
+       ],
+       "text": "2 effects on one trigger: Equinox, Pacifier. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went."
       }
      ],
-     "eternalPart": null,
+     "eternalPart": "The Eternal was part of it: Weald (Forage + Barkskin) sits on the same triggers as the items (every basic attack set off; finishing damage on low-health targets), so the same hits paid out twice.",
      "countered": [
       {
        "ok": false,
        "text": "0 of the 2 players Sparrow killed built physical armor."
+      },
+      {
+       "ok": true,
+       "text": "Anti-heal on Skylar."
       },
       {
        "ok": false,
@@ -8672,15 +9903,100 @@
       }
      ],
      "copy": {
-      "verdict": "unknown",
-      "text": "Too few Sparrow carry games with this Eternal or core this patch to say whether it wins elsewhere."
+      "verdict": "proven",
+      "text": "Weald: 50.9% in 11,976 Sparrow carry games, above the hero's 49.9%. Proven this patch: worth copying."
      }
     },
-    "loadout": []
+    "loadout": [
+     {
+      "kind": "augment",
+      "name": "Inner Fury",
+      "text": "Inner Fire now releases a fan of 5 arrows, has 8% more range, and fires 2 more volleys.",
+      "ability": {
+       "name": "Inner Fire",
+       "key": "R",
+       "what": "Unleash a barrage of fanned arrows, firing 12/14/16 volleys over 3.5s.",
+       "cd": 105,
+       "cdHaste": 105
+      },
+      "numbers": [],
+      "field": {
+       "wr": 48.4,
+       "n": 6730,
+       "share": 31,
+       "base": 49.9,
+       "verdict": "below"
+      },
+      "plain": "Inner Fire fires a wider spread, reaches farther and lasts longer, so more arrows land on grouped enemies. Best in teamfights where she can channel it from safety."
+     },
+     {
+      "kind": "Eternal",
+      "name": "Weald",
+      "text": "Damaging an Enemy Hero below 30% Health fires 4 (+1 per 30% Bonus Attack Speed) projectiles that each deal 7 (+1 per level) True Damage. Missiles travel through walls and disappear after 3000u. 10s cooldown per Hero. On-hit effects apply at 20% effectiveness.",
+      "ability": null,
+      "numbers": [
+       "7 + 1 a level: 25 at level 18"
+      ],
+      "field": {
+       "wr": 50.9,
+       "n": 11976,
+       "share": 56,
+       "base": 49.9,
+       "verdict": "above"
+      },
+      "plain": "Hitting a hero below 30% health fires missiles that pass through walls, with more missiles from bonus attack speed, which she builds a lot of. Helps finish low enemies running away."
+     },
+     {
+      "kind": "minor",
+      "name": "Forage",
+      "text": "Gain 3 additional Gold and 3 additional XP per Minion or Monster kill.",
+      "ability": null,
+      "numbers": [],
+      "field": {
+       "wr": 51.9,
+       "n": 8934,
+       "share": 75,
+       "base": 49.9,
+       "verdict": "above"
+      },
+      "plain": "Extra gold and experience from every minion and monster kill. Generic farming boost, nothing special with her kit."
+     },
+     {
+      "kind": "minor",
+      "name": "Barkskin",
+      "text": "Deal 3 (+1 per Level) Physical Damage to Enemy Heroes that Basic Attack you, triggering On-Hit effects at 50% effectiveness.",
+      "ability": null,
+      "numbers": [
+       "3 + 1 a level: 21 at level 18"
+      ],
+      "field": {
+       "wr": 52.4,
+       "n": 729,
+       "share": 6,
+       "base": 49.9,
+       "verdict": "above"
+      }
+     },
+     {
+      "kind": "crest",
+      "name": "Pacifier",
+      "text": "Adrenalize:  Dash a short distance. Empower your next Physical Damage Instance within 3s. Deals 30 (+25%) Damage. Increased by 2.5x against Targets below 20% Max Health. Killing a Hero within 3s allows Adrenalize to be recast for 6s.",
+      "ability": null,
+      "numbers": [],
+      "field": {
+       "wr": 52.5,
+       "n": 7294,
+       "share": 34,
+       "base": 49.9,
+       "verdict": "above"
+      },
+      "plain": "Dash and empower her next hit, which hits much harder on low-health targets and can be recast after a kill. Use it to finish someone softened by Piercing Shot."
+     }
+    ]
    },
    "power": {
     "type": "physical",
-    "power": 205,
+    "power": 217,
     "pen": {
      "flat": 0,
      "pct": 0,
@@ -8695,52 +10011,67 @@
       "more": 0,
       "diedTo": 1,
       "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "levelKnown": true,
+      "taken": {
+       "type": 11013,
+       "total": 15046
+      }
      },
      {
       "name": "Willy Guggenheim",
       "hero": "Skylar",
-      "armor": 103,
-      "after": 103,
+      "armor": 110,
+      "after": 110,
       "more": 0,
       "diedTo": 1,
-      "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "level": 18,
+      "levelKnown": true,
+      "taken": {
+       "type": 6237,
+       "total": 13652
+      }
      },
      {
       "name": "The-Slicc-Whitt-",
       "hero": "The Fey",
-      "armor": 101,
-      "after": 101,
+      "armor": 107,
+      "after": 107,
       "more": 0,
       "diedTo": 0,
-      "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "level": 18,
+      "levelKnown": true,
+      "taken": {
+       "type": 6660,
+       "total": 21323
+      }
      },
      {
       "name": "Xeebs",
       "hero": "Riktor",
-      "armor": 217,
-      "after": 217,
+      "armor": 225,
+      "after": 225,
       "more": 0,
       "diedTo": 0,
-      "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "level": 18,
+      "levelKnown": true,
+      "taken": {
+       "type": 25048,
+       "total": 33473
+      }
      },
      {
       "name": "Boyd Cooper",
       "hero": "Aurora",
-      "armor": 115,
-      "after": 115,
+      "armor": 121,
+      "after": 121,
       "more": 0,
       "diedTo": 0,
-      "level": 17,
-      "levelKnown": false,
-      "taken": null
+      "level": 18,
+      "levelKnown": true,
+      "taken": {
+       "type": 8686,
+       "total": 16605
+      }
      }
     ],
     "level": 17,
@@ -8764,6 +10095,21 @@
       "name": "Storm Breaker",
       "kind": "item",
       "how": "While moving or landing Basic Attacks: Generate stacks of Momentum. At 100 stacks empower your next Basic Attack On-Hit. Release a bolt of lightning that chains to 7 Targets."
+     },
+     {
+      "name": "Pacifier",
+      "kind": "crest",
+      "how": "Dash a short distance. Empower your next Physical Damage Instance within 3s. Deals 30 (+25%) Damage. Increased by 2.5x against Targets below 20% Max Health."
+     },
+     {
+      "name": "Weald",
+      "kind": "Eternal",
+      "how": "Damaging an Enemy Hero below 30% Health fires 4 (+1 per 30% Bonus Attack Speed) projectiles that each deal 7 (+1 per level) True Damage."
+     },
+     {
+      "name": "Barkskin",
+      "kind": "Eternal minor",
+      "how": "Deal 3 (+1 per Level) Physical Damage to Enemy Heroes that Basic Attack you, triggering On-Hit effects at 50% effectiveness."
      }
     ],
     "items": [
@@ -8819,6 +10165,17 @@
       "pen": 0,
       "penPct": 0,
       "effects": []
+     },
+     {
+      "slug": "pacifier",
+      "name": "Pacifier",
+      "kind": "crest",
+      "power": 12,
+      "pen": 0,
+      "penPct": 0,
+      "effects": [
+       "Dash a short distance. Empower your next Physical Damage Instance within 3s. Deals 30 (+25%) Damage. Increased by 2.5x against Targets below 20% Max Health."
+      ]
      }
     ],
     "dealt": {
@@ -8827,7 +10184,7 @@
     },
     "sustain": {
      "stats": [
-      "7% lifesteal"
+      "14% lifesteal"
      ],
      "effects": [
       {
@@ -8851,7 +10208,7 @@
     "lead": {
      "id": "survival",
      "title": "Hard to kill",
-     "text": "Never died in 33 minutes, fewer deaths than about 98% of Sparrow carry players this patch. The build added health and armor and healing off damage."
+     "text": "Never died in 33 minutes, fewer deaths than about 98% of Sparrow carry players this patch. The build added health and armor and healing off damage. It came from Pacifier, Sky Splitter, Equinox."
     },
     "tabs": [
      "alive",
@@ -8910,16 +10267,81 @@
         "name": "Storm Breaker",
         "kind": "item",
         "text": "While moving or landing Basic Attacks: Generate stacks of Momentum. At 100 stacks empower your next Basic Attack On-Hit. Release a bolt of lightning that chains to 7 Targets. Deal 70 (+20%) Damage. Applies On-Hit effects."
+       },
+       {
+        "name": "Weald",
+        "kind": "Eternal",
+        "text": "Damaging an Enemy Hero below 30% Health fires 4 (+1 per 30% Bonus Attack Speed) projectiles that each deal 7 (+1 per level) True Damage. Missiles travel through walls and disappear after 3000u. 10s cooldown per Hero. On-hit effects apply at 20% effectiveness."
+       },
+       {
+        "name": "Barkskin",
+        "kind": "Eternal minor",
+        "text": "Deal 3 (+1 per Level) Physical Damage to Enemy Heroes that Basic Attack you, triggering On-Hit effects at 50% effectiveness."
        }
       ],
-      "text": "3 effects on one trigger: Scattershot, Sky Splitter, Storm Breaker."
+      "text": "5 effects on one trigger: Scattershot, Sky Splitter, Storm Breaker, Weald, Barkskin."
+     },
+     {
+      "family": "lowHealth",
+      "title": "Finishing damage on low-health targets",
+      "members": [
+       {
+        "name": "Equinox",
+        "kind": "item",
+        "text": "On going below 40% Health: Gain a 350-750 Shield for 4s. Shield size increases with Level."
+       },
+       {
+        "name": "Weald",
+        "kind": "Eternal",
+        "text": "Damaging an Enemy Hero below 30% Health fires 4 (+1 per 30% Bonus Attack Speed) projectiles that each deal 7 (+1 per level) True Damage. Missiles travel through walls and disappear after 3000u. 10s cooldown per Hero. On-hit effects apply at 20% effectiveness."
+       }
+      ],
+      "text": "2 effects on one trigger: Equinox, Weald. Once a fight started going their way, these finished it."
+     },
+     {
+      "family": "heal",
+      "title": "Healing off the damage",
+      "members": [
+       {
+        "name": "Sky Splitter",
+        "kind": "item",
+        "text": "lifesteal"
+       },
+       {
+        "name": "Pacifier",
+        "kind": "item",
+        "text": "lifesteal"
+       }
+      ],
+      "text": "2 effects on one trigger: Sky Splitter, Pacifier."
+     },
+     {
+      "family": "tough",
+      "title": "Kept alive in fights",
+      "members": [
+       {
+        "name": "Equinox",
+        "kind": "item",
+        "text": "On going below 40% Health: Gain a 350-750 Shield for 4s. Shield size increases with Level."
+       },
+       {
+        "name": "Pacifier",
+        "kind": "crest",
+        "text": "Dash a short distance. Empower your next Physical Damage Instance within 3s. Deals 30 (+25%) Damage. Increased by 2.5x against Targets below 20% Max Health. Killing a Hero within 3s allows Adrenalize to be recast for 6s."
+       }
+      ],
+      "text": "2 effects on one trigger: Equinox, Pacifier. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went."
      }
     ],
-    "eternalPart": null,
+    "eternalPart": "The Eternal was part of it: Weald (Forage + Barkskin) sits on the same triggers as the items (every basic attack set off; finishing damage on low-health targets), so the same hits paid out twice.",
     "countered": [
      {
       "ok": false,
       "text": "0 of the 2 players Sparrow killed built physical armor."
+     },
+     {
+      "ok": true,
+      "text": "Anti-heal on Skylar."
      },
      {
       "ok": false,
@@ -8927,8 +10349,8 @@
      }
     ],
     "copy": {
-     "verdict": "unknown",
-     "text": "Too few Sparrow carry games with this Eternal or core this patch to say whether it wins elsewhere."
+     "verdict": "proven",
+     "text": "Weald: 50.9% in 11,976 Sparrow carry games, above the hero's 49.9%. Proven this patch: worth copying."
     }
    },
    "us": false,
@@ -8938,7 +10360,89 @@
    "score": 0.82
   }
  },
- "damageMix": null,
+ "damageMix": {
+  "us": {
+   "physical": 33591,
+   "magical": 62668,
+   "true": 678,
+   "total": 96937
+  },
+  "them": {
+   "physical": 57644,
+   "magical": 37841,
+   "true": 4295,
+   "total": 99780
+  },
+  "trueFrom": [
+   {
+    "hero": "Sparrow",
+    "us": false,
+    "amount": 2179,
+    "share": 8,
+    "from": [
+     {
+      "name": "Weald",
+      "kind": "Eternal"
+     }
+    ]
+   },
+   {
+    "hero": "Greystone",
+    "us": false,
+    "amount": 2116,
+    "share": 8,
+    "from": []
+   }
+  ],
+  "armor": {
+   "us": {
+    "faced": "physical",
+    "physical": [
+     "Riktor"
+    ],
+    "magical": [
+     "Riktor",
+     "Aurora"
+    ],
+    "of": 5,
+    "points": {
+     "physical": 95,
+     "magical": 85
+    }
+   },
+   "them": {
+    "faced": "magical",
+    "physical": [
+     "Greystone",
+     "Khaimera",
+     "Steel"
+    ],
+    "magical": [
+     "Greystone",
+     "Khaimera",
+     "Steel"
+    ],
+    "of": 5,
+    "points": {
+     "physical": 195,
+     "magical": 130
+    }
+   }
+  },
+  "field": {
+   "us": {
+    "wr": 44.5,
+    "n": 4541,
+    "band": "60-70% magical"
+   },
+   "them": {
+    "wr": 51.8,
+    "n": 17783,
+    "band": "30-40% magical"
+   },
+   "best": "20-30% magical (52.9% win)"
+  }
+ },
  "buildNotes": [
   {
    "pid": "7c8ab99c-31c5-4ea5-a6fa-e0d6417c3f1b",
@@ -8976,8 +10480,8 @@
       "has": false
      }
     ],
-    "wr": 55.4,
-    "n": 74
+    "wr": 57.5,
+    "n": 87
    },
    "coreVs": {
     "vs": "Steel",
@@ -9064,8 +10568,8 @@
       "has": false
      }
     ],
-    "wr": 62.9,
-    "n": 356
+    "wr": 62.3,
+    "n": 393
    },
    "coreVs": {
     "vs": "Renna",
@@ -9147,8 +10651,8 @@
       "has": false
      }
     ],
-    "wr": 56.8,
-    "n": 111
+    "wr": 57.9,
+    "n": 121
    },
    "coreVs": {
     "vs": "Sparrow",
@@ -9212,10 +10716,10 @@
     {
      "slug": "fire-blossom",
      "name": "Fire Blossom",
-     "into": 46,
-     "usual": 37,
-     "wr": 52,
-     "n": 1182,
+     "into": 47,
+     "usual": 38,
+     "wr": 51.8,
+     "n": 1312,
      "has": false,
      "vs": "Greystone"
     }
@@ -9245,8 +10749,8 @@
       "has": true
      }
     ],
-    "wr": 56.3,
-    "n": 80
+    "wr": 59.2,
+    "n": 98
    },
    "coreVs": null,
    "built": [
@@ -9284,8 +10788,8 @@
      "name": "Tainted Scepter",
      "into": 34,
      "usual": 24,
-     "wr": 53,
-     "n": 1925,
+     "wr": 52.6,
+     "n": 2114,
      "has": false,
      "vs": "Khaimera"
     }
@@ -9305,18 +10809,18 @@
       "has": false
      },
      {
-      "slug": "magnify",
-      "name": "Magnify",
-      "has": true
-     },
-     {
       "slug": "orion",
       "name": "Orion",
       "has": false
+     },
+     {
+      "slug": "magnify",
+      "name": "Magnify",
+      "has": true
      }
     ],
-    "wr": 57.8,
-    "n": 109
+    "wr": 61.3,
+    "n": 111
    },
    "coreVs": null,
    "built": [
