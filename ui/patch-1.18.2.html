@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patch 1.18.2 review — Pred Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .patch { max-width: 880px; margin: 0 auto; }
+    .lead { color: var(--text-2); font-size: 0.9rem; margin-bottom: 1rem; }
+    .banner { background: var(--accent-dim); border: 1px solid var(--accent); border-radius: var(--radius);
+      padding: 0.75rem 1rem; font-size: 0.82rem; color: var(--text-1); margin-bottom: 1.5rem; }
+    .banner strong { color: var(--text-0); }
+    h2.section { font-size: 1.05rem; margin: 2rem 0 0.75rem; color: var(--text-0);
+      border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    .tldr { list-style: none; padding: 0; }
+    .tldr li { font-size: 0.88rem; color: var(--text-1); margin-bottom: 0.5rem; padding-left: 1.2rem; position: relative; }
+    .tldr li::before { content: '◦'; position: absolute; left: 0; color: var(--accent); font-weight: 700; }
+    .tldr-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 0.7rem 1.4rem; }
+    .tldr-item { border-left: 2px solid var(--border); padding-left: 0.75rem; }
+    .tldr-lead { font-weight: 700; font-size: 0.9rem; color: var(--text-0); margin-bottom: 0.15rem; }
+    .tldr-text { font-size: 0.84rem; color: var(--text-1); line-height: 1.5; }
+    .group-head { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;
+      margin: 1.5rem 0 0.6rem; display: flex; align-items: center; gap: 0.5rem; }
+    .group-count { color: var(--text-2); font-weight: 500; }
+    .hero-card { margin-bottom: 0.85rem; padding: 0.9rem 1rem; }
+    .hero-head { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.55rem; }
+    .hero-name { font-weight: 700; font-size: 1rem; color: var(--text-0); }
+    .hero-pic { display: inline-flex; flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%;
+      overflow: hidden; background: var(--bg-3); border: 1px solid var(--border); }
+    a.hero-pic:hover, a.hero-pic:focus-visible { border-color: var(--accent); }
+    .hero-pic img { width: 100%; height: 100%; object-fit: cover; }
+    span.hero-pic img { cursor: default !important; }
+    .hero-role { font-size: 0.72rem; color: var(--text-2); text-transform: capitalize;
+      border: 1px solid var(--border); border-radius: 5px; padding: 0.05rem 0.4rem; }
+    .badge { font-size: 0.68rem; font-weight: 600; border-radius: 5px; padding: 0.1rem 0.45rem; }
+    .trend-buff { background: var(--green-dim); color: var(--green); }
+    .trend-nerf { background: var(--red-dim); color: var(--red); }
+    .trend-mixed { background: #f0b42925; color: var(--gold); }
+    .mag-meta { background: var(--accent); color: #fff; }
+    .mag-notable { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent); }
+    .mag-minor { background: var(--bg-3); color: var(--text-2); }
+    .change-list { list-style: none; padding: 0; margin: 0 0 0.6rem; }
+    .change-list li { font-size: 0.8rem; color: var(--text-2); margin-bottom: 0.2rem; padding-left: 0.9rem; position: relative; }
+    .change-list li::before { content: '–'; position: absolute; left: 0; }
+    .pred { font-size: 0.86rem; color: var(--text-1); margin-bottom: 0.4rem; line-height: 1.45; }
+    .pred-label { display: inline-block; font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.05em;
+      font-weight: 700; color: var(--accent); margin-right: 0.45rem; vertical-align: 1px; }
+    .sim-read { font-size: 0.74rem; color: var(--text-2); margin-top: 0.35rem;
+      border-top: 1px dashed var(--border); padding-top: 0.4rem; }
+    .pred-builds { margin-top: 0.55rem; border-top: 1px dashed var(--border); padding-top: 0.55rem; }
+    .pb-label { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.45rem; }
+    .pb-tag { font-size: 0.66rem; color: var(--gold); background: #f0b42925; border-radius: 999px; padding: 0.1rem 0.5rem; font-weight: 700; }
+    .pb-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 0.55rem; }
+    .pb-build { background: var(--bg-1); border: 1px solid var(--border); border-radius: 10px; padding: 0.6rem 0.7rem; min-width: 0; }
+    .pb-head { display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 0.45rem; }
+    .pb-title { font-weight: 700; color: var(--text-0); font-size: 0.86rem; }
+    .pb-row { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0.3rem; margin-bottom: 0.45rem; }
+    .pb-it { display: flex; flex-direction: column; align-items: center; width: 62px; text-align: center; }
+    .pb-it img { width: 44px; height: 44px; border-radius: 8px; background: var(--bg-3); border: 1px solid var(--border); object-fit: cover; }
+    .pb-it-name { font-size: 0.64rem; color: var(--text-2); line-height: 1.2; margin-top: 0.2rem; }
+    .pb-alt img { opacity: 0.8; border-style: dashed; }
+    .pb-arrow, .pb-or { color: var(--text-2); font-size: 0.75rem; align-self: center; margin-top: -0.9rem; }
+    .pb-altgrp { display: flex; align-items: flex-start; gap: 0.3rem; }
+    .pb-or { font-style: italic; margin-left: 0.15rem; }
+    .pb-perks { display: flex; flex-wrap: wrap; gap: 0.35rem 0.8rem; font-size: 0.76rem; color: var(--text-1); margin-bottom: 0.35rem; }
+    .pb-perk { display: inline-flex; align-items: center; gap: 0.3rem; }
+    .pb-perk img { width: 20px; height: 20px; border-radius: 50%; object-fit: cover; }
+    .pb-why { font-size: 0.78rem; color: var(--text-2); line-height: 1.45; }
+    .pb-note { font-size: 0.72rem; color: var(--text-2); margin-top: 0.45rem; font-style: italic; }
+    table.et { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    table.et td { border-bottom: 1px solid var(--border); padding: 0.5rem 0.6rem; vertical-align: top; color: var(--text-1); }
+    .et-name { font-weight: 700; color: var(--text-0); white-space: nowrap; }
+    .et-mean { color: var(--text-2); }
+    .aram-grp-head { display: flex; align-items: center; gap: 0.5rem; margin: 1rem 0 0.5rem; }
+    .aram-chips { display: grid; grid-template-columns: repeat(auto-fill, minmax(178px, 1fr)); gap: 0.45rem; }
+    .aram-chips.compact { grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); }
+    .aram-chip { display: flex; align-items: center; gap: 0.55rem; padding: 0.4rem 0.55rem; border-radius: 10px;
+      background: var(--bg-1); border: 1px solid var(--border); border-left: 3px solid var(--border); min-width: 0; }
+    .aram-chip[data-dir="buff"] { border-left-color: var(--green); }
+    .aram-chip[data-dir="nerf"] { border-left-color: var(--red); }
+    .aram-chip[data-dir="mixed"] { border-left-color: var(--gold); }
+    .aram-chip img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; background: var(--bg-3); flex-shrink: 0; }
+    .aram-chip .ac-body { display: flex; flex-direction: column; min-width: 0; }
+    .ac-name { font-weight: 700; font-size: 0.82rem; color: var(--text-0); }
+    .ac-change { font-size: 0.71rem; color: var(--text-2); line-height: 1.3; }
+    .items-list { list-style: none; padding: 0; }
+    .items-list li { font-size: 0.82rem; color: var(--text-1); margin-bottom: 0.45rem; padding-left: 1.2rem; position: relative; }
+    .items-list li::before { content: '⬡'; position: absolute; left: 0; color: var(--gold); }
+    .sys { margin-bottom: 0.7rem; }
+    .sys-name { font-weight: 600; font-size: 0.88rem; color: var(--text-0); }
+    .sys-sum { font-size: 0.82rem; color: var(--text-1); margin-top: 0.15rem; line-height: 1.45; }
+    .foot { margin-top: 2rem; font-size: 0.78rem; color: var(--text-2); border-top: 1px solid var(--border); padding-top: 1rem; }
+    .foot a, .lead a { color: var(--accent); }
+    html { scroll-behavior: smooth; }
+    a.logo { text-decoration: none; }
+    .hx-legend { display: flex; flex-wrap: wrap; gap: 0.9rem; align-items: center; font-size: 0.72rem;
+      font-weight: 700; margin: 0.2rem 0 0.7rem; }
+    .hx-legend .hx-hint { color: var(--text-2); font-weight: 500; }
+    .hx-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 0.5rem;
+      margin-bottom: 1.1rem; }
+    .hx { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; text-decoration: none;
+      color: var(--text-1); padding: 0.5rem 0.3rem; border-radius: 12px; border: 1px solid var(--border);
+      background: var(--bg-1); transition: border-color 0.15s, background 0.15s, transform 0.1s; }
+    .hx:hover { background: var(--bg-2); transform: translateY(-2px); }
+    .hx.tr-buff:hover { border-color: var(--green); }
+    .hx.tr-nerf:hover { border-color: var(--red); }
+    .hx.tr-mixed:hover { border-color: var(--gold); }
+    .hx-imgwrap { position: relative; width: 52px; height: 52px; }
+    .hx-imgwrap img { width: 52px; height: 52px; border-radius: 50%; object-fit: cover;
+      background: var(--bg-3); }
+    .hx-arrow { position: absolute; right: -3px; bottom: -3px; width: 19px; height: 19px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; font-size: 0.66rem; font-weight: 800;
+      background: var(--bg-0); border: 1.5px solid var(--bg-0); }
+    .hx.tr-buff .hx-arrow { color: var(--green); }
+    .hx.tr-nerf .hx-arrow { color: var(--red); }
+    .hx.tr-mixed .hx-arrow { color: var(--gold); }
+    .hx-name { font-size: 0.72rem; font-weight: 600; color: var(--text-1); text-align: center; line-height: 1.1; }
+    .tr-buff { color: var(--green); } .tr-nerf { color: var(--red); } .tr-mixed { color: var(--gold); }
+    .tr-rework { color: var(--accent); }
+    .hx.tr-rework:hover { border-color: var(--accent); }
+    .hx.tr-rework .hx-arrow { color: var(--accent); }
+    .trend-rework { background: var(--accent-dim); color: var(--accent); }
+    .tr-new { color: var(--green); } .tr-removed { color: var(--text-2); }
+    .hx.tr-new:hover { border-color: var(--green); }
+    .hx.tr-removed:hover { border-color: var(--border); }
+    .hx.tr-new .hx-arrow { color: var(--green); }
+    .hx.tr-removed .hx-arrow { color: var(--text-2); }
+    .trend-new { background: var(--green-dim, rgba(0,196,140,0.16)); color: var(--green); }
+    .trend-removed { background: var(--bg-3); color: var(--text-2); }
+    .item-card .hero-name { font-size: 0.95rem; }
+    .hero-card { position: relative; scroll-margin-top: 116px; }
+    .card-out { position: absolute; top: 0.7rem; right: 0.8rem; font-size: 0.68rem; font-weight: 700;
+      color: var(--text-2); text-decoration: none; border: 1px solid var(--border); border-radius: 99px;
+      padding: 0.12rem 0.5rem; }
+    .card-out:hover { color: var(--accent); border-color: var(--accent); }
+    .card-out + .hero-head { padding-right: 4.2rem; }
+    .et-ic { width: 26px; height: 26px; border-radius: 6px; object-fit: contain; background: var(--bg-3);
+      flex-shrink: 0; }
+    .meta-read { margin: 1.1rem 0 0.3rem; background: var(--accent-dim); border-left: 3px solid var(--accent);
+      border-radius: 8px; padding: 0.7rem 0.9rem; font-size: 0.85rem; color: var(--text-1); line-height: 1.5; }
+    .meta-read b { display: block; color: var(--accent); text-transform: uppercase; font-size: 0.64rem;
+      letter-spacing: 0.06em; margin-bottom: 0.25rem; }
+    .ranked-list li::before { content: '⬡'; }
+    h2.section .sec-ic { display: inline-flex; width: 1.1em; height: 1.1em; margin-right: 0.45rem; vertical-align: -0.16em; color: var(--text-0); }
+    h2.section .sec-ic .bic { width: 100%; height: 100%; }
+    .meta-read .mr-ic { display: inline-flex; width: 0.95em; height: 0.95em; margin-right: 0.3rem; vertical-align: -0.12em; }
+    .meta-read .mr-ic .bic { width: 100%; height: 100%; color: var(--accent); }
+    .patch-subnav { position: sticky; top: 56px; z-index: 90; background: var(--bg-1);
+      border-bottom: 1px solid var(--border); backdrop-filter: blur(12px); }
+    .psn-inner { max-width: 880px; margin: 0 auto; display: flex; align-items: center; gap: 0.35rem;
+      padding: 0.5rem 1rem; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+    .psn-inner::-webkit-scrollbar { display: none; }
+    .psn-label { font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-2);
+      font-weight: 700; margin-right: 0.2rem; flex-shrink: 0; }
+    .psn-pill { flex-shrink: 0; font-size: 0.78rem; color: var(--text-1); text-decoration: none;
+      padding: 0.3rem 0.7rem; border-radius: 99px; border: 1px solid var(--border); white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s, background 0.15s; }
+    .psn-pill:hover { color: var(--text-0); border-color: var(--accent); }
+    .psn-pill.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    h2.section { scroll-margin-top: 112px; }
+    .maturity { margin-bottom: 0.6rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);
+      font-size: 0.8rem; color: var(--text-1); }
+    .maturity.early strong { color: var(--accent); text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.74rem; }
+    .chipkey { margin-top: 0.6rem; padding-top: 0.5rem; border-top: 1px solid var(--border);
+      font-size: 0.74rem; color: var(--text-2); line-height: 1.6; }
+    @media (max-width: 560px) { .psn-label { display: none; } }
+    /* Trend sort chips: re-order the hero cards + showcase, never filter. */
+    .hxs { font: inherit; font-size: 0.72rem; font-weight: 600; cursor: pointer;
+      background: transparent; border: 1px solid var(--border); border-radius: 999px;
+      padding: 0.22rem 0.7rem; line-height: 1; min-height: 40px;
+      display: inline-flex; align-items: center; }
+    .hxs:hover { border-color: var(--accent); }
+    .hxs.active { border-color: var(--accent); background: var(--bg-2);
+      box-shadow: 0 0 0 1px var(--accent) inset; }
+    /* "What is this?" popups on item/Eternal cards (anchor targets only). */
+    .card-info { font: inherit; font-size: 0.74rem; font-weight: 600; color: var(--accent);
+      background: transparent; border: 1px solid var(--border); border-radius: 999px;
+      padding: 0.3rem 0.75rem; margin-top: 0.55rem; cursor: pointer;
+      min-height: 40px; display: inline-flex; align-items: center; }
+    .card-info:hover { border-color: var(--accent); }
+    .pop-back { position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 90;
+      display: flex; align-items: center; justify-content: center; padding: 1rem; }
+    /* author display:flex would otherwise beat the [hidden] UA rule */
+    .pop-back[hidden] { display: none; }
+    .pop { background: var(--bg-1); border: 1px solid var(--border); border-radius: 14px;
+      max-width: 460px; width: 100%; max-height: min(80vh, 640px); overflow-y: auto;
+      padding: 1rem 1.1rem 1.2rem; position: relative; box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
+    .pop-x { position: absolute; top: 0.55rem; right: 0.55rem; font: inherit; font-size: 1rem;
+      background: transparent; border: 0; color: var(--text-2); cursor: pointer;
+      min-width: 40px; min-height: 40px; border-radius: 10px; }
+    .pop-x:hover { color: var(--text-1); background: var(--bg-2); }
+    .pop-head { display: flex; gap: 0.75rem; align-items: center; margin-bottom: 0.7rem; padding-right: 2.2rem; }
+    .pop-head img { width: 52px; height: 52px; border-radius: 10px; object-fit: cover; }
+    .pop-kind { font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-2); font-weight: 700; }
+    .pop-head h3 { margin: 0.05rem 0; font-size: 1.05rem; }
+    .pop-meta { font-size: 0.74rem; color: var(--text-2); }
+    .pop-sec { margin-top: 0.7rem; }
+    .pop-sec b { display: block; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em;
+      color: var(--text-2); margin-bottom: 0.25rem; }
+    .pop-sec div { font-size: 0.82rem; color: var(--text-1); line-height: 1.5; margin-bottom: 0.3rem; }
+    .pop-note { margin-top: 0.8rem; font-size: 0.7rem; color: var(--text-2); }
+    /* Glossary terms: dotted underline, tooltip on hover (desktop) or tap/
+       focus (mobile — the spans are tabbable). Tooltip is clamped to the
+       viewport by a --tt-shift set from JS on open. */
+    .term { text-decoration: underline dotted; text-decoration-color: var(--accent); text-decoration-thickness: 1px;
+      text-underline-offset: 3px; cursor: help; position: relative; outline: none; }
+    .term:focus-visible { border-radius: 3px; box-shadow: 0 0 0 2px var(--accent); }
+    .term::after { content: attr(data-tip); position: absolute; left: 50%; bottom: calc(100% + 7px);
+      transform: translateX(calc(-50% + var(--tt-shift, 0px))); width: max-content;
+      max-width: min(270px, calc(100vw - 2rem)); white-space: normal; display: none;
+      background: var(--bg-2); color: var(--text-1); border: 1px solid var(--border); border-radius: 8px;
+      padding: 0.5rem 0.7rem; font-size: 0.74rem; line-height: 1.5; font-weight: 500; text-align: left;
+      z-index: 40; box-shadow: 0 6px 18px rgba(0,0,0,0.35); pointer-events: none; }
+    .term:hover::after, .term:focus::after { display: block; }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition: none !important; animation: none !important; }
+      .hx:hover { transform: none; }
+    }
+  .measured .m-hit, .chipkey .m-hit{color:var(--green,#4caf50);font-weight:700;} .measured .m-miss, .chipkey .m-miss{color:var(--gold,#e0a93e);font-weight:700;}
+  .measured-banner{border-color:var(--green,#4caf50);}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <a class="logo" href="v6/" style="display:inline-flex;align-items:center;gap:0.45rem"><img src="img/brand/logo.svg" alt="" width="26" height="26"> Pred Scout</a>
+      <div class="header-links">
+        <a href="v6/" class="header-link">Pick &amp; Build</a>
+        <a href="v6/squad.html" class="header-link">Pre-Game</a>
+        <a href="v6/coach.html" class="header-link">Coach</a>
+      </div>
+    </div>
+  </header>
+
+  <nav class="patch-subnav" aria-label="Chapters">
+    <div class="psn-inner">
+      <span class="psn-label">Jump to</span>
+      <a class="psn-pill" href="#ch-tldr" data-t="ch-tldr">TL;DR</a><a class="psn-pill" href="#ch-comps" data-t="ch-comps">Ranked comps</a><a class="psn-pill" href="#ch-heroes" data-t="ch-heroes">Hero changes</a><a class="psn-pill" href="#ch-eternals" data-t="ch-eternals">Eternals</a><a class="psn-pill" href="#ch-items" data-t="ch-items">Items</a><a class="psn-pill" href="#ch-systems" data-t="ch-systems">Systems &amp; map</a>
+    </div>
+  </nav>
+
+  <main id="app">
+    <div class="patch">
+      <h1 style="margin-bottom:0.25rem;">Patch 1.18.2</h1>
+      <p class="lead">Releases 2026-11-24 · Scout overview, predictions ·
+        <a href="https://www.predecessorgame.com/en-US/news/patch-notes/Patch_Notes_1.18.2" target="_blank" rel="noopener">official notes ↗</a></p>
+
+      
+      <div class="banner">
+        <strong>Heads up:</strong> these are <strong>predictions</strong>, not measured results. Every forecast is grounded in the patch's stated numbers and in where each hero stood before 1.18.2. Measured win rates replace the
+        forecasts once enough post-patch ranked games land in the feed.
+      </div>
+
+      <h2 class="section" id="ch-tldr"><span class="sec-ic" data-bic="scout"></span>TL;DR — what actually changes how the game plays</h2>
+      <div class="tldr-grid"><div class="tldr-item"><div class="tldr-lead">Mid lane gets squishier</div><div class="tldr-text">Thirteen mages and mid-lane carries lose base health or regen, so poke now sticks and stalling a lane on regen gets harder. The notes expect some carries to lean into mid lane as a result.</div></div><div class="tldr-item"><div class="tldr-lead">Forticus and shield stacking are cut</div><div class="tldr-text">Forticus costs 3000, shields for 6% max health instead of 8% on a 16-10s cooldown, and Swell grows slower. Phylactery, Azure Core, Soulbearer, Vyzar Carapace and Vortex Stone shields shrink too.</div></div><div class="tldr-item"><div class="tldr-lead">Kaelen comes down</div><div class="tldr-text">Razorstorm and Frostfall come back slower, Heart of Ice slows 12% instead of 15%, Winter's Pursuit's Frostbite bonus drops to 1.75x, and his growth stats and Last Winter shield are lower.</div></div><div class="tldr-item"><div class="tldr-lead">New items for on-hit and enchanters</div><div class="tldr-text">Bandit's Toll, Heretic's Blade and Kingsbane give attack-speed heroes new on-hit paths; Shadebinder is a magical bruiser item for Shinbi, Kwang and Aurora; Elysia helps enchanters cast their ultimate more often.</div></div><div class="tldr-item"><div class="tldr-lead">Strong heroes trimmed</div><div class="tldr-text">Akeron, Ikra, Legion, Narbash, Rampage, Revenant, Riktor, Scarlett, Shinbi, The Fey and TwinBlast all lose something, each aimed at the habit the notes name.</div></div><div class="tldr-item"><div class="tldr-lead">Struggling heroes pulled up</div><div class="tldr-text">Adele, Boris, GRIM.exe, Sevarog, Skylar and Wukong gain scaling, cooldowns or utility, and Crunch's model shrinks 5%.</div></div></div>
+      <div class="meta-read"><b><span class="mr-ic" data-bic="scout" data-bic-size="13"></span>Meta read</b>1.18.2 is a durability patch. Thirteen mages lose base health or regen, Forticus and five shield sources shrink, and Kaelen, who sat at 56.8% over 19,912 ranked jungle games, is cut across his kit. Seven items arrive or return for on-hit fighters, bruiser mages and enchanters, with no data yet. Adele, Boris, GRIM.exe, Sevarog, Skylar and Wukong get help.</div>
+
+      <h2 class="section" id="ch-comps"><span class="sec-ic" data-bic="counter-pick"></span>Ranked comps: what shifts</h2>
+      <p class="lead">Expect ranked comps to move away from shield stacking toward damage that sticks: mages get squishier, Forticus and mage shields shrink, and Kaelen comes down. These are reads from the notes, not results.</p>
+      <div class="tldr-grid"><div class="tldr-item"><div class="tldr-lead">Mid lane poke matters again</div><div class="tldr-text">Thirteen mages lose health or regen, so poke now sticks and stalling on regen gets harder. The Fey, at 51.5% over 21,274 midlane games, takes the biggest cut. Expect poke mids and roaming carries to punish slow starts.</div></div><div class="tldr-item"><div class="tldr-lead">Forticus frontlines lose their safety net</div><div class="tldr-text">Forticus shields for 6% instead of 8% on a longer cooldown, and Vortex Stone, Vyzar Carapace and Terminus shields shrink. Expect fighters who poached Forticus to return to damage items, while true tanks keep it.</div></div><div class="tldr-item"><div class="tldr-lead">Kaelen jungle comes down a step</div><div class="tldr-text">Kaelen sat at 56.8% over 19,912 ranked jungle games, and Forticus was in 1,629 of his listed core games. Expect him to stay a common pick, with buffed Boris, Sevarog and Wukong as other jungle options.</div></div><div class="tldr-item"><div class="tldr-lead">On-hit carries get new tools</div><div class="tldr-text">Kingsbane, Bandit's Toll and Heretic's Blade add on-hit paths, and Onixian Quiver's Multishot gets its lost damage back. TwinBlast's Vaporize is cut ahead of them; expect attack-speed carries and GRIM.exe to test them first.</div></div><div class="tldr-item"><div class="tldr-lead">Enchanters pick up Elysia</div><div class="tldr-text">Elysia gives 25 ultimate haste and faster basic cooldowns after an ultimate; the notes name Zinx, Muriel and Maco. Hexbound Bracers drops from 15 to 10 haste, so expect enchanter supports to move toward Elysia.</div></div></div>
+
+
+      <h2 class="section" id="ch-heroes"><span class="sec-ic" data-bic="counter-pick"></span>Hero changes <span style="font-size:0.7rem;color:var(--text-2);font-weight:500;">
+        1 meta-shifting · 12 notable · 19 minor · bugfix-only heroes excluded</span></h2>
+      
+      <div class="hx-legend hx-sortbar" role="group" aria-label="Sort heroes by change type">
+        <button class="hxs tr-rework" data-sort="rework" aria-pressed="false">⟳ reworks</button>
+        <button class="hxs tr-buff" data-sort="buff" aria-pressed="false">▲ buffs</button>
+        <button class="hxs tr-nerf" data-sort="nerf" aria-pressed="false">▼ nerfs</button>
+        <button class="hxs tr-mixed" data-sort="mixed" aria-pressed="false">◆ mixed</button>
+        <span class="hx-hint">tap a change type to bring those heroes to the top — nothing is hidden. tap a hero to jump to its changes</span>
+      </div>
+      <div class="hx-grid" id="heroShowcaseGrid" data-hero-jump>
+        <a class="hx tr-nerf" data-trend="nerf" href="#hero-kaelen" title="Kaelen — meta-shifting nerf; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/kaelen.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Kaelen</span>
+          </a><a class="hx tr-buff" data-trend="buff" href="#hero-adele" title="Adele — notable buff; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/adele.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▲</span></span>
+            <span class="hx-name">Adele</span>
+          </a><a class="hx tr-buff" data-trend="buff" href="#hero-boris" title="Boris — notable buff; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/boris.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▲</span></span>
+            <span class="hx-name">Boris</span>
+          </a><a class="hx tr-buff" data-trend="buff" href="#hero-grim-exe" title="GRIM.exe — notable buff; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/grim-exe.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▲</span></span>
+            <span class="hx-name">GRIM.exe</span>
+          </a><a class="hx tr-buff" data-trend="buff" href="#hero-sevarog" title="Sevarog — notable buff; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/sevarog.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▲</span></span>
+            <span class="hx-name">Sevarog</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#hero-akeron" title="Akeron — notable nerf; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/akeron.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Akeron</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#hero-gadget" title="Gadget — notable nerf; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/gadget.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Gadget</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#hero-ikra" title="Ikra — notable nerf; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/ikra.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Ikra</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#hero-narbash" title="Narbash — notable nerf; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/narbash.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Narbash</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#hero-revenant" title="Revenant — notable nerf; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/revenant.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Revenant</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#hero-scarlett" title="Scarlett — notable nerf; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/scarlett.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Scarlett</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#hero-the-fey" title="The Fey — notable nerf; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/the-fey.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">The Fey</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#hero-twinblast" title="TwinBlast — notable nerf; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/twinblast.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">TwinBlast</span>
+          </a><a class="hx tr-rework" data-trend="rework" href="#hero-mourn" title="Mourn — minor shift; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/mourn.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">⟳</span></span>
+            <span class="hx-name">Mourn</span>
+          </a><a class="hx tr-buff" data-trend="buff" href="#hero-crunch" title="Crunch — minor buff; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/crunch.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▲</span></span>
+            <span class="hx-name">Crunch</span>
+          </a><a class="hx tr-buff" data-trend="buff" href="#hero-skylar" title="Skylar — minor buff; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/skylar.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▲</span></span>
+            <span class="hx-name">Skylar</span>
+          </a><a class="hx tr-buff" data-trend="buff" href="#hero-wukong" title="Wukong — minor buff; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/wukong.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▲</span></span>
+            <span class="hx-name">Wukong</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#hero-argus" title="Argus — minor nerf; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/argus.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Argus</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#hero-valmont" title="Baron Valmont — minor nerf; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/valmont.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Baron Valmont</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#hero-gideon" title="Gideon — minor nerf; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/gideon.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Gideon</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#hero-iggy-scorch" title="Iggy &amp; Scorch — minor nerf; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/iggy-scorch.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Iggy &amp; Scorch</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#hero-legion" title="Legion — minor nerf; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/legion.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Legion</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#hero-lt-belica" title="Lt. Belica — minor nerf; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/lt-belica.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Lt. Belica</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#hero-morigesh" title="Morigesh — minor nerf; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/morigesh.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Morigesh</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#hero-muriel" title="Muriel — minor nerf; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/muriel.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Muriel</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#hero-neon" title="Neon — minor nerf; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/neon.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Neon</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#hero-rampage" title="Rampage — minor nerf; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/rampage.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Rampage</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#hero-renna" title="Renna — minor nerf; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/renna.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Renna</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#hero-riktor" title="Riktor — minor nerf; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/riktor.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Riktor</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#hero-shinbi" title="Shinbi — minor nerf; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/shinbi.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Shinbi</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#hero-wraith" title="Wraith — minor nerf; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/wraith.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Wraith</span>
+          </a><a class="hx tr-mixed" data-trend="mixed" href="#hero-howitzer" title="Howitzer — minor mixed; jump to its changes">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/howitzer.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">◆</span></span>
+            <span class="hx-name">Howitzer</span>
+          </a>
+      </div>
+      
+      <h3 class="group-head"><span class="badge mag-meta">Meta-shifting</span> <span class="group-count">1 hero</span></h3>
+      <div class="group-cards">
+      <div class="hero-card card" id="hero-kaelen" data-mag="meta-shifting" data-trend="nerf">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=kaelen" title="Open Kaelen's full page"><img loading="lazy" src="img/heroes/kaelen.webp" alt="Kaelen" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">Kaelen</span>
+          <span class="hero-role">jungle</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+          <span class="badge mag-meta">Meta-shifting</span>
+        </div>
+        <ul class="change-list"><li>Last Winter [Augment]: Max Health Shield decreased from 10% to 8%</li><li>Last Winter [Augment]: Shield per Target Hit Max Health Scaling decreased from 4% to 3%</li><li>Base stats: Health Growth decreased from 131 to 128</li><li>Base stats: Health Regen Growth decreased from 0.2 to 0.18</li><li>Base stats: Physical Power Growth decreased from 5.2 to 5</li><li>Base stats: Physical Armor Growth decreased from 4.8 to 4.6</li><li>Heart Of Ice [Passive]: Slow decreased from 15% to 12%</li><li>Razorstorm [Primary]: Cooldown increased from 13/11.75/10.5/9.25/8 to 13/12/11/10/9</li><li>Winter's Pursuit [Secondary]: Frostbite Damage Multiplier decreased from 2x to 1.75x</li><li>Frostfall [Ultimate]: Bonus Physical Power Scaling decreased from 100% to 85%</li><li>Frostfall [Ultimate]: Cooldown increased from 130/110/90 to 130/115/100</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>Razorstorm's cooldown ends at 9s instead of 8s, Frostfall's at 100s instead of 90s, and Heart of Ice slows 12% instead of 15%. Last Winter and stat growth shrink.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect him to stay strong but lose ground, with Forticus also cut. He sat at 56.8% over 19,912 ranked jungle games. His most-built jungle core, Basilisk, Citadel and Giant's Ring, skips Forticus, so it is the safer path now.</div>
+        
+        
+        
+      </div></div>
+      <h3 class="group-head"><span class="badge mag-notable">Notable</span> <span class="group-count">12 heroes</span></h3>
+      <div class="group-cards">
+      <div class="hero-card card" id="hero-adele" data-mag="notable" data-trend="buff">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=adele" title="Open Adele's full page"><img loading="lazy" src="img/heroes/adele.webp" alt="Adele" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">Adele</span>
+          <span class="hero-role">support</span>
+          <span class="badge trend-buff">▲ Buff</span>
+          <span class="badge mag-notable">Notable</span>
+        </div>
+        <ul class="change-list"><li>Court Of Roses [Augment]: Vine Ally Damage Modifier increased from 50% to 75%</li><li>Base stats: Physical Power Growth increased from 3 to 3.4</li><li>Iron Rose [Secondary]: Damage Bonus Health Scaling increased from 0.7% to 1%</li><li>Iron Rose [Secondary]: Cooldown decreased from 18/17.25/16.5/15.75/15 to 17/16/15/14/13</li><li>Queen's Garden [Ultimate]: Slow increased from 35%/37.5%/40% to 35%/40%/45%</li><li>Queen's Garden [Ultimate]: Root Duration increased from 0.5s to 0.75s</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>Iron Rose's cooldown drops from 18-15s to 17-13s and its health scaling rises from 0.7% to 1%. Queen's Garden roots for 0.75s instead of 0.5s and slows up to 45%.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect a clear lift for engage Adele, mostly in fights where the longer root lands. She sat at 49.9% over 11,677 ranked support games. Land Queen's Garden on grouped enemies, then follow with Iron Rose while they are rooted.</div>
+        
+        
+        
+      </div>
+      <div class="hero-card card" id="hero-boris" data-mag="notable" data-trend="buff">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=boris" title="Open Boris's full page"><img loading="lazy" src="img/heroes/boris.webp" alt="Boris" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">Boris</span>
+          <span class="hero-role">jungle</span>
+          <span class="badge trend-buff">▲ Buff</span>
+          <span class="badge mag-notable">Notable</span>
+        </div>
+        <ul class="change-list"><li>Base stats: Health Growth increased from 130 to 135</li><li>Base stats: Mana Growth increased from 40 to 46</li><li>Detection Protocol [Primary]: Movement Speed increased from 45%/55%/65%/75%/85% to 45%/60%/75%/90%/105%</li><li>Primeval Roar [Secondary]: Magical Power Scaling increased from 70% to 85%</li><li>Primeval Roar [Secondary]: Maximum Fear Time increased from 1s to 1.1s</li><li>Primeval Roar [Secondary]: Damage Reduction increased from 20%/22.5%/25%/27.5%/30% to 20%/23%/26%/29%/32%</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>Primeval Roar's scaling rises from 70% to 85%, its fear to 1.1s and its damage reduction to 32%. Detection Protocol's speed tops out at 105% instead of 85%.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect a modest climb, mostly late game where he struggled. He sat at 48.7% over 10,942 ranked jungle games. Use Detection Protocol's extra speed to reach the enemy backline, then Roar to fear them while you take less damage.</div>
+        
+        
+        
+      </div>
+      <div class="hero-card card" id="hero-grim-exe" data-mag="notable" data-trend="buff">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=grim-exe" title="Open GRIM.exe's full page"><img loading="lazy" src="img/heroes/grim-exe.webp" alt="GRIM.exe" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">GRIM.exe</span>
+          <span class="hero-role">carry</span>
+          <span class="badge trend-buff">▲ Buff</span>
+          <span class="badge mag-notable">Notable</span>
+        </div>
+        <ul class="change-list"><li>Base stats: Attack Speed Growth increased from 1.3 to 1.5</li><li>Displacement Blast [Primary]: Bonus Physical Power Scaling increased from 105% to 115%</li><li>Displacement Blast [Primary]: Magical Power Scaling increased from 100% to 105%</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>Attack speed growth rises from 1.3 to 1.5, and Displacement Blast's scaling rises from 105% to 115% bonus physical power and from 100% to 105% magical power.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect a modest climb from mid game on, which is what the notes aim for. He sat at 47.8% over 5,059 ranked carry games. Play the early lane safe and farm; the extra attack speed growth pays off with levels, not in the first trades.</div>
+        
+        
+        
+      </div>
+      <div class="hero-card card" id="hero-sevarog" data-mag="notable" data-trend="buff">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=sevarog" title="Open Sevarog's full page"><img loading="lazy" src="img/heroes/sevarog.webp" alt="Sevarog" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">Sevarog</span>
+          <span class="hero-role">offlane</span>
+          <span class="badge trend-buff">▲ Buff</span>
+          <span class="badge mag-notable">Notable</span>
+        </div>
+        <ul class="change-list"><li>Unholy Pursuit [Augment]: Souls gained on Hero Hit decreased from 2 to 1</li><li>Siphon [Primary]: Monster Damage increased from 40/45/50/55/60 to 45/50/55/60/65</li><li>Siphon [Primary]: Bonus Health Scaling increased from 4% to 4.5%</li><li>Subjugate [Secondary]: Mana Cost decreased from 60/70/80/90/100 to 50/60/70/80/90</li><li>Subjugate [Secondary]: Cooldown decreased from 16/15/14/13/12 to 15/14/13/12/11</li><li>Colossal Blow [Ultimate]: Damage increased from 200/330/460 to 240/350/460</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>Colossal Blow deals 240/350/460 instead of 200/330/460, Subjugate costs less on a 15-11s cooldown, and Siphon hits monsters harder. Unholy Pursuit grants 1 soul per hero hit instead of 2.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect a clear early lift in both offlane and jungle. He sat at 47.5% over 6,727 ranked offlane games. Take more early trades with the cheaper, faster Subjugate, since Unholy Pursuit now stacks slower off heroes.</div>
+        
+        
+        
+      </div>
+      <div class="hero-card card" id="hero-akeron" data-mag="notable" data-trend="nerf">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=akeron" title="Open Akeron's full page"><img loading="lazy" src="img/heroes/akeron.webp" alt="Akeron" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">Akeron</span>
+          <span class="hero-role">offlane</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+          <span class="badge mag-notable">Notable</span>
+        </div>
+        <ul class="change-list"><li>Consume [Ultimate]: Bite Damage Bonus Physical Power Scaling decreased from 75% to 65%</li><li>Consume [Ultimate]: Bite Damage Magical Power Scaling decreased from 40% to 35%</li><li>Consume [Ultimate]: Execute Bonus Physical Power Scaling decreased from 3.5% to 3%</li><li>Consume [Ultimate]: Execute Bonus Magical Power Scaling decreased from 2.5% to 2%</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>Consume's bite scaling falls from 75% to 65% bonus physical power and from 40% to 35% magical power, and its execute scaling drops too. Nothing else in his kit changes.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect a step down when he gets ahead, made larger because Forticus and Nihil, both in his usual offlane setup, are cut too. He sat at 51.5% over 8,181 ranked offlane games. Fight with your team close, since he can no longer finish targets alone as easily.</div>
+        
+        
+        
+      </div>
+      <div class="hero-card card" id="hero-gadget" data-mag="notable" data-trend="nerf">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=gadget" title="Open Gadget's full page"><img loading="lazy" src="img/heroes/gadget.webp" alt="Gadget" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">Gadget</span>
+          <span class="hero-role">midlane</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+          <span class="badge mag-notable">Notable</span>
+        </div>
+        <ul class="change-list"><li>Base stats: Health decreased from 640 to 630</li><li>Base stats: Health Regen decreased from 1.35 to 1.2</li><li>Auto-Lock Amp [Augment]: Seek &amp; Destroy Tracking Speed decreased from 25% to 20%</li><li>Sticky Mine [Primary]: Mana Cost increased from 50/55/60/65/70 to 55/60/65/70/75</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>Base health falls from 640 to 630 and regen from 1.35 to 1.2. Auto-Lock Amp tracks 20% instead of 25%, and Sticky Mine costs 55-75 mana instead of 50-70.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect a small drop for poke Gadget, who runs dry sooner, most of all in the offlane. She sat at 49.8% over 19,393 ranked midlane games. Auto-Lock Amp follows targets less, so aim mines in the enemy's path and spend them on trades, not waves.</div>
+        
+        
+        
+      </div>
+      <div class="hero-card card" id="hero-ikra" data-mag="notable" data-trend="nerf">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=ikra" title="Open Ikra's full page"><img loading="lazy" src="img/heroes/ikra.webp" alt="Ikra" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">Ikra</span>
+          <span class="hero-role">midlane</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+          <span class="badge mag-notable">Notable</span>
+        </div>
+        <ul class="change-list"><li>Base stats: Health decreased from 690 to 665</li><li>Base stats: Health Growth decreased from 138 to 134</li><li>Hydroclasm [Secondary]: Magical Power Scaling decreased from 15% to 10%</li><li>Genesis [Ultimate]: Damage decreased from 320/460/600 to 320/450/580</li><li>Genesis [Ultimate]: Magical Power Scaling decreased from 85% to 80%</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>Base health falls from 690 to 665. Hydroclasm's scaling drops from 15% to 10%, and Genesis deals 320/450/580 instead of 320/460/600 with 80% scaling instead of 85%.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect a further drop, mostly in the burst all-ins the notes say were too strong in high ranks. He sat at 45.8% over 4,574 ranked midlane games. Poke enemies down before going in with Genesis, since the combo no longer kills from as high.</div>
+        
+        
+        
+      </div>
+      <div class="hero-card card" id="hero-narbash" data-mag="notable" data-trend="nerf">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=narbash" title="Open Narbash's full page"><img loading="lazy" src="img/heroes/narbash.webp" alt="Narbash" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">Narbash</span>
+          <span class="hero-role">support</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+          <span class="badge mag-notable">Notable</span>
+        </div>
+        <ul class="change-list"><li>Base stats: Health Regen decreased from 1.65 to 1.5</li><li>Base stats: Mana Growth decreased from 50 to 45</li><li>March [Primary]: Cooldown increased from 15/13.5/12/10.5/9 to 15/13.75/12.5/11.25/10</li><li>Song Of My People [Secondary]: Movement Speed decreased from 4.5%/5.5%/6.5%/7.5%/8.5% to 4%/4.5%/5%/5.5%/6%</li><li>Song Of My People [Secondary]: [Bugfix] Now correctly grants Assists when buffing Allies within the Aura</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>Mana growth drops from 50 to 45, regen from 1.65 to 1.5. March ends at a 10s cooldown, not 9s; Song of My People's speed caps at 6%, not 8.5%.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect a dip from the top of the support board, felt in slower team rotations and more mana pressure. He sat at 53.2% over 11,961 ranked support games. Into him, poke early: he now runs out of mana sooner.</div>
+        
+        
+        
+      </div>
+      <div class="hero-card card" id="hero-revenant" data-mag="notable" data-trend="nerf">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=revenant" title="Open Revenant's full page"><img loading="lazy" src="img/heroes/revenant.webp" alt="Revenant" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">Revenant</span>
+          <span class="hero-role">carry</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+          <span class="badge mag-notable">Notable</span>
+        </div>
+        <ul class="change-list"><li>Base stats: Health decreased from 690 to 680</li><li>Quickdraw [Augment]: Reload Speed decreased from +35% to +30%</li><li>Fate [Basic Attack]: [Bugfix] Fixed an issue where Revenant would sometimes fail to Reload after a Recall, and be stuck on 0 Bullets</li><li>Reckoning [Ultimate]: Duration decreased from 6/7/8 to 5/6/7</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>Base health falls from 690 to 680, Quickdraw's reload speed from 35% to 30%, and Reckoning lasts 5/6/7s instead of 6/7/8s. Terminus, in his top cores, shields less.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect a small dip, with Terminus also trimmed and his ultimate escape shorter. He sat at 51.0% over 19,469 ranked carry games. Reckoning ends a second sooner at each rank, so start your escape earlier.</div>
+        
+        
+        
+      </div>
+      <div class="hero-card card" id="hero-scarlett" data-mag="notable" data-trend="nerf">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=scarlett" title="Open Scarlett's full page"><img loading="lazy" src="img/heroes/scarlett.webp" alt="Scarlett" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">Scarlett</span>
+          <span class="hero-role">offlane</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+          <span class="badge mag-notable">Notable</span>
+        </div>
+        <ul class="change-list"><li>Base stats: Health decreased from 695 to 685</li><li>Base stats: Health Growth decreased from 136 to 133</li><li>Base stats: Health Regen decreased from 2 to 1.6</li><li>Base stats: Physical Armor Growth decreased from 5 to 4.8</li><li>Volcanic Slam [Augment]: Eruption Damage decreased from 20 (+4 per Level) to 20 (+3 per Level)</li><li>Volcanic Slam [Augment]: Eruption Damage Bonus Physical Power Scaling decreased from 25% to 20%</li><li>Minuet [Alternate]: Critical Damage Modifier decreased from 50% to 40%</li><li>Minuet [Alternate]: Energy Cost increased from 100/90/80/70/60 to 105/95/85/75/65</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>Health regen falls from 2 to 1.6, Minuet's crit bonus from 50% to 40%, and Volcanic Slam's scaling from 25% to 20%. Knell, her top Eternal, is trimmed too.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect a clear drop in lane, where her <span class="term" tabindex="0" data-tip="Sustain is everything that refills health through a lane or a fight: regen, potions, lifesteal, omnivamp, healing abilities.">sustain</span> carried her. She sat at 52.0% over 12,327 ranked offlane games. Mutilator gains Devour damage and sits in her most-built cores, so keep it into health-stacking lanes.</div>
+        
+        
+        
+      </div>
+      <div class="hero-card card" id="hero-the-fey" data-mag="notable" data-trend="nerf">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=the-fey" title="Open The Fey's full page"><img loading="lazy" src="img/heroes/the-fey.webp" alt="The Fey" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">The Fey</span>
+          <span class="hero-role">midlane</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+          <span class="badge mag-notable">Notable</span>
+        </div>
+        <ul class="change-list"><li>Base stats: Health decreased from 695 to 665</li><li>Base stats: Health Regen decreased from 1.6 to 1.2</li><li>Base stats: Mana decreased from 435 to 410</li><li>Base stats: Mana Growth increased from 32 to 35</li><li>Bramble Patch [Primary]: Cooldown increased from 12/11.5/11/10.5/10 to 13/12.5/12/11.5/11</li><li>Fly Trap [Ultimate]: Cooldown increased from 125/110/95 to 130/115/100</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>Base health falls from 695 to 665 and regen from 1.6 to 1.2, the largest health cut in the mage pass. Bramble Patch and Fly Trap come back slower.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect a clear drop: lower health, slower shove and longer cooldowns all hit her lane. She sat at 51.5% over 21,274 ranked midlane games. With less mana and regen early, shove only when it sets up a back or a rotation.</div>
+        
+        
+        
+      </div>
+      <div class="hero-card card" id="hero-twinblast" data-mag="notable" data-trend="nerf">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=twinblast" title="Open TwinBlast's full page"><img loading="lazy" src="img/heroes/twinblast.webp" alt="TwinBlast" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">TwinBlast</span>
+          <span class="hero-role">carry</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+          <span class="badge mag-notable">Notable</span>
+        </div>
+        <ul class="change-list"><li>Base stats: Health decreased from 700 to 690</li><li>Base stats: Health Regen decreased from 1.5 to 1.35</li><li>Base stats: Physical Power Growth decreased from 4.5 to 4</li><li>Base stats: Attack Speed Growth decreased from 1.5 to 1.35</li><li>Vaporize [Primary]: On-Hit Modifier decreased from 200% to 150%</li><li>Vaporize [Primary]: Cooldown increased from 13/11.25/9.5/7.75/6 to 13/11.5/10/8.5/7</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>Vaporize's on-hit falls from 200% to 150% and its cooldown ends at 7s instead of 6s. Base health, regen, physical power growth and attack speed growth all drop.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect a clear drop, which the notes add ahead of the new on-hit items. He sat at 49.6% over 23,204 ranked carry games. Mid-lane invades pay off less with his lower health, so stay in the duo lane and scale.</div>
+        
+        
+        
+      </div></div>
+      <h3 class="group-head"><span class="badge mag-minor">Minor</span> <span class="group-count">19 heroes</span></h3>
+      <div class="group-cards">
+      <div class="hero-card card" id="hero-mourn" data-mag="minor" data-trend="rework">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=mourn" title="Open Mourn's full page"><img loading="lazy" src="img/heroes/mourn.webp" alt="Mourn" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">Mourn</span>
+          <span class="hero-role">support</span>
+          <span class="badge trend-rework">⟳ Shift</span>
+          <span class="badge mag-minor">Minor</span>
+        </div>
+        <ul class="change-list"><li>Contagion [Primary]: The first hit of Contagion is no longer considered an instance of DoT Damage</li><li>Contagion [Primary]: As a result, the first instance of damage now pulls Tower and Monster Aggro, can cancel Recalls, and applies various Effects it could not before, such as Combustion</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>Contagion's first hit no longer counts as damage over time, so it now pulls tower and monster aggro, cancels recalls and applies effects like Combustion.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect a small change both ways: recall cancels and extra item effects help, while accidental tower and camp aggro costs. Mourn sat at 52.7% over 15,904 ranked support games. Hold Contagion near enemy towers, and use it to cancel a low enemy's recall.</div>
+        
+        
+        
+      </div>
+      <div class="hero-card card" id="hero-crunch" data-mag="minor" data-trend="buff">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=crunch" title="Open Crunch's full page"><img loading="lazy" src="img/heroes/crunch.webp" alt="Crunch" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">Crunch</span>
+          <span class="hero-role">offlane</span>
+          <span class="badge trend-buff">▲ Buff</span>
+          <span class="badge mag-minor">Minor</span>
+        </div>
+        <ul class="change-list"><li>Base stats: Hero Model and Hitbox Size decreased by 5%</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>His model and hitbox shrink by 5%. Nothing else in his kit or stats changes.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect little change; a smaller hitbox mostly helps him slip skillshots in fights. He sat at 48.6% over 9,318 ranked offlane games. Mutilator, in his most-built cores, gains Devour damage (3x to 3.5x), so keep rushing it into health-stacking lanes.</div>
+        
+        
+        
+      </div>
+      <div class="hero-card card" id="hero-skylar" data-mag="minor" data-trend="buff">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=skylar" title="Open Skylar's full page"><img loading="lazy" src="img/heroes/skylar.webp" alt="Skylar" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">Skylar</span>
+          <span class="hero-role">carry</span>
+          <span class="badge trend-buff">▲ Buff</span>
+          <span class="badge mag-minor">Minor</span>
+        </div>
+        <ul class="change-list"><li>Base stats: Physical Power Growth increased from 2.55 to 3</li><li>Base stats: Mana increased from 290 to 310</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>Physical power growth rises from 2.55 to 3 and base mana from 290 to 310.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect a modest mid-game lift. She sat at 48.2% over 12,829 ranked carry games. Scattershot, already in her cores, now costs 3000 and deals 70% instead of 50% to minions, so it is a solid early wave-clear buy.</div>
+        
+        
+        
+      </div>
+      <div class="hero-card card" id="hero-wukong" data-mag="minor" data-trend="buff">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=wukong" title="Open Wukong's full page"><img loading="lazy" src="img/heroes/wukong.webp" alt="Wukong" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">Wukong</span>
+          <span class="hero-role">jungle</span>
+          <span class="badge trend-buff">▲ Buff</span>
+          <span class="badge mag-minor">Minor</span>
+        </div>
+        <ul class="change-list"><li>Ruyi Jingu Bang [Basic Attack]: Bonus Physical Power Scaling increased from 80% to 82.5%</li><li>Pole Vault [Primary]: Attack Speed Physical Penetration Scaling increased from 60% to 70%</li><li>84,000 Hairs [Ultimate]: Clone Damage Total Physical Power Scaling increased from 12% to 15%</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>Basic attack scaling rises from 80% to 82.5%, Pole Vault's attack speed to penetration conversion from 60% to 70%, and clone scaling from 12% to 15%.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect a small lift for basic-attack jungle Wukong. He sat at 47.6% over 2,986 ranked jungle games. Build around basic attacks and clones; the new on-hit items, such as Kingsbane, fit that plan.</div>
+        
+        
+        
+      </div>
+      <div class="hero-card card" id="hero-argus" data-mag="minor" data-trend="nerf">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=argus" title="Open Argus's full page"><img loading="lazy" src="img/heroes/argus.webp" alt="Argus" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">Argus</span>
+          <span class="hero-role">midlane</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+          <span class="badge mag-minor">Minor</span>
+        </div>
+        <ul class="change-list"><li>Base stats: Health decreased from 660 to 650</li><li>Base stats: Health Regen decreased from 1.7 to 1.5</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>Base health falls from 660 to 650 and health regen from 1.7 to 1.5. Azure Core, in his most-built midlane core, also loses shield.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect a slight dip, felt in early lane trades. He sat at 52.0% over 13,582 ranked midlane games. With less health and regen, poke now puts him in kill range sooner, so back earlier instead of staying low in lane.</div>
+        
+        
+        
+      </div>
+      <div class="hero-card card" id="hero-valmont" data-mag="minor" data-trend="nerf">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=valmont" title="Open Baron Valmont's full page"><img loading="lazy" src="img/heroes/valmont.webp" alt="Baron Valmont" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">Baron Valmont</span>
+          <span class="hero-role">midlane</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+          <span class="badge mag-minor">Minor</span>
+        </div>
+        <ul class="change-list"><li>Base stats: Health decreased from 685 to 665</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>Base health falls from 685 to 665. Nothing else in his kit changes.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect a slight dip; lower health means mage poke puts him in kill range sooner in lane. He sat at 49.5% over 9,664 ranked midlane games. Favor short trades and use his healing between waves to stay topped up.</div>
+        
+        
+        
+      </div>
+      <div class="hero-card card" id="hero-gideon" data-mag="minor" data-trend="nerf">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=gideon" title="Open Gideon's full page"><img loading="lazy" src="img/heroes/gideon.webp" alt="Gideon" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">Gideon</span>
+          <span class="hero-role">midlane</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+          <span class="badge mag-minor">Minor</span>
+        </div>
+        <ul class="change-list"><li>Base stats: Health decreased from 670 to 650</li><li>Base stats: Health Regen decreased from 1.45 to 1.3</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>Base health falls from 670 to 650 and health regen from 1.45 to 1.3.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect a slight dip; lower health means an early poke combo puts him in kill range sooner. He sat at 48.7% over 19,896 ranked midlane games. Winter's Fury can now be used during Black Hole, which makes it a stronger crest for him.</div>
+        
+        
+        
+      </div>
+      <div class="hero-card card" id="hero-iggy-scorch" data-mag="minor" data-trend="nerf">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=iggy-scorch" title="Open Iggy &amp; Scorch's full page"><img loading="lazy" src="img/heroes/iggy-scorch.webp" alt="Iggy &amp; Scorch" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">Iggy &amp; Scorch</span>
+          <span class="hero-role">midlane</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+          <span class="badge mag-minor">Minor</span>
+        </div>
+        <ul class="change-list"><li>Hold This! [Augment]: [Bugfix] Now correctly grants more than 1 set of stacks if Iggy hits more than 1 Hero with the same Molotov</li><li>Base stats: Health decreased from 665 to 655</li><li>Base stats: Health Regen decreased from 1.5 to 1.3</li><li>Oil Spill [Secondary]: [Bugfix] Fixed an issue where Oil Spill would sometimes apply 5 stacks of Slick, instantly</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>Base health falls from 665 to 655 and regen from 1.5 to 1.3. Oil Spill no longer wrongly applies 5 Slick stacks at once; Hold This! stacks per hero hit.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect a slight dip in lane, as the Oil Spill fix removes damage he got by accident. He sat at 50.6% over 13,140 ranked midlane games. Hold This! now pays off for every hero one Molotov hits, so throw it into grouped fights.</div>
+        
+        
+        
+      </div>
+      <div class="hero-card card" id="hero-legion" data-mag="minor" data-trend="nerf">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=legion" title="Open Legion's full page"><img loading="lazy" src="img/heroes/legion.webp" alt="Legion" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">Legion</span>
+          <span class="hero-role">carry</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+          <span class="badge mag-minor">Minor</span>
+        </div>
+        <ul class="change-list"><li>Scorched Earth [Augment]: Damage decreased from 7 to 6</li><li>Ballistic Calibration [Passive]: Attack Speed to <span class="term" tabindex="0" data-tip="Ability haste shortens cooldowns — more haste means abilities come back faster.">Ability Haste</span> Conversion decreased from 0.75 to 0.7</li><li>K-75 Storm Rifle [Basic Attack]: [Bugfix] Fixed an issue where Legion would not gain stacks from Marksman Crest if he was using Full-Auto Firing</li><li>Orbital Sanction [Ultimate]: Bonus Physical Power Scaling decreased from 26% to 24%</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>Scorched Earth's damage falls from 7 to 6, attack speed converts to 0.7 ability haste instead of 0.75, and Orbital Sanction's scaling drops from 26% to 24%.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect a small step down from a strong spot, as the notes trim his Scorched Earth buff to a midpoint. He sat at 52.6% over 27,576 ranked carry games. Scorched Earth still led his augments on 1.18 numbers, so keep it.</div>
+        
+        
+        
+      </div>
+      <div class="hero-card card" id="hero-lt-belica" data-mag="minor" data-trend="nerf">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=lt-belica" title="Open Lt. Belica's full page"><img loading="lazy" src="img/heroes/lt-belica.webp" alt="Lt. Belica" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">Lt. Belica</span>
+          <span class="hero-role">midlane</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+          <span class="badge mag-minor">Minor</span>
+        </div>
+        <ul class="change-list"><li>Base stats: Health decreased from 690 to 670</li><li>Base stats: Health Regen decreased from 1.55 to 1.35</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>Base health falls from 690 to 670 and health regen from 1.55 to 1.35.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect a slight dip; lower health means early poke puts her in kill range sooner. She sat at 50.9% over 14,993 ranked midlane games. Trade from max range and back before a gank can catch her low.</div>
+        
+        
+        
+      </div>
+      <div class="hero-card card" id="hero-morigesh" data-mag="minor" data-trend="nerf">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=morigesh" title="Open Morigesh's full page"><img loading="lazy" src="img/heroes/morigesh.webp" alt="Morigesh" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">Morigesh</span>
+          <span class="hero-role">midlane</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+          <span class="badge mag-minor">Minor</span>
+        </div>
+        <ul class="change-list"><li>Base stats: Health Regen decreased from 1.5 to 1.3</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>Health regen falls from 1.5 to 1.3. Her base health is unchanged.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect a very small dip; only her regen changes, so she just recovers slower between trades. She sat at 49.0% over 9,279 ranked midlane games. Back on time instead of waiting to heal up in lane.</div>
+        
+        
+        
+      </div>
+      <div class="hero-card card" id="hero-muriel" data-mag="minor" data-trend="nerf">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=muriel" title="Open Muriel's full page"><img loading="lazy" src="img/heroes/muriel.webp" alt="Muriel" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">Muriel</span>
+          <span class="hero-role">support</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+          <span class="badge mag-minor">Minor</span>
+        </div>
+        <ul class="change-list"><li>Base stats: Physical Armor Growth decreased from 5.1 to 4.7</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>Physical armor growth falls from 5.1 to 4.7, so she ends games with less armor. Nothing else changes.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect a small late-game dip, as the notes want divers and assassins to punish her. She sat at 52.4% over 9,929 ranked support games. Stay behind your frontline in late fights; Elysia, which the notes name for her, is worth testing.</div>
+        
+        
+        
+      </div>
+      <div class="hero-card card" id="hero-neon" data-mag="minor" data-trend="nerf">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=neon" title="Open Neon's full page"><img loading="lazy" src="img/heroes/neon.webp" alt="Neon" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">Neon</span>
+          <span class="hero-role">midlane</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+          <span class="badge mag-minor">Minor</span>
+        </div>
+        <ul class="change-list"><li>Base stats: Health decreased from 650 to 640</li><li>Base stats: Health Growth decreased from 135 to 131</li><li>Base stats: Health Regen decreased from 1.5 to 1.25</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>Base health falls from 650 to 640, health growth from 135 to 131, and health regen from 1.5 to 1.25.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect a slight dip; lower health and regen make her early trades riskier. She sat at 47.6% over 9,178 ranked midlane games. Lotus did better for her than Vesh on 1.18 numbers, and this patch touches neither.</div>
+        
+        
+        
+      </div>
+      <div class="hero-card card" id="hero-rampage" data-mag="minor" data-trend="nerf">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=rampage" title="Open Rampage's full page"><img loading="lazy" src="img/heroes/rampage.webp" alt="Rampage" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">Rampage</span>
+          <span class="hero-role">jungle</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+          <span class="badge mag-minor">Minor</span>
+        </div>
+        <ul class="change-list"><li>The Rumbling [Augment]: [Bugfix] Fixed an issue where Rampage would not regenerate Mana while in the Jungle Role when damaging Monsters with Rumble while using this Augment</li><li>Base stats: Health Regen Growth decreased from 0.25 to 0.2</li><li>Rumble [Secondary]: Health to Physical Power Conversion decreased from 1.5%/1.8%/2.1%/2.4%/2.7% to 1.5%/1.75%/2%/2.25%/2.5%</li><li>Behemoth [Ultimate]: Nearby Enemy Hero Bonus Healing decreased from 4% to 3%</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>Health regen growth falls from 0.25 to 0.2, Rumble's health conversion tops out at 2.5% instead of 2.7%, and Behemoth's bonus healing drops from 4% to 3%.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect a small drop, mostly when he dives the backline, with Forticus in his cores also cut. He sat at 49.5% over 7,723 ranked jungle games. His top core without Forticus, Overlord, Rapture and Cursed Scroll, is the cleaner path now.</div>
+        
+        
+        
+      </div>
+      <div class="hero-card card" id="hero-renna" data-mag="minor" data-trend="nerf">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=renna" title="Open Renna's full page"><img loading="lazy" src="img/heroes/renna.webp" alt="Renna" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">Renna</span>
+          <span class="hero-role">midlane</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+          <span class="badge mag-minor">Minor</span>
+        </div>
+        <ul class="change-list"><li>Base stats: Health decreased from 675 to 655</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>Base health falls from 675 to 655, one of the larger cuts in the mage pass. Nothing else changes.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect a slight dip from the most-played midlaner; lower health means poke puts her in kill range sooner. She sat at 52.4% over 22,308 ranked midlane games. Trade only when your poke lands first, since early mistakes now cost more.</div>
+        
+        
+        
+      </div>
+      <div class="hero-card card" id="hero-riktor" data-mag="minor" data-trend="nerf">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=riktor" title="Open Riktor's full page"><img loading="lazy" src="img/heroes/riktor.webp" alt="Riktor" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">Riktor</span>
+          <span class="hero-role">support</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+          <span class="badge mag-minor">Minor</span>
+        </div>
+        <ul class="change-list"><li>Base stats: Mana decreased from 420 to 390</li><li>Electrocute [Secondary]: Mana Cost increased from 80/85/90/95/100 to 80/90/100/110/120</li><li>Riplash [Alternate]: Mana Cost decreased from 80 to 70</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>Base mana falls from 420 to 390 and Electrocute costs 80-120 instead of 80-100. Riplash now costs 70 mana instead of 80.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect a slight dip in lanes where he spammed Electrocute, plus some loss from the Forticus and Vortex Stone cuts. He sat at 50.4% over 24,693 ranked support games. Use the cheaper Riplash freely and save Electrocute for real trades.</div>
+        
+        
+        
+      </div>
+      <div class="hero-card card" id="hero-shinbi" data-mag="minor" data-trend="nerf">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=shinbi" title="Open Shinbi's full page"><img loading="lazy" src="img/heroes/shinbi.webp" alt="Shinbi" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">Shinbi</span>
+          <span class="hero-role">offlane</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+          <span class="badge mag-minor">Minor</span>
+        </div>
+        <ul class="change-list"><li>Line Tempo [Primary]: Range decreased from 1800 to 1700</li><li>Rushing Beat [Alternate]: Cooldown increased from 14/12.5/11/9.5/8 to 14/13/12/11/10</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>Line Tempo's range falls from 1800 to 1700 and Rushing Beat's cooldown ends at 10s instead of 8s.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect a small dip in safe poke and farming, the habit the notes target. She sat at 50.7% over 10,118 ranked offlane games. Shadebinder is named for her, but the shorter range means playing nearer the wave.</div>
+        
+        
+        
+      </div>
+      <div class="hero-card card" id="hero-wraith" data-mag="minor" data-trend="nerf">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=wraith" title="Open Wraith's full page"><img loading="lazy" src="img/heroes/wraith.webp" alt="Wraith" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">Wraith</span>
+          <span class="hero-role">midlane</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+          <span class="badge mag-minor">Minor</span>
+        </div>
+        <ul class="change-list"><li>Base stats: Health Regen decreased from 1.6 to 1.3</li><li>Base stats: Magical Armor decreased from 33 to 28</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>Magical armor falls from 33 to 28 and health regen from 1.6 to 1.3, so mage poke hurts him more in mid while physical lanes feel it less.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect a small drop in mid lane and little change as a carry. He sat at 46.9% over 8,293 ranked midlane games. Into mage-heavy mid lanes, the carry lane is the better seat, where his 1.18 rate was higher.</div>
+        
+        
+        
+      </div>
+      <div class="hero-card card" id="hero-howitzer" data-mag="minor" data-trend="mixed">
+        <div class="hero-head">
+          <a class="hero-pic" href="v6/?hero=howitzer" title="Open Howitzer's full page"><img loading="lazy" src="img/heroes/howitzer.webp" alt="Howitzer" onerror="this.style.visibility='hidden'"></a>
+          <span class="hero-name">Howitzer</span>
+          <span class="hero-role">midlane</span>
+          <span class="badge trend-mixed">◆ Mixed</span>
+          <span class="badge mag-minor">Minor</span>
+        </div>
+        <ul class="change-list"><li>Base stats: Health decreased from 690 to 675</li><li>H11 Cluster Grenades [Alternate]: Damage increased from 30/50/70/90/110 to 40/60/80/100/120</li><li>H11 Cluster Grenades [Alternate]: Slow increased from 24%/28%/32%/36%/40% to 30%/32.5%/35%/37.5%/40%</li><li>Make It Rain [Ultimate]: Self Slow while Hovering reduced from 30% to 20%</li></ul>
+        <div class="pred"><span class="pred-label">Why</span>Base health falls from 690 to 675, but Cluster Grenades deal 40-120 instead of 30-110 and slow 30% from rank 1. Make It Rain slows him 20% instead of 30%.</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>Expect a small net gain: the stronger early slow and damage outweigh the lost health. He sat at 48.7% over 7,390 ranked midlane games. Open trades with Cluster Grenades for the bigger slow, then poke while they walk out of it.</div>
+        
+        
+        
+      </div></div>
+      <div class="meta-read"><b><span class="mr-ic" data-bic="scout" data-bic-size="13"></span>Meta read</b>Thirty-two heroes change, and the cuts follow the board: Kaelen at 56.8% over 19,912 jungle games, Narbash at 53.2% over 11,961 support games and Scarlett at 52.0% over 12,327 offlane games. Buffs go to heroes below average, such as Sevarog at 47.5% and GRIM.exe at 47.8%. Thirteen mages lose a little health or regen, so mid lane poke sticks more.</div>
+
+      <h2 class="section" id="ch-eternals"><span class="sec-ic" data-bic="eternal-augment"></span>Eternals (draft blessings)</h2>
+      <p class="lead">No new Eternals. <span class="term" tabindex="0" data-tip="Sustain is everything that refills health through a lane or a fight: regen, potions, lifesteal, omnivamp, healing abilities.">Sustain</span> minors come down together, Knell is trimmed for damage heroes a second patch running, and Mage shield sources shrink with Phylactery. Pilow is the one buff.</p>
+      
+      <div class="hx-legend"><span class="hx-hint">tap an Eternal to jump to its change</span></div>
+      <div class="hx-grid">
+        <a class="hx tr-nerf" data-trend="nerf" href="#eternal-nihil" title="Nihil — Nerf; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/eternals/nihil.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Nihil</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#eternal-krix" title="Krix — Nerf; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/eternals/krix.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Krix</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#eternal-idrisil" title="Idrisil — Nerf; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/eternals/idrisil.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Idrisil</span>
+          </a><a class="hx tr-mixed" data-trend="mixed" href="#eternal-knell" title="Knell — Mixed; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/eternals/knell.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">◆</span></span>
+            <span class="hx-name">Knell</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#eternal-vesh" title="Vesh — Nerf; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/eternals/vesh.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Vesh</span>
+          </a><a class="hx tr-buff" data-trend="buff" href="#eternal-pilow" title="Pilow — Buff; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/eternals/pilow.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▲</span></span>
+            <span class="hx-name">Pilow</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#eternal-aion" title="Aion — Nerf; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/eternals/aion.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Aion</span>
+          </a><a class="hx tr-mixed" data-trend="mixed" href="#eternal-thraex" title="Thraex — Mixed; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/eternals/thraex.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">◆</span></span>
+            <span class="hx-name">Thraex</span>
+          </a>
+      </div>
+      
+      <div class="hero-card card" id="eternal-nihil" data-trend="nerf">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/eternals/nihil.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Nihil</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+        </div>
+        <ul class="change-list"><li>Major: stat increase on level-up and takedown 20% -&gt; 17.5%. From The Abyss health regen 0.2%/0.4%/0.7%/1% -&gt; 0.2%/0.4%/0.6%/0.8%.</li></ul>
+        <div class="pred"><span class="pred-label">Meaning</span>Less snowball on the durable frontliners the notes say it has been carrying, and less <span class="term" tabindex="0" data-tip="Sustain is everything that refills health through a lane or a fight: regen, potions, lifesteal, omnivamp, healing abilities.">sustain</span> late.</div>
+        <button class="card-info" data-info="eternal-nihil">ⓘ what is Nihil?</button>
+      </div>
+      <div class="hero-card card" id="eternal-krix" data-trend="nerf">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/eternals/krix.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Krix</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+        </div>
+        <ul class="change-list"><li>Regenerative Tissue health regen 0.2%/0.4%/0.7%/1% -&gt; 0.2%/0.4%/0.6%/0.8%. Bugfix: no more jitter when gaining max health.</li></ul>
+        <div class="pred"><span class="pred-label">Meaning</span>Part of the <span class="term" tabindex="0" data-tip="Sustain is everything that refills health through a lane or a fight: regen, potions, lifesteal, omnivamp, healing abilities.">sustain</span> pass: damage should stick to bulky targets in the late game.</div>
+        <button class="card-info" data-info="eternal-krix">ⓘ what is Krix?</button>
+      </div>
+      <div class="hero-card card" id="eternal-idrisil" data-trend="nerf">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/eternals/idrisil.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Idrisil</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+        </div>
+        <ul class="change-list"><li>Mending missing health healing 3%/4%/5%/6% -&gt; 2.5%/3.5%/4.5%/5.5%.</li></ul>
+        <div class="pred"><span class="pred-label">Meaning</span>The same <span class="term" tabindex="0" data-tip="Sustain is everything that refills health through a lane or a fight: regen, potions, lifesteal, omnivamp, healing abilities.">sustain</span> cut, on the healing-after-damage minor.</div>
+        <button class="card-info" data-info="eternal-idrisil">ⓘ what is Idrisil?</button>
+      </div>
+      <div class="hero-card card" id="eternal-knell" data-trend="mixed">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/eternals/knell.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Knell</span>
+          <span class="badge trend-mixed">◆ Mixed</span>
+        </div>
+        <ul class="change-list"><li>Patina movement speed 4% -&gt; 3%. Fracture bonus damage 3.5% -&gt; 3%. Bugfix: Resonant Repair now refreshes its healing when immobilized repeatedly.</li></ul>
+        <div class="pred"><span class="pred-label">Meaning</span>A second straight trim aimed at Scarlett and Eden; the Resonant Repair fix restores value it was losing.</div>
+        <button class="card-info" data-info="eternal-knell">ⓘ what is Knell?</button>
+      </div>
+      <div class="hero-card card" id="eternal-vesh" data-trend="nerf">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/eternals/vesh.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Vesh</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+        </div>
+        <ul class="change-list"><li>The Tenth Seal ultimate haste 25 -&gt; 20. Phylactery shield max mana scaling 15% -&gt; 12%.</li></ul>
+        <div class="pred"><span class="pred-label">Meaning</span>Less ultimate uptime and smaller mage shields, in step with Azure Core and Soulbearer.</div>
+        <button class="card-info" data-info="eternal-vesh">ⓘ what is Vesh?</button>
+      </div>
+      <div class="hero-card card" id="eternal-pilow" data-trend="buff">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/eternals/pilow.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Pilow</span>
+          <span class="badge trend-buff">▲ Buff</span>
+        </div>
+        <ul class="change-list"><li>Major: debuff radius 600 -&gt; 650.</li></ul>
+        <div class="pred"><span class="pred-label">Meaning</span>Easier to tag several enemies with the damage-reduction debuff in fights.</div>
+        <button class="card-info" data-info="eternal-pilow">ⓘ what is Pilow?</button>
+      </div>
+      <div class="hero-card card" id="eternal-aion" data-trend="nerf">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/eternals/aion.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Aion</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+        </div>
+        <ul class="change-list"><li>Sacrifice missing mana regen 3.5% -&gt; 3%.</li></ul>
+        <div class="pred"><span class="pred-label">Meaning</span>A partial revert of its buff: less mana <span class="term" tabindex="0" data-tip="Sustain is everything that refills health through a lane or a fight: regen, potions, lifesteal, omnivamp, healing abilities.">sustain</span> across the laning phase.</div>
+        <button class="card-info" data-info="eternal-aion">ⓘ what is Aion?</button>
+      </div>
+      <div class="hero-card card" id="eternal-thraex" data-trend="mixed">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/eternals/thraex.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Thraex</span>
+          <span class="badge trend-mixed">◆ Mixed</span>
+        </div>
+        <ul class="change-list"><li>Bugfix: Savage Strikes no longer pops spell shields.</li></ul>
+        <div class="pred"><span class="pred-label">Meaning</span>A fix, not a balance change: spell shields now hold against it.</div>
+        <button class="card-info" data-info="eternal-thraex">ⓘ what is Thraex?</button>
+      </div>
+      <div class="meta-read"><b><span class="mr-ic" data-bic="scout" data-bic-size="13"></span>Meta read</b>No new Eternals. The <span class="term" tabindex="0" data-tip="Sustain is everything that refills health through a lane or a fight: regen, potions, lifesteal, omnivamp, healing abilities.">sustain</span> minors shrink together: From The Abyss, Regenerative Tissue and Mending all heal less late, and Regenerative Tissue ran in 78,290 ranked games. Nihil's level-up bonus falls from 20% to 17.5%, The Tenth Seal from 25 to 20 ultimate haste, and Patina from 4% to 3% speed. Pilow's debuff radius grows from 600 to 650.</div>
+
+      <h2 class="section" id="ch-items"><span class="sec-ic" data-bic="build"></span>Items</h2>
+      
+      <div class="hx-legend"><span class="tr-new">✦ new</span><span class="hx-hint">tap an item to jump to its change</span></div>
+      <div class="hx-grid">
+        <a class="hx tr-new" data-trend="new" href="#item-bandits-toll" title="Bandit's Toll — New; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/bandits-toll.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">✦</span></span>
+            <span class="hx-name">Bandit's Toll</span>
+          </a><a class="hx tr-new" data-trend="new" href="#item-elysia" title="Elysia — New; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/elysia.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">✦</span></span>
+            <span class="hx-name">Elysia</span>
+          </a><a class="hx tr-new" data-trend="new" href="#item-heretics-blade" title="Heretic's Blade — New; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/heretics-blade.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">✦</span></span>
+            <span class="hx-name">Heretic's Blade</span>
+          </a><a class="hx tr-new" data-trend="new" href="#item-infused-bracers" title="Infused Bracers — New; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/infused-bracers.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">✦</span></span>
+            <span class="hx-name">Infused Bracers</span>
+          </a><a class="hx tr-new" data-trend="new" href="#item-kingsbane" title="Kingsbane — New; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/kingsbane.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">✦</span></span>
+            <span class="hx-name">Kingsbane</span>
+          </a><a class="hx tr-new" data-trend="new" href="#item-shadebinder" title="Shadebinder — New; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/shadebinder.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">✦</span></span>
+            <span class="hx-name">Shadebinder</span>
+          </a><a class="hx tr-new" data-trend="new" href="#item-stigmata" title="Stigmata — New; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/stigmata.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">✦</span></span>
+            <span class="hx-name">Stigmata</span>
+          </a><a class="hx tr-buff" data-trend="buff" href="#item-earthshaker" title="Earthshaker — Buff; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/earthshaker.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▲</span></span>
+            <span class="hx-name">Earthshaker</span>
+          </a><a class="hx tr-buff" data-trend="buff" href="#item-mutilator" title="Mutilator — Buff; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/mutilator.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▲</span></span>
+            <span class="hx-name">Mutilator</span>
+          </a><a class="hx tr-buff" data-trend="buff" href="#item-onixian-quiver" title="Onixian Quiver — Buff; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/onixian-quiver.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▲</span></span>
+            <span class="hx-name">Onixian Quiver</span>
+          </a><a class="hx tr-buff" data-trend="buff" href="#item-scattershot" title="Scattershot — Buff; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/scattershot.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▲</span></span>
+            <span class="hx-name">Scattershot</span>
+          </a><a class="hx tr-buff" data-trend="buff" href="#item-serrated-blade" title="Serrated Blade — Buff; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/serrated-blade.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▲</span></span>
+            <span class="hx-name">Serrated Blade</span>
+          </a><a class="hx tr-buff" data-trend="buff" href="#item-winters-fury" title="Winter's Fury — Buff; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/winters-fury.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▲</span></span>
+            <span class="hx-name">Winter's Fury</span>
+          </a><a class="hx tr-mixed" data-trend="mixed" href="#item-megacosm" title="Megacosm — Mixed; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/megacosm.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">◆</span></span>
+            <span class="hx-name">Megacosm</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#item-azure-core" title="Azure Core — Nerf; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/azure-core.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Azure Core</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#item-forticus" title="Forticus — Nerf; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/forticus.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Forticus</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#item-hexbound-bracers" title="Hexbound Bracers — Nerf; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/hexbound-bracers.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Hexbound Bracers</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#item-soulbearer" title="Soulbearer — Nerf; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/soulbearer.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Soulbearer</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#item-terminus" title="Terminus — Nerf; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/terminus.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Terminus</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#item-vortex-stone" title="Vortex Stone — Nerf; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/vortex-stone.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Vortex Stone</span>
+          </a><a class="hx tr-nerf" data-trend="nerf" href="#item-vyzar-carapace" title="Vyzar Carapace — Nerf; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/vyzar-carapace.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Vyzar Carapace</span>
+          </a>
+      </div>
+      
+      <div class="hero-card card item-card" id="item-bandits-toll" data-trend="new">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/bandits-toll.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Bandit's Toll</span>
+          <span class="badge trend-new">✦ New</span>
+        </div>
+        <div class="pred" style="margin:0">New 2750g fighter on-hit item: 40% attack speed, 150 health, 8% <span class="term" tabindex="0" data-tip="Lifesteal heals for a percentage of basic-attack damage dealt.">lifesteal</span>. Basic attacks deal 15 (+5% total physical power per basic ability on cooldown) true damage, and your basic attack movement penalty is halved (20% for ranged). The notes aim it at armored targets.</div>
+        
+      </div>
+      <div class="hero-card card item-card" id="item-elysia" data-trend="new">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/elysia.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Elysia</span>
+          <span class="badge trend-new">✦ New</span>
+        </div>
+        <div class="pred" style="margin:0">New 2350g enchanter item: 40 magical power, 125% base mana regen, 12% heal and shield power and 25 ultimate haste; after your ultimate, basic cooldowns progress 40% faster for 6s (30s cooldown). The notes name Zinx, Muriel and Maco.</div>
+        
+      </div>
+      <div class="hero-card card item-card" id="item-heretics-blade" data-trend="new">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/heretics-blade.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Heretic's Blade</span>
+          <span class="badge trend-new">✦ New</span>
+        </div>
+        <div class="pred" style="margin:0">New 2900g on-hit item with 40 physical armor, 40% attack speed and 15 <span class="term" tabindex="0" data-tip="Ability haste shortens cooldowns — more haste means abilities come back faster.">ability haste</span>. Basic attacks deal 15 (+1 per level), 1.5x against slowed or immobilized units, and for 6s after your ultimate they slow 20% (30s cooldown). The notes name Grux, Serath and Yin.</div>
+        
+      </div>
+      <div class="hero-card card item-card" id="item-infused-bracers" data-trend="new">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/infused-bracers.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Infused Bracers</span>
+          <span class="badge trend-new">✦ New</span>
+        </div>
+        <div class="pred" style="margin:0">New 450g tier 1 component with 5 Hybrid Penetration. For now it only builds into Kingsbane.</div>
+        
+      </div>
+      <div class="hero-card card item-card" id="item-kingsbane" data-trend="new">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/kingsbane.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Kingsbane</span>
+          <span class="badge trend-new">✦ New</span>
+        </div>
+        <div class="pred" style="margin:0">Returns after about two years, reworked: 3000g, 40% attack speed, 10 Hybrid Penetration, 15 <span class="term" tabindex="0" data-tip="Ability haste shortens cooldowns — more haste means abilities come back faster.">ability haste</span>. Basic attacks deal 25 on-hit, +3 per hero hit up to 80, resetting after 2.5s without damaging a hero.</div>
+        
+      </div>
+      <div class="hero-card card item-card" id="item-shadebinder" data-trend="new">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/shadebinder.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Shadebinder</span>
+          <span class="badge trend-new">✦ New</span>
+        </div>
+        <div class="pred" style="margin:0">New 3000g magical bruiser item: 65 magical power, 25% attack speed, 250 health, 15 <span class="term" tabindex="0" data-tip="Ability haste shortens cooldowns — more haste means abilities come back faster.">ability haste</span>. Every 3 basic attacks within 3s deal 25 (+25% magical power) (+100% item ability haste) magical damage around the target. The notes name Shinbi, Kwang and Aurora.</div>
+        
+      </div>
+      <div class="hero-card card item-card" id="item-stigmata" data-trend="new">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/stigmata.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Stigmata</span>
+          <span class="badge trend-new">✦ New</span>
+        </div>
+        <div class="pred" style="margin:0">New 1000g tier 2 mage component (25 magical power, 5 <span class="term" tabindex="0" data-tip="Ability haste shortens cooldowns — more haste means abilities come back faster.">ability haste</span>) whose Hexfire burns for 5 magical damage every 0.75s for 3s, 65% more to monsters. Builds into Megacosm, for mages in the jungle or early lane.</div>
+        
+      </div>
+      <div class="hero-card card item-card" id="item-earthshaker" data-trend="buff">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/earthshaker.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Earthshaker</span>
+          <span class="badge trend-buff">▲ Buff</span>
+        </div>
+        <div class="pred" style="margin:0">Physical power 45 -&gt; 50.</div>
+        <button class="card-info" data-info="item-earthshaker">ⓘ what is Earthshaker?</button>
+      </div>
+      <div class="hero-card card item-card" id="item-mutilator" data-trend="buff">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/mutilator.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Mutilator</span>
+          <span class="badge trend-buff">▲ Buff</span>
+        </div>
+        <div class="pred" style="margin:0">Devour damage modifier 3x -&gt; 3.5x against health-stacking targets.</div>
+        <button class="card-info" data-info="item-mutilator">ⓘ what is Mutilator?</button>
+      </div>
+      <div class="hero-card card item-card" id="item-onixian-quiver" data-trend="buff">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/onixian-quiver.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Onixian Quiver</span>
+          <span class="badge trend-buff">▲ Buff</span>
+        </div>
+        <div class="pred" style="margin:0">7% <span class="term" tabindex="0" data-tip="Lifesteal heals for a percentage of basic-attack damage dealt.">lifesteal</span> becomes 7% <span class="term" tabindex="0" data-tip="Omnivamp heals for a percentage of ALL damage dealt — abilities included.">omnivamp</span>, and a bugfix restores Multishot's intended damage (it was about 10-20% low).</div>
+        <button class="card-info" data-info="item-onixian-quiver">ⓘ what is Onixian Quiver?</button>
+      </div>
+      <div class="hero-card card item-card" id="item-scattershot" data-trend="buff">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/scattershot.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Scattershot</span>
+          <span class="badge trend-buff">▲ Buff</span>
+        </div>
+        <div class="pred" style="margin:0">Cost 3100 -&gt; 3000; Scatter minion damage 50% -&gt; 70%.</div>
+        <button class="card-info" data-info="item-scattershot">ⓘ what is Scattershot?</button>
+      </div>
+      <div class="hero-card card item-card" id="item-serrated-blade" data-trend="buff">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/serrated-blade.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Serrated Blade</span>
+          <span class="badge trend-buff">▲ Buff</span>
+        </div>
+        <div class="pred" style="margin:0">Cost 950 -&gt; 900.</div>
+        <button class="card-info" data-info="item-serrated-blade">ⓘ what is Serrated Blade?</button>
+      </div>
+      <div class="hero-card card item-card" id="item-winters-fury" data-trend="buff">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/winters-fury.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Winter's Fury</span>
+          <span class="badge trend-buff">▲ Buff</span>
+        </div>
+        <div class="pred" style="margin:0">The crest's active can now be used while channelling, such as during Gideon's Black Hole.</div>
+        <button class="card-info" data-info="item-winters-fury">ⓘ what is Winter's Fury?</button>
+      </div>
+      <div class="hero-card card item-card" id="item-megacosm" data-trend="mixed">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/megacosm.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Megacosm</span>
+          <span class="badge trend-mixed">◆ Mixed</span>
+        </div>
+        <div class="pred" style="margin:0">Chronomatic Wand is replaced by Stigmata in the recipe (still 3000g), and Disintegrate deals at least 15 damage to monsters.</div>
+        <button class="card-info" data-info="item-megacosm">ⓘ what is Megacosm?</button>
+      </div>
+      <div class="hero-card card item-card" id="item-azure-core" data-trend="nerf">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/azure-core.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Azure Core</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+        </div>
+        <div class="pred" style="margin:0">Spirit Shield max mana scaling 12% -&gt; 10%.</div>
+        <button class="card-info" data-info="item-azure-core">ⓘ what is Azure Core?</button>
+      </div>
+      <div class="hero-card card item-card" id="item-forticus" data-trend="nerf">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/forticus.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Forticus</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+        </div>
+        <div class="pred" style="margin:0">Cost 2900 -&gt; 3000. Immovable shield 8% -&gt; 6% max health and 3.5s -&gt; 3s, cooldown 14-10s -&gt; 16-10s. Swell health 0.6% -&gt; 0.5% and movement speed 4 -&gt; 3.5. The notes call it a catch-all buy that non-tanks were poaching.</div>
+        <button class="card-info" data-info="item-forticus">ⓘ what is Forticus?</button>
+      </div>
+      <div class="hero-card card item-card" id="item-hexbound-bracers" data-trend="nerf">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/hexbound-bracers.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Hexbound Bracers</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+        </div>
+        <div class="pred" style="margin:0"><span class="term" tabindex="0" data-tip="Ability haste shortens cooldowns — more haste means abilities come back faster.">Ability haste</span> 15 -&gt; 10, aimed at ranged enchanters buying it.</div>
+        <button class="card-info" data-info="item-hexbound-bracers">ⓘ what is Hexbound Bracers?</button>
+      </div>
+      <div class="hero-card card item-card" id="item-soulbearer" data-trend="nerf">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/soulbearer.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Soulbearer</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+        </div>
+        <div class="pred" style="margin:0">Anima Shield 100 -&gt; 80, magical power scaling 35% -&gt; 30%, max mana scaling 6% -&gt; 5%.</div>
+        <button class="card-info" data-info="item-soulbearer">ⓘ what is Soulbearer?</button>
+      </div>
+      <div class="hero-card card item-card" id="item-terminus" data-trend="nerf">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/terminus.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Terminus</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+        </div>
+        <div class="pred" style="margin:0">Shield total physical power scaling 100% -&gt; 85%. The notes name Scarlett, Revenant and Eden rushing it.</div>
+        <button class="card-info" data-info="item-terminus">ⓘ what is Terminus?</button>
+      </div>
+      <div class="hero-card card item-card" id="item-vortex-stone" data-trend="nerf">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/vortex-stone.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Vortex Stone</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+        </div>
+        <div class="pred" style="margin:0">Eye of the Storm shield 12% -&gt; 10% max health.</div>
+        <button class="card-info" data-info="item-vortex-stone">ⓘ what is Vortex Stone?</button>
+      </div>
+      <div class="hero-card card item-card" id="item-vyzar-carapace" data-trend="nerf">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/vyzar-carapace.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Vyzar Carapace</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+        </div>
+        <div class="pred" style="margin:0">Shell Smash shield 12% -&gt; 10% max health.</div>
+        <button class="card-info" data-info="item-vyzar-carapace">ⓘ what is Vyzar Carapace?</button>
+      </div>
+      <div class="meta-read"><b><span class="mr-ic" data-bic="scout" data-bic-size="13"></span>Meta read</b>Seven items are new or returning, with no data yet: Bandit's Toll, Heretic's Blade and Kingsbane for on-hit, Shadebinder for magical bruisers, Elysia for enchanters, plus Stigmata and Infused Bracers. Forticus, in the top cores of 25 hero-roles, now costs 3000 and shields for 6% instead of 8%. Earthshaker, Mutilator, Scattershot and Onixian Quiver get stronger.</div>
+
+      
+
+      <h2 class="section" id="ch-systems"><span class="sec-ic" data-bic="meta-guide"></span>Systems &amp; map</h2>
+      <div class="sys"><div class="sys-name">Hybrid Penetration</div><div class="sys-sum">A new stat that grants equal physical and magical penetration (10 Hybrid Penetration = 10 of each), like Omnivamp does for lifesteal. Found on Infused Bracers and Kingsbane.</div></div><div class="sys"><div class="sys-name">Bug fixes that change play</div><div class="sys-sum">Aurora's Cryoseism now damages unstoppable heroes and towers prioritize her statue correctly. Dekker's Photon Disruptor hits airborne heroes. Greystone's Tainted Oath now applies its anti-heal. Zarus's thrown Spear of Nyr no longer deals 15% too little to low-health targets. Zinx's Ricochet stun now scales with rank and Neural Regenesis' revive health ignores anti-heal. Iggy's Oil Spill no longer applies 5 Slick stacks at once. Thraex's Savage Strikes no longer pops spell shields. Resonant Repair now refreshes when immobilized repeatedly. Onixian Quiver's Multishot now deals its intended damage, about 10-20% more than before.</div></div><div class="sys"><div class="sys-name">Quests overhaul</div><div class="sys-sum">Three daily quests and one weekly quest with random rewards (Battlepass XP, Account XP, Amber, Platinum, Opals, Loot Cores), daily re-rolls for 400 Amber, and in-game quest tracking. Battlepass XP from match completion is up 44% while quests roll out. Cosmetic and progression only.</div></div><div class="sys"><div class="sys-name">PCC Winter Peak</div><div class="sys-sum">The esports circuit returns with $8,000 across regions and a LAN invitation; the Top 8 bracket plays December 5-6 and 12-13.</div></div>
+      <div class="meta-read"><b><span class="mr-ic" data-bic="scout" data-bic-size="13"></span>Meta read</b>Hybrid Penetration is new: 10 of it gives 10 physical and 10 magical penetration, on Infused Bracers and Kingsbane. Bug fixes touch Aurora, Dekker, Greystone, Zarus and Zinx. Quests change rewards only.</div>
+
+      
+
+      <div class="foot">
+        Generated from <code>data/patches/1.18.2.json</code> +
+        <code>data/aggregates/patch-1.18.2-predictions.json</code> by
+        <code>scripts/build-patch-page.js</code>. Predictions authored on session compute (no API) and
+        grounded in the stated change numbers. Measured results (when shown) come from the ranked
+        match feed: pre-patch baseline vs the patch-to-date window (dates in the predictions file's measured.source).
+      </div>
+    </div>
+  </main>
+  <div class="pop-back" id="popBack" hidden>
+    <div class="pop" role="dialog" aria-modal="true" aria-labelledby="popTitle">
+      <button class="pop-x" id="popClose" aria-label="Close">✕</button>
+      <div class="pop-head">
+        <img id="popImg" alt="" onerror="this.style.visibility='hidden'">
+        <div>
+          <div class="pop-kind" id="popKind"></div>
+          <h3 id="popTitle"></h3>
+          <div class="pop-meta" id="popMeta"></div>
+        </div>
+      </div>
+      <div id="popBody"></div>
+      <div class="pop-note" id="popNote"></div>
+    </div>
+  </div>
+  <script>
+  window.__POPUP_INFO = {"eternal-nihil":{"kind":"Eternal","name":"Nihil","img":"img/eternals/nihil.webp","meta":"Primarchs · Extended-Fight Fighter","note":"Base info from the team's Eternals data (patch 1.17.2). Where a later patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Major (always on)","lines":["Damage a hero to gain Doom for 3s. Doom grants 1 Physical Power, 2 Magical Power, 1 Physical Armor & 1 Magical Armor for every 3s it persists. On level-up or Takedown, the stats Doom grants are permanently increased by 20%."]},{"title":"Minor slot 1 (pick one)","lines":["Growing Threat — At 16 minutes, gain +12% Bonus Damage and 5% Omnivamp permanently.","From the Abyss — Restore 0.2/0.4/0.7/1% Max Health/s (Levels 1/6/11/16) while in Hero Combat or out of enemy vision.","Mana Siphon — Ability hits on Enemy Heroes steal 10 (+1% of the target's Max Mana) Mana."]},{"title":"Minor slot 2 (pick one)","lines":["Adaptive Plating — Taking damage grants matching Armor (1% per hit, stacks 10x).","Inescapable — Enemies within 800u that dash/leap/blink are slowed 25% for 1.75s.","Terror — Take 35% less damage from Minions and Monsters, and 25% less from Towers."]}]},"eternal-krix":{"kind":"Eternal","name":"Krix","img":"img/eternals/krix.webp","meta":"Dreadnoughts · Health-Stacking Tank","note":"Base info from the team's Eternals data (patch 1.17.2). Where a later patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Major (always on)","lines":["Gain 5% (+1% per Level) increased Maximum Health, and bonus size equal to 0.5% of your Maximum Health."]},{"title":"Minor slot 1 (pick one)","lines":["Voracity — Killing an Enemy Unit restores 0.75% of your Maximum Health and grants 2 Gold.","Regenerative Tissue — After 8s without taking Hero damage, regenerate 0.2/0.4/0.7/1% Max Health per second at Levels 1/6/11/16.","Festering Wounds — Your DoT abilities and Immobilizing Effects reduce Enemy Heroes' healing by 45% for 3s."]},{"title":"Minor slot 2 (pick one)","lines":["Cannibalism — Takedowns permanently increase your Maximum Health by 25.","Feeding Frenzy — Gain +10% Attack Speed per Enemy Hero within 1200 units.","Predator — Camp Leader kills grant 10% Bonus Damage and 4% Movement Speed for 20s, with 100% bonus duration for Epic Monsters."]}]},"eternal-idrisil":{"kind":"Eternal","name":"Idrisil","img":"img/eternals/idrisil.webp","meta":"Dreadnoughts · Armor Tank","note":"Base info from the team's Eternals data (patch 1.17.2). Where a later patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Major (always on)","lines":["While off cooldown and above 30% Max Health, gain 15% increased Physical and Magical Armor. Falling below 30% Health consumes this bonus to grant a 4s Shield equal to 150% of your total Armor (CD: 75–32.5s)."]},{"title":"Minor slot 1 (pick one)","lines":["Cold Hearted — Enemies that basic attack you lose 3% movement speed for 2s (stacks 4x).","Mending — After taking Hero damage, restore 3/4/5/6% Missing Health at Levels 1/6/11/16 over 8s.","Frost Snap — Deal 10% Bonus Damage to Immobilized or Slowed Targets."]},{"title":"Minor slot 2 (pick one)","lines":["Icy Touch — Your Basic Attacks reduce enemy Attack Speed by 3% for 3s (stacks 4x).","Glacier — Permanently gain 1 Magical Armor per 300 total gold earned.","Diamond Tip — Gain 4% increased Physical and Magical Penetration per finished item."]}]},"eternal-knell":{"kind":"Eternal","name":"Knell","img":"img/eternals/knell.webp","meta":"Dreadnoughts · Armor Shred Amplifier","note":"Base info from the team's Eternals data (patch 1.17.2). Where a later patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Major (always on)","lines":["Attacks and abilities against Enemy Heroes apply a stack of Rust for 5s. Each stack shreds 2% (+0.2% per Level) Physical Armor and Magical Armor, stacking up to 4 times. Gain 75% of the Armors shredded."]},{"title":"Minor slot 1 (pick one)","lines":["Frequency — Gain 2% Total Attack Speed and 2 Ability Haste per Rust stack currently applied.","Patina — Gain a 30 (+14 per level) Shield when not taking damage for 10s. Gain 4% Movement Speed while the shield holds.","Dampening — Incoming damage from enemies farther than 1100 units away is reduced by 10%."]},{"title":"Minor slot 2 (pick one)","lines":["Peal — Gain 15 Ultimate Ability Haste. Upon casting your ultimate, attacks and abilities apply maximum stacks of Rust for 4s. 20s cooldown.","Fracture — Deal 4% (+0.2% per level) more damage against targets with maximum stacks of Rust.","Resonant Repair — Whenever you are Immobilized, you restore 3% of your Maximum Health over 4s and gain 20 Tenacity for 4s."]}]},"eternal-vesh":{"kind":"Eternal","name":"Vesh","img":"img/eternals/vesh.webp","meta":"Sovereigns · Ability Damage Mage","note":"Base info from the team's Eternals data (patch 1.17.2). Where a later patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Major (always on)","lines":["Ability damage dealt to Enemy Heroes deals 7% (+0.4% per minute) of that damage as a DoT over 3s."]},{"title":"Minor slot 1 (pick one)","lines":["Lich — Gain 4%/7%/10%/14% Magical Lifesteal at Levels 1/6/11/16.","Tithe of Death — Takedowns restore 15% Max Mana and permanently grant 2 Ability Haste, up to 30 Ability Haste.","The Tenth Seal — At Level 10, gain 5% Ultimate Damage and 25 Ultimate Ability Haste."]},{"title":"Minor slot 2 (pick one)","lines":["Mind Rot — The major also deals 2% of the target's current health as bonus damage.","Phylactery — After your Ultimate, gain 100% Cooldown Progression for 4s and a shield equal to 15% of Max Mana for 4s. 20s cooldown.","Millennia — Every 60s, increase your Ultimate Ability Damage by 0.75%."]}]},"eternal-pilow":{"kind":"Eternal","name":"Pilow","img":"img/eternals/pilow.webp","meta":"Divines · Damage-Reduction Zoner","note":"Base info from the team's Eternals data (patch 1.17.2). Where a later patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Major (always on)","lines":["Decrease your size by 10%. Upon casting an ability, nearby enemy Heroes within 600 units are debuffed, dealing 4% decreased damage for 3.5s, stacking up to 3 times."]},{"title":"Minor slot 1 (pick one)","lines":["Bioluminescence — Enemies you damage take 3% bonus Damage and are Revealed for 4s.","Harmonic Currents — Casting an ability restores 2.5% of your Missing Health and Missing Mana over 3s (1 tick on cast, then 3 once a second).","Diffusion — Increases the radius of Pilow’s debuff pulse by 50% and its duration by 1.5s."]},{"title":"Minor slot 2 (pick one)","lines":["Neurotoxin — Pilow additionally increases damage enemies take by 1.5% per stack.","Convection — Gain 4 Physical Armor and 4 Magical Armor for every active stack of Pilow on nearby enemy Heroes.","Lil Sucker — Basic Attacks steal 2% of the target’s Movement Speed for 3s, stacking up to 3 times."]}]},"eternal-aion":{"kind":"Eternal","name":"Aion","img":"img/eternals/aion.webp","meta":"Anomalies · Mana / Economy Mage","note":"Base info from the team's Eternals data (patch 1.17.2). Where a later patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Major (always on)","lines":["Casting a spell grants 1 Mana Regeneration for 8s (stacks 5x). Spells also grant gold equal to 6% of damage dealt to Enemy Heroes."]},{"title":"Minor slot 1 (pick one)","lines":["Philosopher — Every 10s, generate 4 gold (faster with Ability Haste).","Sacrifice — Damaging an Enemy Hero with an ability grants 3.5% Missing Mana regeneration over 5s. Hero kills regenerate 25% Missing Mana over 5s.","Bottomless Vial — Killing a River Buff restores a Potion charge and grants +5 Magical Power permanently."]},{"title":"Minor slot 2 (pick one)","lines":["Arcane Resonance — Basic ability cooldowns and Philosopher progress 0.75% faster per 1 Mana Regen, up to 50%.","Perfection — While above 85% Health, gain 30 Ability Haste.","Runic Focus — Gain 0.2% increased Magical Power per 1% current Mana."]}]},"eternal-thraex":{"kind":"Eternal","name":"Thraex","img":"img/eternals/thraex.webp","meta":"Primarchs · Sustained Duelist","note":"Base info from the team's Eternals data (patch 1.17.2). Where a later patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Major (always on)","lines":["Mark the last Enemy Hero damaged by your Basic Attack for 3s, increasing your damage against them by 3% (+0.4% per level) and reducing the damage they deal to you by 1.5% (+0.35% per level)."]},{"title":"Minor slot 1 (pick one)","lines":["Alpha's Court — Deal 6% bonus damage when no allied hero is within 800 units.","Savage Strikes — Deal 1.5 (+0.4 per level) Physical Damage On-Hit. Attacking an Enemy Hero increases this by 100% for 3s, stacking up to 3 times. Heal for the damage dealt.","The King — Basic Attacks against Enemy Heroes grant you 6 gold."]},{"title":"Minor slot 2 (pick one)","lines":["Ferocity — Gain 1% Total Attack Speed per 1s in Hero Combat, stacking infinitely.","Rallying Roar — Gain 10 Ultimate Haste. Casting your Ultimate grants you and allies within 1500 units 25% Movement Speed for 4s. 20s cooldown.","Golden Mane — Take 8% less damage from all non-AoE attacks and abilities."]}]},"item-earthshaker":{"kind":"Item","name":"Earthshaker","img":"img/items/earthshaker.webp","meta":"Epic · 3000g","note":"Base info from the team's committed item snapshot (2026-11-03). Where this patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Stats","lines":["Physical power 45","Health 300","Ability haste 15"]},{"title":"Battleborn (passive)","lines":["On dealing damage to Heroes or Monsters:","Increase your Ability Damage dealt by 1.25% for 3s.","Stacks up to 10 times.","Melee Heroes gain Stacks twice as fast."]},{"title":"Effect (passive)","lines":["Damage Dealt: {DamageDealt}Damage Dealt to Heroes: {DamageDealtHeroes}"]}]},"item-mutilator":{"kind":"Item","name":"Mutilator","img":"img/items/mutilator.webp","meta":"Epic · 3150g","note":"Base info from the team's committed item snapshot (2026-11-03). Where this patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Stats","lines":["Physical power 45","Ability haste 15","Omnivamp 12%"]},{"title":"Mutilate (passive)","lines":["On Successsful Basic Attacks:","Deal 1% of their Max Health as Damage."]},{"title":"Devour (passive)","lines":["Ability Hits on Heroes:","Apply Mutilate 3 times (once per ability)."]},{"title":"Effect (passive)","lines":["Damage Dealt: {DamageDealt}Damage Dealt to Heroes: {DamageDealtToHeroes}"]}]},"item-onixian-quiver":{"kind":"Item","name":"Onixian Quiver","img":"img/items/onixian-quiver.webp","meta":"Epic · 2750g","note":"Base info from the team's committed item snapshot (2026-11-03). Where this patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Stats","lines":["Attack speed 55%","Critical chance 20%","Lifesteal 7%"]},{"title":"Multishot (passive)","lines":["On Ranged Basic Attack:","Fire 2 additional projectiles.","Each deals 10-35% (increases with Range) () Damage.","Can Critically Strike and apply Lifesteal."]},{"title":"Onixia (passive)","lines":["On Melee Heroes only:","Increase your Total Critical Strike Chance by 25%.","Gain 1% Damage Mitigation for every 10% Missing Health."]},{"title":"Effect (passive)","lines":["Damage Dealt: {DamageDealt}Damage Dealt to Heroes: {DamageDealtHeroes}"]}]},"item-scattershot":{"kind":"Item","name":"Scattershot","img":"img/items/scattershot.webp","meta":"Epic · 3100g","note":"Base info from the team's committed item snapshot (2026-11-03). Where this patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Stats","lines":["Physical power 50","Attack speed 25%","Critical chance 20%"]},{"title":"Scatter (passive)","lines":["Upon successful On-Hit Attack:","Summon 2 projectiles from the Target.","These home towards the closest Enemies.","Each deals (+40%) Damage.","Applies On-Hit effects at 50% effectiveness.","Can Critically Strike and deals 1.5x damage to Minions."]},{"title":"Effect (passive)","lines":["Damage Dealt: {DamageDealt}Damage Dealt to Heroes: {DamageDealtHeroes}"]}]},"item-serrated-blade":{"kind":"Item","name":"Serrated Blade","img":"img/items/serrated-blade.webp","meta":"Rare · 950g","note":"Base info from the team's committed item snapshot (2026-11-03). Where this patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Stats","lines":["Physical power 20"]},{"title":"Blighted Strikes (passive)","lines":["On Dealing Physical Damage:","Reduce the Target's Healing by 35% for 3s."]}]},"item-winters-fury":{"kind":"Item","name":"Winter's Fury","img":"img/items/winters-fury.webp","meta":"Legendary · Crest","note":"Base info from the team's committed item snapshot (2026-11-03). Where this patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Stats","lines":["Magical power 30","Health 100","Ability haste 8"]},{"title":"Chillrend (active)","lines":["Release a sphere of icey energy that expands over 3s.","Deals 100 (+20%) Damage to Enemies inside the zone.","Applies a 50% Decaying Slow over 2.5s.","Damaged Enemies take 10% more Magical Damage for 3s."]},{"title":"Effect (passive)","lines":["Damage Dealt to Heroes: {DamageDealt}Heroes Chilled: {HeroesChilled}"]}]},"item-megacosm":{"kind":"Item","name":"Megacosm","img":"img/items/megacosm.webp","meta":"Epic · 3000g","note":"Base info from the team's committed item snapshot (2026-11-03). Where this patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Stats","lines":["Magical power 65","Health 250","Ability haste 10"]},{"title":"Disintegrate (passive)","lines":["On dealing Ability Damage:","Deal 2.5% of Target's Max Health as Damage over 3s.","Additional applications refresh the duration."]},{"title":"Star Killer (passive)","lines":["On dealing Ability Damage to Heroes:","Deal 6% of Target's Bonus Health as Damage over 3s."]},{"title":"Effect (passive)","lines":["Damage Dealt: {DamageDealt}Damage Dealt to Heroes: {DamageDealtHeroes}"]}]},"item-azure-core":{"kind":"Item","name":"Azure Core","img":"img/items/azure-core.webp","meta":"Epic · 3000g","note":"Base info from the team's committed item snapshot (2026-11-03). Where this patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Stats","lines":["Magical power 70","Mana 450","Ability haste 10"]},{"title":"Spirit Shield (passive)","lines":["On going below 40% Health:","Gain a 100 (+12%) Shield for 5s."]},{"title":"Font (passive)","lines":["On Killing any Unit:","Gain 5 Max Mana.","Camp Leaders grant 15.","Stacks up to 400.","At 400, gain (+3.5%) Magical Power."]},{"title":"Effect (passive)","lines":["Power Gained: {Power}"]}]},"item-forticus":{"kind":"Item","name":"Forticus","img":"img/items/forticus.webp","meta":"Epic · 2900g","note":"Base info from the team's committed item snapshot (2026-11-03). Where this patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Stats","lines":["Health 325","Physical armor 55","Tenacity 75"]},{"title":"Immovable (passive)","lines":["Upon taking Hero damage:","Gain a (+8%) Shield for 3.5s."]},{"title":"Swell (passive)","lines":["Upon damaging or being damaged by Heroes:","For the next 3s, gain Stats each second:","(+0.6% Base Health) additional Max Health,","+4 Movement Speed and +0.5% Size.","All Stats are lost once the 3s timer expires."]},{"title":"Effect (passive)","lines":["Shield Activations: {Activations}Hero Combat Time: {Time}"]}]},"item-hexbound-bracers":{"kind":"Item","name":"Hexbound Bracers","img":"img/items/hexbound-bracers.webp","meta":"Epic · 2450g","note":"Base info from the team's committed item snapshot (2026-11-03). Where this patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Stats","lines":["Health 375","Mana 300","Ability haste 15","Heal shield increase 8%"]},{"title":"Mana Reactor (passive)","lines":["Restore Mana equal to 15% of damage taken.","Reduced to 5% when damaged by Non-Heroes.","Based on your Missing Mana, gain 1-3 additional Mana Regen."]},{"title":"Hexed Guard (passive)","lines":["Take 8 (+1 per Level) less damage from Hero Basic Attacks."]},{"title":"Effect (passive)","lines":["Mana Restored: {ManaRestored}"]}]},"item-soulbearer":{"kind":"Item","name":"Soulbearer","img":"img/items/soulbearer.webp","meta":"Legendary · Crest","note":"Base info from the team's committed item snapshot (2026-11-03). Where this patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Stats","lines":["Magical power 30","Mana 200","Ability haste 8"]},{"title":"Anima (active)","lines":["Gain a 100 (+35) (+6%) Shield for 8s.","Gain 20% Magical Lifesteal and 10% Movement Speed for 8s."]}]},"item-terminus":{"kind":"Item","name":"Terminus","img":"img/items/terminus.webp","meta":"Epic · 3150g","note":"Base info from the team's committed item snapshot (2026-11-03). Where this patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Stats","lines":["Physical power 60","Critical chance 20%","Lifesteal 15%"]},{"title":"Anon (passive)","lines":["On Overhealing from Lifesteal:","Convert excess Healing into a Shield.","Max Shield size: (+100%).","The Shield slowly decays 15s after leaving combat."]}]},"item-vortex-stone":{"kind":"Item","name":"Vortex Stone","img":"img/items/vortex-stone.webp","meta":"Epic · 2350g","note":"Base info from the team's committed item snapshot (2026-11-03). Where this patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Stats","lines":["Health 375","Health regeneration 100","Mana regeneration 100","Ability haste 10"]},{"title":"Eye Of The Storm (passive)","lines":["On Immobilizing Heroes:","Reduce your Current Basic Ability Cooldowns by 20%.","Gain a (+12%) Shield for 4s.","Shield is reduced by 50% for Ranged Heroes."]},{"title":"Effect (passive)","lines":["Activations: {Activations}"]}]},"item-vyzar-carapace":{"kind":"Item","name":"Vyzar Carapace","img":"img/items/vyzar-carapace.webp","meta":"Epic · 2900g","note":"Base info from the team's committed item snapshot (2026-11-03). Where this patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Stats","lines":["Physical power 45","Health 250","Ability haste 15"]},{"title":"Shell Shock (passive)","lines":["Against Enemy Heroes:","Basic Attacks and Abilities apply a stack of Scorn.","Apply 3 stacks to a Hero to trigger Shell Smash.","Scorn can only be applied once per ability."]},{"title":"Shell Smash (passive)","lines":["Deals 60-170 Damage, based on Level.","Gain a 50 (+12%) Shield for 3s."]},{"title":"Effect (passive)","lines":["Damage Dealt: {DamageDealt}Times Applied: {TimesApplied}"]}]}};
+  </script>
+  <script>
+  (function () {
+    var pills = [].slice.call(document.querySelectorAll('.psn-pill'));
+    var byId = {}; pills.forEach(function (p) { byId[p.dataset.t] = p; });
+    var secs = pills.map(function (p) { return document.getElementById(p.dataset.t); }).filter(Boolean);
+    if (!('IntersectionObserver' in window) || !secs.length) return;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        pills.forEach(function (p) { p.classList.toggle('active', p.dataset.t === e.target.id); });
+        var p = byId[e.target.id];
+        if (p) { p.parentNode.scrollTo({ left: p.offsetLeft - p.parentNode.clientWidth / 2 + p.offsetWidth / 2, behavior: 'smooth' }); }
+      });
+    }, { rootMargin: '-20% 0px -75% 0px' });
+    secs.forEach(function (s) { io.observe(s); });
+  })();
+  // Trend sort chips: clicking a chip lifts that change type to the top of the
+  // showcase grid and every magnitude group — a SORT, never a filter. Clicking
+  // the active chip again restores the default order (reworks, buffs, nerfs,
+  // mixed — the order the page ships in, stamped here as data-oi).
+  (function () {
+    var btns = [].slice.call(document.querySelectorAll('.hxs'));
+    if (!btns.length) return;
+    var pools = [].slice.call(document.querySelectorAll('#heroShowcaseGrid, .group-cards'));
+    pools.forEach(function (pool) {
+      [].slice.call(pool.children).forEach(function (el, i) { el.dataset.oi = i; });
+    });
+    function apply(sel) {
+      pools.forEach(function (pool) {
+        [].slice.call(pool.children)
+          .sort(function (a, b) {
+            var ra = sel && a.dataset.trend === sel ? 0 : 1;
+            var rb = sel && b.dataset.trend === sel ? 0 : 1;
+            return ra - rb || (+a.dataset.oi - +b.dataset.oi);
+          })
+          .forEach(function (el) { pool.appendChild(el); });
+      });
+      btns.forEach(function (b) {
+        var on = b.dataset.sort === sel;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+    }
+    var current = null;
+    btns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        current = current === b.dataset.sort ? null : b.dataset.sort;
+        apply(current);
+      });
+    });
+  })();
+  // "What is this?" popups: the buttons live on the item/Eternal cards (the
+  // anchor targets), so the popup is reachable only after jumping there — the
+  // showcase tiles above keep their plain jump behavior.
+  (function () {
+    var INFO = window.__POPUP_INFO || {};
+    var back = document.getElementById('popBack');
+    if (!back) return;
+    var lastFocus = null;
+    function open(key) {
+      var d = INFO[key];
+      if (!d) return;
+      document.getElementById('popKind').textContent = d.kind;
+      document.getElementById('popTitle').textContent = d.name;
+      document.getElementById('popMeta').textContent = d.meta || '';
+      var img = document.getElementById('popImg');
+      img.style.visibility = ''; img.src = d.img; img.alt = '';
+      var body = document.getElementById('popBody');
+      body.innerHTML = '';
+      (d.sections || []).forEach(function (s) {
+        var sec = document.createElement('div'); sec.className = 'pop-sec';
+        var h = document.createElement('b'); h.textContent = s.title; sec.appendChild(h);
+        s.lines.forEach(function (ln) {
+          var div = document.createElement('div'); div.textContent = ln; sec.appendChild(div);
+        });
+        body.appendChild(sec);
+      });
+      document.getElementById('popNote').textContent = d.note || '';
+      lastFocus = document.activeElement;
+      back.hidden = false;
+      document.getElementById('popClose').focus();
+    }
+    function close() {
+      back.hidden = true;
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+    [].slice.call(document.querySelectorAll('.card-info')).forEach(function (b) {
+      b.addEventListener('click', function () { open(b.dataset.info); });
+    });
+    document.getElementById('popClose').addEventListener('click', close);
+    back.addEventListener('click', function (e) { if (e.target === back) close(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !back.hidden) close(); });
+  })();
+  // Glossary tooltips: clamp each tooltip inside the viewport when it opens
+  // (the CSS centers it on the term; --tt-shift nudges it off an edge).
+  (function () {
+    [].slice.call(document.querySelectorAll('.term')).forEach(function (t) {
+      function place() {
+        var r = t.getBoundingClientRect();
+        var w = Math.min(270, window.innerWidth - 32);
+        var cx = r.left + r.width / 2, half = w / 2, shift = 0;
+        if (cx - half < 12) shift = 12 - (cx - half);
+        else if (cx + half > window.innerWidth - 12) shift = (window.innerWidth - 12) - (cx + half);
+        t.style.setProperty('--tt-shift', shift + 'px');
+      }
+      t.addEventListener('mouseenter', place);
+      t.addEventListener('focus', place);
+    });
+  })();
+  </script>
+  <script defer src="v6/icons.js"></script>
+  <script defer src="v6/nav.js"></script>
+  <script defer src="v6/hero-links.js"></script>
+</body>
+</html>
