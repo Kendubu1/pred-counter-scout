@@ -6095,3 +6095,24 @@ Mourn mitigated 721 a minute (0.76x a support's average), so not there. The fiel
 on the draft class, since that is what the ranked lineups count.
 
 2026-11-14: GENESIS_CORE is Shaper, not the base Core. Preserve identifiers and normalize display names. Recovery audit prioritizes mode-bound objective timing, real objective durability, event-order passives and multi-target scenarios. A decoded rule cannot establish observed player execution. See docs/recovery-opportunities.md.
+
+## 2026-11-20 — Patch 1.18.2 review, captured four days before release
+- **Keep image positions when stripping the notes.** 1.18.2 heads many hero sections with a
+  bare "General:" and names the hero only in a banner image, and puts a no-header item block
+  right after another item's. A plain tag strip glued them onto the previous hero: the
+  690 -> 670 health line printed after Legion is Lt. Belica's, the regen-only line is
+  Morigesh's, and the Stigmata recipe/Disintegrate lines are Megacosm's, not Azure Core's.
+  Replacing each <img> with an [[IMG filename]] marker before stripping, then splitting on
+  banners, attributed all 37 hero blocks (one banner filename was garbled: Boris).
+- **The item pool had silently stopped refreshing.** data/aggregates/item-pool.json was
+  still the release-day 1.18 snapshot (2026-11-03) on 11-20; the daily chain does not run
+  `npm run itempool`. Item usage for the review came from predgg-builds.json top cores
+  instead (who builds Forticus: 25 hero-roles; Steel support 1,972 core games).
+- **eternals.json never took the 1.18 Eternal changes.** It still reads 1.17.2 (Patina
+  +14 per level, Fracture 4%); the patch digests carry the changes but nothing applies them
+  to the Eternal text the hero pages show. Logged as priorities 21b.
+- Copy: author kept to the short house style (why <= 30, willChange <= 55, verdict first);
+  critic round 1 found 11 (1 high: Neon's line said the patch touches neither of her
+  Eternals while it cuts Vesh's Tenth Seal), round 2 found 2 low wording leftovers from its
+  own fixes. Core win rates were banned from the copy up front (finishing three items
+  correlates with winning); core game counts carry "who builds it".

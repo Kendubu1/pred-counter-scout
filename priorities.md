@@ -549,6 +549,21 @@ items from the lineups (21a) for this card. Open:
   them; keep the tags and answers rule-based.
 - **22f. "What enemies build against you" (other half of 16b)** from the same cells, per enemy role.
 
+## 21. Patch 1.18.2 rollover (queued 2026-11-20; the review page shipped as predictions)
+
+Releases 2026-11-24. Review: data/patches/1.18.2.json, data/aggregates/patch-1.18.2-predictions.json,
+ui/patch-1.18.2.html. 1.18.2 is in the 1.18 family, so the lane board does not reset.
+
+- **21a.** After release: `npm run catalog` (the seven new items and Hybrid Penetration join;
+  patchcheck's 19 pending checks must flip to applied), `npm run icons` (replaces the seven
+  placeholder item icons; the guessed slugs bandits-toll / heretics-blade may differ from
+  pred.gg's, in which case delete the orphan placeholder), artifacts, copy loop.
+- **21b.** data/game-data/eternals.json is still 1.17.2 text: apply the 1.18 and 1.18.2 Eternal
+  changes from the digests (Patina, Fracture, Resonant Repair, Tenth Seal, Phylactery, Krix,
+  Nihil, Mending, Sacrifice, Pilow, Vesh, Aion, Demiurge, Xyris, Marrow) and bump its patch.
+- **21c.** `npm run itempool` is not in the daily chain; item-pool.json stopped at 2026-11-03.
+- **21d.** Measured 1.18.2 win rates next to the predictions after about a week (build-measured).
+
 ## Parked ideas (not yet scheduled)
 
 - Comfort-vs-meta flex logic (parked by maintainer 2026-06-12): when a
