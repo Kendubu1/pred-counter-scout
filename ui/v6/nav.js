@@ -10,7 +10,7 @@
     // hardest to kill AND winning, per lane (npm run tanks)
     { href: 'tanks.html',            label: 'Tankiest builds',        icon: 'meta-guide', tag: 'new', match: ['tanks.html'] },
     // only the current review; older ones are listed at the bottom of What's new
-    { href: '../patch-1.18.html',    label: 'Patch 1.18 review',      icon: 'patch-strategy',   match: ['patch-1.18.html'] },
+    { href: '../patch-1.18.2.html',  label: 'Patch 1.18.2 review',    icon: 'patch-strategy',   match: ['patch-1.18.2.html'] },
     { group: 'Coach' },
     { href: 'coach.html',            label: 'Game review',            icon: 'scout',            match: ['coach.html'] },
     { href: 'reports.html',          label: 'Player reports',         icon: 'scout',            match: ['reports.html'] },
